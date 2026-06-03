@@ -1,90 +1,58 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { getById } from '@/lib/paintings';
+import Link from 'next/link'
+import { getArtworkById } from '@/lib/db'
+import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
-export default async function PaintingDetailPage({ params }) {
-  const { id } = await params;
-  const painting = await getById(id);
-
-  if (!painting) notFound();
-
-  const allImages = painting.images && painting.images.length > 0 ? painting.images : [painting.image];
-  const extraImages = allImages.filter((img) => img !== painting.image);
+export default async function PaintingPage({ params }) {
+  const artwork = await getArtworkById(params.id)
+  if (!artwork) notFound()
 
   return (
-    <article>
-      <div className="painting-header">
-        <h1>{painting.title}</h1>
-        <p className="painting-meta">{painting.medium} | {painting.size} | {painting.year} | {painting.category}</p>
-      </div>
-
-      <div className="painting-content">
-        <div className="painting-detail-grid">
-          <div>
-            <div className="painting-main-image">
-              <img src={painting.image} alt={painting.title} style={{ width: '100%', display: 'block' }} />
-            </div>
-            {extraImages.length > 0 && (
-              <div className="painting-images-grid">
-                {extraImages.map((img, i) => (
-                  <img key={i} src={img} alt={`${painting.title} view ${i + 1}`} />
-                ))}
-              </div>
-            )}
+    <main className="main-content">
+      <section className="section" style={{ paddingTop: 120 }}>
+        <div className="container">
+          <div style={{ marginBottom: 40 }}>
+            <Link href="/#gallery" style={{ fontSize: 13, color: 'var(--coffee)', textDecoration: 'none' }}>&larr; Back to Gallery</Link>
           </div>
 
-          <div className="painting-info">
-            <h2>{painting.title}</h2>
-            <p className="painting-medium">{painting.medium}</p>
-            <p className="painting-specs">{painting.size} — {painting.year} — {painting.category}</p>
-            <p className="painting-description">{painting.description}</p>
-
-            <div className="painting-price-box">
-              <div style={{ fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: 'var(--slate-gray)', marginBottom: 4 }}>
-                {painting.sold ? 'Status: Sold' : 'Price'}
-              </div>
-              <div className={`painting-price${painting.sold ? ' sold' : ''}`}>
-                {painting.sold ? 'SOLD' : `${painting.currency} ${painting.price.toLocaleString()}`}
-              </div>
-              {painting.sold
-                ? <p style={{ fontSize: 13, color: 'var(--caput-mortuum)', marginTop: 8 }}>This piece has been acquired.</p>
-                : <p style={{ fontSize: 13, color: 'var(--slate-gray)', marginTop: 8 }}>Contact for inquiries and acquisition</p>
-              }
+          <div className="painting-detail">
+            <div className="painting-detail-image">
+              {artwork.image ? (
+                <img src={artwork.image} alt={artwork.title} style={{ width: '100%', borderRadius: 12, boxShadow: 'var(--shadow-lg)' }} />
+              ) : (
+                <div style={{ width: '100%', padding: '80px 0', background: '#eee', textAlign: 'center', color: '#999', borderRadius: 12 }}>No Image Available</div>
+              )}
+              {artwork.images.length > 1 && (
+                <div style={{ display: 'flex', gap: 10, marginTop: 16, overflowX: 'auto' }}>
+                  {artwork.images.map((url, i) => (
+                    <img key={i} src={url} alt={`${artwork.title} view ${i + 1}`} style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 8, cursor: 'pointer', border: i === 0 ? '2px solid var(--coffee)' : '2px solid transparent' }} />
+                  ))}
+                </div>
+              )}
             </div>
 
-            <Link href="/#gallery" className="btn btn-primary">Back to Gallery</Link>
-            <Link href="/#contacts" className="btn btn-secondary" style={{ marginLeft: 8 }}>Inquire</Link>
+            <div className="painting-detail-info">
+              <div className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : 'AVAILABLE'}</div>
+              <h1 className="detail-title">{artwork.title}</h1>
+              {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}
+              {artwork.size && <p className="detail-dimensions">{artwork.size}</p>}
+              {artwork.description && (
+                <div className="detail-description">
+                  {artwork.description.split('\n').filter(Boolean).map((p, i) => (<p key={i}>{p}</p>))}
+                </div>
+              )}
+              <div className="detail-price">
+                {artwork.sold ? 'SOLD' : `${artwork.currency} ${(artwork.price || 0).toLocaleString()}`}
+              </div>
+              <div className="detail-actions">
+                <a href="/#contacts" className="btn btn-primary">Inquire About This Work</a>
+                <Link href="/#gallery" className="btn btn-secondary">Back to Gallery</Link>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <style>{`
-        .painting-header { text-align: center; padding: 70px 20px; background: linear-gradient(135deg, var(--space-cadet) 0%, #1a1c2e 100%); }
-        .painting-header h1 { color: var(--coffee); }
-        .painting-meta { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 16px; }
-        .painting-content { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
-        .painting-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: start; }
-        .painting-main-image { width: 100%; border-radius: 12px; overflow: hidden; box-shadow: var(--shadow-lg); }
-        .painting-main-image img { width: 100%; display: block; }
-        .painting-info h2 { font-size: 32px; margin-bottom: 12px; }
-        .painting-info .painting-medium { font-size: 16px; color: var(--tan); font-style: italic; margin-bottom: 8px; }
-        .painting-info .painting-specs { font-size: 14px; color: var(--slate-gray); margin-bottom: 20px; }
-        .painting-info .painting-description { font-size: 16px; line-height: 1.9; margin-bottom: 24px; color: var(--space-cadet); }
-        .painting-info .painting-price-box { background: linear-gradient(135deg, rgba(212,167,106,0.15) 0%, rgba(212,167,106,0.05) 100%); border: 1px solid rgba(212,167,106,0.3); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-        .painting-info .painting-price { font-size: 32px; font-weight: 900; color: var(--caput-mortuum); }
-        .painting-info .painting-price.sold { color: var(--slate-gray); text-decoration: line-through; }
-        .painting-images-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 30px; }
-        .painting-images-grid img { width: 100%; border-radius: 8px; cursor: pointer; transition: var(--transition); aspect-ratio: 1; object-fit: cover; }
-        .painting-images-grid img:hover { transform: scale(1.03); box-shadow: var(--shadow-md); }
-        @media (max-width: 768px) {
-          .painting-detail-grid { grid-template-columns: 1fr; gap: 30px; }
-          .painting-info h2 { font-size: 24px; }
-          .painting-info .painting-price { font-size: 24px; }
-          .painting-images-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-      `}</style>
-    </article>
-  );
+      </section>
+    </main>
+  )
 }

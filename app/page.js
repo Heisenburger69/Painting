@@ -1,11 +1,14 @@
-import Link from 'next/link';
-import { getAll, getFeatured } from '@/lib/paintings';
+import Link from 'next/link'
+import { getArtistProfile, getCredentials, getPastExhibitions, getUpcomingExhibitions, getArtworks, getFeaturedArtworks } from '@/lib/db'
 
-export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [paintings, featuredPaintings] = await Promise.all([getAll(), getFeatured()]);
-  const featured = featuredPaintings.length > 0 ? featuredPaintings[0] : paintings[0];
+  const [profile, credentials, pastExhibitions, upcomingExhibitions, artworks, featuredList] = await Promise.all([
+    getArtistProfile(), getCredentials(), getPastExhibitions(), getUpcomingExhibitions(), getArtworks(), getFeaturedArtworks(),
+  ])
+
+  const featured = featuredList.length > 0 ? featuredList[0] : artworks[0]
 
   return (
     <>
@@ -23,31 +26,27 @@ export default async function HomePage() {
       {/* GALLERY */}
       <section id="gallery" className="section">
         <div className="container">
-          <div className="section-header">
-            <h2>Available Works</h2>
-          </div>
-          <div className="paintings-grid">
-            {paintings.map((painting) => (
-              <Link
-                key={painting.id}
-                href={`/painting/${painting.id}`}
-                className={`painting-card${painting.featured ? ' featured' : ''}`}
-              >
-                <div className="card-image">
-                  <img src={painting.image} alt={painting.title} />
-                </div>
-                <div className="card-title">{painting.title}</div>
-                <div className="card-medium">{painting.medium} — {painting.year}</div>
-                <p className="card-excerpt">
-                  {painting.description.slice(0, 120)}{painting.description.length > 120 ? '...' : ''}
-                </p>
-                <div className={`card-price${painting.sold ? ' sold' : ''}`}>
-                  {painting.sold ? 'SOLD' : `${painting.currency} ${painting.price.toLocaleString()}`}
-                  {painting.sold && <span className="sold-badge">Sold</span>}
-                </div>
-              </Link>
-            ))}
-          </div>
+          <div className="section-header"><h2>Available Works</h2></div>
+          {artworks.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 60 }}>No artworks yet — check back soon.</p>
+          ) : (
+            <div className="paintings-grid">
+              {artworks.map((a) => (
+                <Link key={a.id} href={`/painting/${a.id}`} className={`painting-card${a.featured ? ' featured' : ''}`}>
+                  <div className="card-image">
+                    {a.image ? <img src={a.image} alt={a.title} /> : <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: 12 }}>No Image</div>}
+                  </div>
+                  <div className="card-title">{a.title}</div>
+                  <div className="card-medium">{a.medium} — {a.year}</div>
+                  <p className="card-excerpt">{a.description ? (a.description.slice(0, 120) + (a.description.length > 120 ? '...' : '')) : ''}</p>
+                  <div className={`card-price${a.sold ? ' sold' : ''}`}>
+                    {a.sold ? 'SOLD' : `${a.currency} ${(a.price || 0).toLocaleString()}`}
+                    {a.sold && <span className="sold-badge">Sold</span>}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -56,16 +55,20 @@ export default async function HomePage() {
         <div className="container">
           <div className="section-header"><h2>Artist Statement</h2></div>
           <div className="info-card-dark" style={{ maxWidth: 900, margin: '0 auto' }}>
-            <p style={{ fontSize: 16, lineHeight: 1.9, marginBottom: 20 }}>
-              I paint because I must. Each brushstroke is an attempt to capture what words cannot hold — the slant of light across a forgotten courtyard, the weight of silence between two people, the texture of memory as it fades and reforms.
-            </p>
-            <p style={{ fontSize: 16, lineHeight: 1.9, marginBottom: 20 }}>
-              My work sits at the intersection of observation and emotion. The landscapes are not places I have seen so much as places I have felt. The portraits are not people I know, but people I have been. I am drawn to the in-between moments — dusk, departure, the pause before a word is spoken.
-            </p>
-            <p style={{ fontSize: 16, lineHeight: 1.9 }}>
-              Colour is my primary language. I build layers of pigment, scraping back and adding again, until the surface carries the history of its own making. Every mark, every accident, every deliberate stroke remains visible — a diary of decisions.
-            </p>
-            <div style={{ textAlign: 'right', marginTop: 30, fontStyle: 'italic', color: 'var(--tan)' }}>— The Artist</div>
+            {profile?.artist_statement ? (
+              profile.artist_statement.split('\n').filter(Boolean).map((p, i) => (
+                <p key={i} style={{ fontSize: 16, lineHeight: 1.9, marginBottom: 20 }}>{p}</p>
+              ))
+            ) : (
+              <p style={{ fontSize: 16, lineHeight: 1.9, color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>
+                Artist statement coming soon.
+              </p>
+            )}
+            {profile?.name && (
+              <div style={{ textAlign: 'right', marginTop: 30, fontStyle: 'italic', color: 'var(--tan)' }}>
+                — {profile.name}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -74,50 +77,59 @@ export default async function HomePage() {
       <section id="biography" className="section">
         <div className="container">
           <div className="section-header"><h2>Biography</h2></div>
-          <div className="grid grid-2" style={{ gap: 40, alignItems: 'start' }}>
-            <div className="info-card">
-              <h3 style={{ marginBottom: 16, fontSize: 14, color: 'var(--slate-gray)' }}>Education & Training</h3>
-              <ul className="info-list">
-                <li><strong>MFA in Fine Arts</strong> — Royal Academy of Arts, London (2018–2020)</li>
-                <li><strong>BFA in Painting</strong> — Faculty of Fine Arts, Cairo University (2014–2018)</li>
-                <li><strong>Atelier Grégoire</strong> — Classical painting techniques, Paris (2017)</li>
-                <li><strong>Certificate in Art Theory</strong> — The Courtauld Institute of Art (2019)</li>
-              </ul>
+          {credentials.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 40 }}>Biography details coming soon.</p>
+          ) : (
+            <div className="grid grid-2" style={{ gap: 40, alignItems: 'start' }}>
+              {['education', 'certificate', 'work'].map((type) => {
+                const items = credentials.filter((c) => c.type === type)
+                if (items.length === 0) return null
+                const label = type === 'education' ? 'Education & Training' : type === 'certificate' ? 'Certificates' : 'Professional Experience'
+                return (
+                  <div className="info-card" key={type}>
+                    <h3 style={{ marginBottom: 16, fontSize: 14, color: 'var(--slate-gray)' }}>{label}</h3>
+                    <ul className="info-list">
+                      {items.map((c) => (
+                        <li key={c.id}>
+                          <strong>{c.title}</strong>
+                          {c.institution ? ` — ${c.institution}` : ''}
+                          {c.start_year ? ` (${c.start_year}${c.end_year ? `–${c.end_year}` : ''})` : ''}
+                          {c.description ? <br /> : ''}
+                          {c.description ? <span style={{ fontSize: 13, color: 'var(--slate-gray)' }}>{c.description}</span> : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })}
             </div>
-            <div className="info-card">
-              <h3 style={{ marginBottom: 16, fontSize: 14, color: 'var(--slate-gray)' }}>Professional Experience</h3>
-              <ul className="info-list">
-                <li><strong>Independent Artist</strong> — Full-time studio practice, Cairo (2021–Present)</li>
-                <li><strong>Visiting Lecturer</strong> — Faculty of Fine Arts, Cairo University (2022–2024)</li>
-                <li><strong>Resident Artist</strong> — Zamalek Art Residency, Cairo (2021)</li>
-                <li><strong>Studio Assistant</strong> — Atelier Khairy, Alexandria (2018–2019)</li>
-              </ul>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* EXHIBITIONS */}
+      {/* EXHIBITIONS (Past) */}
       <section id="exhibitions" className="section-dark">
         <div className="container">
           <div className="section-header"><h2>Exhibitions</h2></div>
-          <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
-            {[
-              { title: '"Between Light & Shadow"', year: '2025', venue: 'Solo Exhibition — Cairo Opera House, Egypt', desc: 'A collection of 24 works exploring the interplay of natural light and human emotion across urban and rural landscapes.' },
-              { title: 'Contemporary Visions', year: '2024', venue: 'Group Exhibition — Sharjah Art Foundation, UAE', desc: 'Featured 3 large-scale abstract works alongside 15 international contemporary artists.' },
-              { title: 'Roots & Horizons', year: '2023', venue: 'Solo Exhibition — Darb 1718, Cairo, Egypt', desc: 'A deeply personal exhibition reflecting on heritage, displacement, and belonging through mixed-media works on canvas and paper.' },
-              { title: 'Young Collectors\' Fair', year: '2022', venue: 'Art Fair — The Nile Ritz-Carlton, Cairo', desc: 'Selected as one of 12 emerging artists to showcase work to collectors and gallery owners.' },
-            ].map((ex) => (
-              <div className="info-card-dark" key={ex.title}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                  <h3 style={{ margin: 0, fontSize: 16 }}>{ex.title}</h3>
-                  <span style={{ color: 'var(--tan)', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>{ex.year}</span>
-                </div>
-                <p style={{ fontSize: 13, marginBottom: 8 }}>{ex.venue}</p>
-                <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{ex.desc}</p>
-              </div>
-            ))}
-          </div>
+          {pastExhibitions.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>No past exhibitions yet.</p>
+          ) : (
+            <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
+              {pastExhibitions.map((ex) => {
+                const year = ex.start_date ? new Date(ex.start_date).getFullYear() : ''
+                return (
+                  <div className="info-card-dark" key={ex.id}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                      <h3 style={{ margin: 0, fontSize: 16 }}>{ex.title}</h3>
+                      {year && <span style={{ color: 'var(--tan)', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>{year}</span>}
+                    </div>
+                    <p style={{ fontSize: 13, marginBottom: 8 }}>{[ex.venue, ex.location].filter(Boolean).join(', ')}</p>
+                    {ex.description && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{ex.description}</p>}
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -125,69 +137,40 @@ export default async function HomePage() {
       <section id="research" className="section">
         <div className="container">
           <div className="section-header"><h2>Research & Academic Work</h2></div>
-          <div className="info-card" style={{ maxWidth: 900, margin: '0 auto' }}>
-            <h3 style={{ fontSize: 15, color: 'var(--coffee)', marginBottom: 12 }}>Master's Thesis</h3>
-            <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 20 }}>
-              <strong>&ldquo;The Luminous in the Everyday: Translating Transient Light into Permanent Pigment&rdquo;</strong>
-            </p>
-            <p style={{ fontSize: 14, lineHeight: 1.8, marginBottom: 16 }}>
-              A practice-led research project examining how contemporary painters can capture the fleeting quality of natural light through layering techniques borrowed from the Old Masters and reinterpreted through a modern lens.
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--slate-gray)' }}>
-              Royal Academy of Arts, London — 2020 | Supervisor: Prof. Helena Marchetti
-            </p>
-          </div>
-          <div className="grid grid-2" style={{ gap: 24, marginTop: 30, maxWidth: 900, marginInline: 'auto' }}>
-            <div className="info-card">
-              <h3 style={{ fontSize: 13, color: 'var(--coffee)', marginBottom: 8 }}>Published Articles</h3>
-              <ul className="info-list" style={{ fontSize: 13 }}>
-                <li>&ldquo;Painting as Meditation&rdquo; — Art Monthly, Issue 482 (2023)</li>
-                <li>&ldquo;The Return of Figuration&rdquo; — Cairo Art Review, Vol. 4 (2022)</li>
-                <li>&ldquo;Materiality in Contemporary Egyptian Art&rdquo; — Nafas Magazine (2021)</li>
-              </ul>
+          {profile?.research_academic ? (
+            <div className="info-card" style={{ maxWidth: 900, margin: '0 auto' }}>
+              {profile.research_academic.split('\n').filter(Boolean).map((p, i) => (
+                <p key={i} style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16 }}>{p}</p>
+              ))}
             </div>
-            <div className="info-card">
-              <h3 style={{ fontSize: 13, color: 'var(--coffee)', marginBottom: 8 }}>Lectures & Workshops</h3>
-              <ul className="info-list" style={{ fontSize: 13 }}>
-                <li>&ldquo;Colour Theory for Painters&rdquo; — Cairo University (2024)</li>
-                <li>&ldquo;Building a Studio Practice&rdquo; — Alexandria Atelier (2023)</li>
-                <li>&ldquo;Layering Techniques in Oil Painting&rdquo; — Zamalek Art Residency (2022)</li>
-              </ul>
-            </div>
-          </div>
+          ) : (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 40 }}>Research & academic work coming soon.</p>
+          )}
         </div>
       </section>
 
-      {/* NEWS & EVENTS */}
+      {/* NEWS & EVENTS (Upcoming) */}
       <section id="news" className="section-dark">
         <div className="container">
           <div className="section-header"><h2>News & Events</h2></div>
-          <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
-            <div className="info-card-dark">
-              <span style={{ display: 'inline-block', background: 'var(--tan)', color: 'var(--space-cadet)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>Upcoming</span>
-              <h3 style={{ fontSize: 16, marginBottom: 8 }}>&ldquo;New Works&rdquo; — Summer Exhibition</h3>
-              <p style={{ fontSize: 13, marginBottom: 8 }}>Solo exhibition opening August 2026 at Zamalek Art Gallery, Cairo</p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>A new body of work exploring the coastline of the Mediterranean — from Alexandria to Marsa Matruh. 18 new paintings, all available for preview.</p>
+          {upcomingExhibitions.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>No upcoming events at this time.</p>
+          ) : (
+            <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
+              {upcomingExhibitions.map((ex) => {
+                const badgeColor = ex.status === 'upcoming' ? 'var(--tan)' : ex.status === 'current' ? 'var(--coffee)' : 'var(--space-cadet)'
+                const badgeText = ex.status === 'upcoming' ? 'Upcoming' : ex.status === 'current' ? 'Current' : 'Event'
+                return (
+                  <div className="info-card-dark" key={ex.id}>
+                    <span style={{ display: 'inline-block', background: badgeColor, color: badgeColor === 'var(--space-cadet)' ? 'var(--tan)' : badgeColor === 'var(--coffee)' ? '#fff' : 'var(--space-cadet)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>{badgeText}</span>
+                    <h3 style={{ fontSize: 16, marginBottom: 8 }}>{ex.title}</h3>
+                    {ex.start_date && <p style={{ fontSize: 13, marginBottom: 8 }}>{new Date(ex.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} — {[ex.venue, ex.location].filter(Boolean).join(', ')}</p>}
+                    {ex.description && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{ex.description}</p>}
+                  </div>
+                )
+              })}
             </div>
-            <div className="info-card-dark">
-              <span style={{ display: 'inline-block', background: 'var(--coffee)', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>Open Studio</span>
-              <h3 style={{ fontSize: 16, marginBottom: 8 }}>Open Studio Weekend</h3>
-              <p style={{ fontSize: 13, marginBottom: 8 }}>September 12–13, 2026 — Studio 4, Downtown Cairo</p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Visit the studio, see works in progress, and discuss commissions directly. Coffee and conversation included.</p>
-            </div>
-            <div className="info-card-dark">
-              <span style={{ display: 'inline-block', background: 'var(--space-cadet)', color: 'var(--tan)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>Past</span>
-              <h3 style={{ fontSize: 16, marginBottom: 8 }}>Art Cairo 2026</h3>
-              <p style={{ fontSize: 13, marginBottom: 8 }}>March 2026 — Grand Egyptian Museum</p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>Participated in the inaugural Art Cairo fair. &ldquo;Urban Solitude&rdquo; and &ldquo;Whispers of Autumn&rdquo; were acquired by private collectors.</p>
-            </div>
-            <div className="info-card-dark">
-              <span style={{ display: 'inline-block', background: 'var(--space-cadet)', color: 'var(--tan)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>Past</span>
-              <h3 style={{ fontSize: 16, marginBottom: 8 }}>Commission Project: Nabil Foundation</h3>
-              <p style={{ fontSize: 13, marginBottom: 8 }}>Completed January 2026</p>
-              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>A series of 5 large-scale paintings commissioned for the lobby of the Nabil Foundation headquarters in New Cairo.</p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -198,10 +181,13 @@ export default async function HomePage() {
             <h2>Featured Artwork</h2>
             <p style={{ fontSize: 14, color: 'var(--slate-gray)' }}>A changing selection — the current highlight of the collection</p>
           </div>
-          {featured && (
+          {!featured ? (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 60 }}>No featured artwork selected yet.</p>
+          ) : (
             <div className="grid grid-2" style={{ gap: 40, alignItems: 'center', maxWidth: 900, margin: '0 auto' }}>
               <div style={{ borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-lg)' }}>
-                <img src={featured.image} alt={featured.title} style={{ width: '100%', display: 'block' }} />
+                {featured.image ? <img src={featured.image} alt={featured.title} style={{ width: '100%', display: 'block' }} />
+                  : <div style={{ width: '100%', padding: '60px 0', background: '#eee', textAlign: 'center', color: '#999' }}>No Image</div>}
               </div>
               <div>
                 <h3 style={{ fontSize: 13, color: 'var(--slate-gray)', letterSpacing: 2, marginBottom: 8 }}>Featured Work</h3>
@@ -209,7 +195,7 @@ export default async function HomePage() {
                 <p style={{ fontSize: 14, color: 'var(--coffee)', fontStyle: 'italic', marginBottom: 16 }}>{featured.medium} — {featured.size} — {featured.year}</p>
                 <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 20 }}>{featured.description}</p>
                 <div style={{ fontSize: 24, fontWeight: 900, color: featured.sold ? 'var(--caput-mortuum)' : 'var(--coffee)', marginBottom: 16 }}>
-                  {featured.sold ? 'SOLD' : `${featured.currency} ${featured.price.toLocaleString()}`}
+                  {featured.sold ? 'SOLD' : `${featured.currency} ${(featured.price || 0).toLocaleString()}`}
                 </div>
                 {!featured.sold && <a href="#gallery" className="btn btn-primary" style={{ pointerEvents: 'auto' }}>View Gallery</a>}
               </div>
@@ -226,26 +212,26 @@ export default async function HomePage() {
             <div className="contact-item">
               <span className="contact-icon">&#9993;</span>
               <div className="contact-label">Email</div>
-              <div className="contact-value">hello@atelier.art</div>
+              <div className="contact-value">{profile?.contact_email || 'Not set'}</div>
             </div>
             <div className="contact-item">
               <span className="contact-icon">&#9743;</span>
               <div className="contact-label">Phone</div>
-              <div className="contact-value">+20 100 123 4567</div>
+              <div className="contact-value">{profile?.contact_phone || 'Not set'}</div>
             </div>
             <div className="contact-item">
               <span className="contact-icon">&#9670;</span>
               <div className="contact-label">Instagram</div>
-              <div className="contact-value">@atelier.art</div>
+              <div className="contact-value">{profile?.instagram_url || 'Not set'}</div>
             </div>
             <div className="contact-item">
               <span className="contact-icon">&#9835;</span>
               <div className="contact-label">TikTok</div>
-              <div className="contact-value">@atelier.art</div>
+              <div className="contact-value">{profile?.tiktok_url || 'Not set'}</div>
             </div>
           </div>
         </div>
       </section>
     </>
-  );
+  )
 }
