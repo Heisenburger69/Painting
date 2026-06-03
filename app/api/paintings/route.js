@@ -1,37 +1,40 @@
-import { NextResponse } from 'next/server';
-import { getAll, create, getAllJSON, importJSON } from '@/lib/paintings';
+import { NextResponse } from 'next/server'
+import { getServiceSupabase } from '@/lib/supabase'
 
 export async function GET() {
-  const paintings = await getAll();
-  return NextResponse.json({ paintings });
+  const supabase = getServiceSupabase()
+  const { data, error } = await supabase
+    .from('artworks')
+    .select('*, artwork_images(*)')
+    .is('deleted_at', null)
+    .order('sort_order', { ascending: true })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
 }
 
 export async function POST(request) {
-  try {
-    const body = await request.json();
-    const painting = await create(body);
-    return NextResponse.json(painting, { status: 201 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
-  }
-}
+  const supabase = getServiceSupabase()
+  const body = await request.json()
 
-export async function PUT(request) {
-  try {
-    const { action } = await request.json();
-    if (action === 'import') {
-      const { json } = await request.json();
-      await importJSON(json);
-      return NextResponse.json({ success: true });
-    }
-    if (action === 'reorder') {
-      const { fromIndex, toIndex } = await request.json();
-      const { reorder } = await import('@/lib/paintings');
-      await reorder(fromIndex, toIndex);
-      return NextResponse.json({ success: true });
-    }
-    return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
-  } catch (err) {
-    return NextResponse.json({ error: err.message }, { status: 400 });
-  }
+  const { data, error } = await supabase
+    .from('artworks')
+    .insert({
+      title: body.title,
+      year: body.year,
+      medium: body.medium,
+      width_cm: body.width_cm,
+      height_cm: body.height_cm,
+      depth_cm: body.depth_cm,
+      description: body.description,
+      price: body.price,
+      currency: body.currency || 'EGP',
+      status: body.status || 'available',
+      is_featured: body.is_featured || false,
+      is_published: body.is_published !== undefined ? body.is_published : true,
+      sort_order: body.sort_order || 0,
+    })
+    .select()
+    .single()
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json(data)
 }
