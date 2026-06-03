@@ -1,83 +1,56 @@
-# Rising Stars Language School Magazine
-## Complete Setup & Usage Guide
+# Atelier — Artist Portfolio & Painting Sales Site
 
-### Files Structure
+A static artist portfolio website where an admin can manage paintings (add, edit, reorder, mark as sold), and visitors can browse, view details, and inquire about purchases.
+
+## Structure
+
 ```
-/files/
-├── index.html           # Main homepage
-├── article.html       # Dynamic article page
-├── student.html      # Student profile page
-├── top-students.html # Star students listing
-├── admin.html       # Admin dashboard (password: admin123)
-├── article-editor.html # Multi-element article creator
-├── css/
-│   └── style.css  # Global styles
-├── data/
-│   ├── events.json  # Events (multi-element CMS)
-│   └── students.json # Students (CMS)
-└── [images]       # Student photos, event images
+├── index.html          — Main gallery + 7 info sections
+├── painting.html       — Individual painting detail page (?id=)
+├── admin.html          — Admin panel for managing paintings
+├── css/style.css       — All styles (Inter font, CSS variables)
+├── js/data.js          — DataStore: loads/manages paintings
+├── data/paintings.json — Painting data file
+├── assets/images/      — Image assets
+└── package.json        — Project metadata
 ```
 
-### Default Passwords
-- **Admin Panel**: `admin123`
+## Data Flow
 
-### Home Screen Articles
-- 3-column grid on desktop
-- 2-column on tablet (1024px)
-- 2-column on mobile (768px/480px)
-- Featured articles span 2 columns
+1. `index.html` calls `DataStore.load()` which fetches `data/paintings.json`
+2. `DataStore.getPaintings()` returns the array → rendered into `.paintings-grid`
+3. Clicking a painting → `painting.html?id=xxx` → `DataStore.getPainting(id)` → renders detail
+4. Admin logs in → edits/adds paintings → copies JSON → pastes into `data/paintings.json`
 
-### Article Editor - Multi-Element System
-Now supports adding **multiple elements** to each article:
+## Color Palette
 
-| Element | Options |
-|--------|--------|
-| 📝 **Text** | Paragraph content |
-| 🖼️ **Image** | filename, caption, align (left/right/full) |
-| 💬 **Quote** | quote text, author |
-| 🎬 **Video** | YouTube embed URL |
-| 🎠 **Slideshow** | comma-separated images |
-| 👥 **Students** | name, role, achievement |
+| Name            | Hex       | Usage                               |
+|-----------------|-----------|-------------------------------------|
+| Caput Mortuum   | `#592720` | Navbar, footer, admin header, prices|
+| Space Cadet     | `#2D3142` | Dark section backgrounds, hero      |
+| Slate Gray      | `#6C7A89` | Muted text, sold status, secondary  |
+| Tan             | `#D4A76A` | Accent, highlights, button text     |
+| Coffee          | `#6F4E37` | Primary accent, buttons, headings   |
 
-### Building an Article
-1. Go to `article-editor.html`
-2. Enter title, category, featured
-3. Click element buttons to add (Text, Image, Quote, Video, Slideshow, Students)
-4. Configure each element
-5. Click "Generate Article JSON"
-6. Copy to `data/events.json`
+## 7 Sections (below gallery)
 
-### Student-Event Linking
-- Student names must **exactly match** between `events.json` and `students.json`
-- When matched: click student name → see all their events
-- Shows role + achievement per event
-- Star students highlighted with gold badge
+1. **Artist Statement** — Philosophy and intent behind the work
+2. **Biography** — Education, work experience, certificates
+3. **Exhibitions** — Past exhibitions participated in
+4. **Research & Academic Work** — Master's thesis, publications
+5. **News & Events** — Upcoming exhibitions, open studios
+6. **Contacts** — Email, phone, Instagram, TikTok
+7. **Featured Artwork** — Frequently changeable hero piece
 
-### Star Students
-- Marked with gold badge "★ Star"
-- Appear highlighted in listings
-- Can filter by class (Preparatory/Secondary)
+## Usage
 
-### Mobile Features
-- Responsive at 1024px, 768px, 480px
-- Touch-friendly hamburger menu
-- 2-column article grid on all devices
-- Readable typography
+1. Replace placeholder images in `assets/images/` with actual painting photos
+2. Edit `data/paintings.json` or use `admin.html` (password: `admin123`) to manage paintings
+3. Copy the JSON from Admin → JSON tab → paste into `data/paintings.json` to persist
+4. Deploy the entire folder to any static host (GitHub Pages, Netlify, Vercel)
 
-### Article Types (Legacy still supported)
-- `text-only` - Plain article
-- `image-text` - Image + text side by side  
-- `full-image` - Full width image
-- `text-image` - Text then large image
-- `slideshow` - Image carousel
-- `video` - YouTube embed
-- `multi` - New multi-element format
+## Notes
 
-### Video Embed Format
-Use YouTube embed URL:
-```
-https://www.youtube.com/embed/VIDEO_ID
-```
-
-### Demo Mode
-If JSON files fail to load, demo data is used automatically.
+- Pure vanilla HTML/CSS/JS — no dependencies, no build step
+- Admin password is `admin123` — change in `admin.html` before deployment
+- All painting data is loaded from `data/paintings.json` at runtime

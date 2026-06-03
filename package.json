@@ -1,0 +1,6 @@
+{
+  "name": "atelier-portfolio",
+  "version": "1.0.0",
+  "description": "Artist portfolio & painting sales website — static site, no build tools",
+  "private": true
+}

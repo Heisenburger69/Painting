@@ -1,291 +1,82 @@
-/**
- * Shared data module for The Rising Times Magazine
- * Handles loading, saving, and managing events and students data
- */
-
 const DataStore = {
-    events: { events: [] },
-    students: { students: [] },
-    cseCouncil: {
-        head: "Miss Somia",
-        stages: {
-            secondary: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" },
-            preparatory: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" },
-            primary: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" }
-        }
-    },
-    topStudents: [],
+    paintings: { paintings: [] },
     _loaded: false,
 
-async load() {
+    async load() {
         if (this._loaded) return;
-        
         try {
-            // Server first - cache bust
-            const e = await fetch('data/events.json?_=' + Date.now());
-            if (e.ok) {
-                this.events = await e.json();
-                if (!this._offlineMode) localStorage.setItem('magazine_events', JSON.stringify(this.events));
-            }
-            
-            const s = await fetch('data/students.json?_=' + Date.now());
-            if (s.ok) {
-                this.students = await s.json();
-                this.topStudents = this.students.topStudents || [];
-                if (!this._offlineMode) localStorage.setItem('magazine_students', JSON.stringify(this.students));
+            const p = await fetch('data/paintings.json?_=' + Date.now());
+            if (p.ok) {
+                this.paintings = await p.json();
+                if (!this._offlineMode) localStorage.setItem('atelier_paintings', JSON.stringify(this.paintings));
             }
         } catch (err) {
-            // Offline fallback
             this._offlineMode = true;
-            const storedEvents = localStorage.getItem('magazine_events');
-            const storedStudents = localStorage.getItem('magazine_students');
-            if (storedEvents) this.events = JSON.parse(storedEvents);
-            if (storedStudents) this.students = JSON.parse(storedStudents);
+            const stored = localStorage.getItem('atelier_paintings');
+            if (stored) this.paintings = JSON.parse(stored);
         }
-        
-        // Fix: if type is teacher, ensure class is "Teacher"
-        if (this.students.students) {
-            this.students.students.forEach(s => {
-                if (s.type === 'teacher') s.class = 'Teacher';
-            });
-        }
-        
         this._loaded = true;
     },
 
-    getEvents() {
-        return this.events.events || [];
+    getPaintings() {
+        return this.paintings.paintings || [];
     },
 
-    reorderEvent(fromIndex, toIndex) {
-        const events = this.events.events;
-        const [moved] = events.splice(fromIndex, 1);
-        events.splice(toIndex, 0, moved);
-        localStorage.setItem('magazine_events', JSON.stringify(this.events));
+    getPainting(id) {
+        return this.getPaintings().find(p => p.id === id);
     },
 
-    getStudents() {
-        return this.students.students || [];
+    getFeatured() {
+        return this.getPaintings().filter(p => p.featured);
     },
 
-    getEvent(id) {
-        return this.getEvents().find(e => e.id === id);
+    getAvailable() {
+        return this.getPaintings().filter(p => p.inStock);
     },
 
-    getStudent(name) {
-        return this.getStudents().find(s => s.name === name);
+    getByCategory(category) {
+        return this.getPaintings().filter(p => p.category === category);
     },
 
-    getStudentById(id) {
-        return this.getStudents().find(s => s.id === id);
+    reorderPainting(fromIndex, toIndex) {
+        const items = this.paintings.paintings;
+        const [moved] = items.splice(fromIndex, 1);
+        items.splice(toIndex, 0, moved);
+        localStorage.setItem('atelier_paintings', JSON.stringify(this.paintings));
     },
 
-    getStarStudents() {
-        return this.getStudents().filter(s => s.star);
+    addPainting(painting) {
+        this.paintings.paintings.unshift(painting);
     },
 
-    getStudentEvents(studentName) {
-        const events = this.getEvents().filter(event => {
-            if (event.id === 'top-students-competition') return false;
-            if (event.elements) {
-                return event.elements.some(el => {
-                    if (el.type === 'students' && el.students) {
-                        return el.students.some(s => s.name === studentName);
-                    }
-                    if (el.type === 'organizers' && el.organizers) {
-                        return el.organizers.some(s => s.name === studentName);
-                    }
-                    return false;
-                });
-            }
-            return false;
-        });
-        
-        const council = this.getCSECouncil();
-        
-        let cseRole = null;
-        if (council.head && council.head.toLowerCase() === studentName.toLowerCase()) {
-            cseRole = { key: 'head', title: 'Council Head', icon: '👑' };
-        } else {
-            const roleMap = {
-                president: { title: 'Stage President', icon: '👑' },
-                vicePresident: { title: 'Vice President', icon: '⭐' },
-                science: { title: 'Science Representative', icon: '🔬' },
-                religiousCulture: { title: 'Religious & Culture Representative', icon: '🕌' },
-                art: { title: 'Art Representative', icon: '🎨' },
-                social: { title: 'Social Representative', icon: '🤝' },
-                sports: { title: 'Sports Representative', icon: '🏆' }
-            };
-            const stageLabelMap = {
-                secondary: 'Secondary',
-                preparatory: 'Preparatory',
-                primary: 'Primary'
-            };
-            for (const [stage, stageRoles] of Object.entries(council.stages)) {
-                for (const [roleKey, memberName] of Object.entries(stageRoles)) {
-                    if (memberName && memberName.toLowerCase() === studentName.toLowerCase()) {
-                        const roleInfo = roleMap[roleKey] || { title: 'Member', icon: '👤' };
-                        cseRole = { key: roleKey, title: stageLabelMap[stage] + ' ' + roleInfo.title, icon: roleInfo.icon, stage };
-                        break;
-                    }
-                }
-                if (cseRole) break;
-            }
-        }
-        
-        if (cseRole) {
-            const cseEvent = {
-                id: 'cse-council-event',
-                title: 'CSE Council',
-                featured: false,
-                elements: [{ type: 'text', content: 'CSE Council Member' }],
-                _isCSE: true,
-                _cseRole: cseRole
-            };
-            events.unshift(cseEvent);
-        }
-        
-        const topStudent = this.topStudents?.find(ts => ts.name === studentName);
-        if (topStudent) {
-            const topEvent = {
-                id: 'top-students-competition',
-                title: 'Top Students',
-                featured: false,
-                elements: [{ type: 'text', content: 'Outstanding Student Achievement' }],
-                _isTopStudent: true,
-                _topRole: { title: topStudent.role, icon: '★' }
-            };
-            events.unshift(topEvent);
-        }
-        
-        return events;
+    updatePainting(id, updated) {
+        const idx = this.paintings.paintings.findIndex(p => p.id === id);
+        if (idx !== -1) this.paintings.paintings[idx] = updated;
     },
 
-    getEventPreviewImage(event) {
-        if (!event.elements) return '';
-        for (const el of event.elements) {
-            if (el.type === 'image' && el.image) return el.image;
-            if (el.type === 'slideshow' && el.images && el.images.length) return el.images[0];
-        }
-        return '';
+    deletePainting(id) {
+        this.paintings.paintings = this.paintings.paintings.filter(p => p.id !== id);
     },
 
-    getEventExcerpt(event) {
-        if (!event.elements) return '';
-        const textEl = event.elements.find(e => e.type === 'text');
-        return textEl ? textEl.content : '';
+    getPaintingsJSON() {
+        return JSON.stringify(this.paintings, null, 2);
     },
 
-    getEventStudents(event) {
-        if (!event.elements) return [];
-        const result = [];
-        event.elements.forEach(el => {
-            if (el.type === 'students' && el.students) {
-                el.students.forEach(s => result.push(s));
-            }
-        });
-        return result;
-    },
-
-    // --- Mutation methods (for admin) ---
-
-    addEvent(event) {
-        this.events.events.unshift(event);
-    },
-
-    updateEvent(id, updated) {
-        const idx = this.events.events.findIndex(e => e.id === id);
-        if (idx !== -1) this.events.events[idx] = updated;
-    },
-
-    deleteEvent(id) {
-        this.events.events = this.events.events.filter(e => e.id !== id);
-    },
-
-    addStudent(student) {
-        this.students.students.push(student);
-    },
-
-    updateStudent(id, updated) {
-        const idx = this.students.students.findIndex(s => s.id === id);
-        if (idx !== -1) this.students.students[idx] = updated;
-    },
-
-    deleteStudent(id) {
-        this.students.students = this.students.students.filter(s => s.id !== id);
-    },
-
-    // --- JSON export ---
-
-    getEventsJSON() {
-        const council = this.getCSECouncil();
-        return JSON.stringify({ ...this.events, cseCouncil: council }, null, 2);
-    },
-
-    getStudentsJSON() {
-        return JSON.stringify({ ...this.students, topStudents: this.topStudents || [] }, null, 2);
-    },
-
-    // --- JSON import ---
-
-    importEvents(json) {
+    importPaintings(json) {
         const parsed = JSON.parse(json);
-        if (parsed.events && Array.isArray(parsed.events)) {
-            this.events = parsed;
-            localStorage.setItem('magazine_events', JSON.stringify(this.events));
+        if (parsed.paintings && Array.isArray(parsed.paintings)) {
+            this.paintings = parsed;
+            localStorage.setItem('atelier_paintings', JSON.stringify(this.paintings));
             return true;
         }
-        throw new Error('Invalid events JSON — must have "events" array');
+        throw new Error('Invalid JSON — must have "paintings" array');
     },
 
-    importStudents(json) {
-        const parsed = JSON.parse(json);
-        if (parsed.students && Array.isArray(parsed.students)) {
-            this.students = parsed;
-            localStorage.setItem('magazine_students', JSON.stringify(this.students));
-            return true;
-        }
-        throw new Error('Invalid students JSON — must have "students" array');
-    },
-    
     reload() {
         this._loaded = false;
-        localStorage.removeItem('magazine_events');
-        localStorage.removeItem('magazine_students');
-        localStorage.removeItem('magazine_cse');
+        localStorage.removeItem('atelier_paintings');
         return this.load();
     },
-    
-    // --- CSE Council methods ---
-    
-    getCSECouncil() {
-        if (this.events?.cseCouncil) {
-            return this.events.cseCouncil;
-        }
-        this.topStudents = this.topStudents || [];
-        return { 
-            head: "Miss Somia", 
-            stages: { 
-                secondary: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" }, 
-                preparatory: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" }, 
-                primary: { president: "", vicePresident: "", science: "", religiousCulture: "", art: "", social: "", sports: "" } 
-            } 
-        };
-    },
-    
-    updateCSEPosition(stage, role, studentName) {
-        if (this.cseCouncil?.stages?.[stage]) {
-            this.cseCouncil.stages[stage][role] = studentName;
-            localStorage.setItem('magazine_cse', JSON.stringify(this.cseCouncil));
-        }
-    },
-    
-    getCSEHead() {
-        const council = this.getCSECouncil();
-        return council.head || "Miss Somia";
-    },
-
-    // --- ID generation ---
 
     generateId(title) {
         return title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
