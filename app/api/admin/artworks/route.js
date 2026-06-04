@@ -27,10 +27,13 @@ export async function POST(request) {
     const { data: profiles } = await supabase.from('artist_profile').select('id')
     if (profiles && profiles.length > 0) artistId = profiles[0].id
   }
+  if (!artistId) return NextResponse.json({ error: 'Could not resolve artist' }, { status: 500 })
 
   const artworkId = body.id && body.id !== 'undefined' && body.id !== 'null' ? body.id : uuid()
 
-  const { error } = await supabase.from('artworks').upsert({ ...body, id: artworkId, artist_id: artistId })
+  const { error } = await supabase.from('artworks').upsert({
+    id: artworkId, artist_id: artistId, title: body.title, year: body.year, medium: body.medium, width_cm: body.width_cm || null, height_cm: body.height_cm || null, depth_cm: body.depth_cm || null, description: body.description, price: body.price || 0, currency: body.currency || 'EGP', status: body.status || 'available', is_featured: body.is_featured || false, is_published: body.is_published !== undefined ? body.is_published : true, sort_order: body.sort_order || 0,
+  })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ id: artworkId })
 }
