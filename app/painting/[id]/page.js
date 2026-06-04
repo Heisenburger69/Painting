@@ -5,7 +5,8 @@ import { notFound } from 'next/navigation'
 export const dynamic = 'force-dynamic'
 
 export default async function PaintingPage({ params }) {
-  const artwork = await getArtworkById(params.id)
+  const { id } = await params
+  const artwork = await getArtworkById(id)
   if (!artwork) notFound()
 
   return (
