@@ -57,9 +57,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="container">
         <Link href="/" className="logo">
-          <span style={{ color: 'var(--tan)', fontWeight: 900, fontSize: 22, letterSpacing: 2, textTransform: 'uppercase' }}>
-            Atelier
-          </span>
+          Atelier
         </Link>
 
         <ul className={`nav-links${menuOpen ? ' active' : ''}`}>
@@ -78,15 +76,6 @@ export default function Navbar() {
             <Link href="/admin" className="admin-link">Admin</Link>
           </li>
         </ul>
-
-        <div className="social-nav">
-          <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-            <img src="/assets/images/instagram.webp" alt="Instagram" />
-          </a>
-          <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer">
-            <img src="/assets/images/tiktok.png" alt="TikTok" style={{ width: 28, height: 28, borderRadius: 0 }} />
-          </a>
-        </div>
 
         <button
           className={`menu-toggle${menuOpen ? ' active' : ''}`}

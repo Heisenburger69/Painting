@@ -11,7 +11,7 @@ function uuid() {
 export async function GET() {
   const supabase = getServiceSupabase()
   if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
-  const { data, error } = await supabase.from('artworks').select('*, artwork_images(*)').is('deleted_at', null).order('sort_order', { ascending: true })
+  const { data, error } = await supabase.from('collections').select('*, artworks(*, artwork_images(*))').order('sort_order', { ascending: true })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
@@ -29,11 +29,17 @@ export async function POST(request) {
   }
   if (!artistId) return NextResponse.json({ error: 'Could not resolve artist' }, { status: 500 })
 
-  const artworkId = body.id && body.id !== 'undefined' && body.id !== 'null' ? body.id : uuid()
+  const collectionId = body.id && body.id !== 'undefined' && body.id !== 'null' ? body.id : uuid()
 
-  const { error } = await supabase.from('artworks').upsert({
-    id: artworkId, artist_id: artistId, title: body.title, year: body.year, medium: body.medium, width_cm: body.width_cm || null, height_cm: body.height_cm || null, depth_cm: body.depth_cm || null, description: body.description, price: body.price || 0, currency: body.currency || 'EGP', status: body.status || 'available', stock: body.stock !== '' && body.stock !== undefined ? body.stock : null, is_featured: body.is_featured || false, is_published: body.is_published !== undefined ? body.is_published : true, sort_order: body.sort_order || 0, collection_id: body.collection_id || null,
+  const { error } = await supabase.from('collections').upsert({
+    id: collectionId,
+    artist_id: artistId,
+    title: body.title,
+    description: body.description || '',
+    cover_image: body.cover_image || '',
+    sort_order: body.sort_order || 0,
+    is_published: body.is_published !== undefined ? body.is_published : true,
   })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ id: artworkId })
+  return NextResponse.json({ id: collectionId })
 }
