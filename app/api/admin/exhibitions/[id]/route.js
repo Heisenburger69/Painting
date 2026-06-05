@@ -13,7 +13,7 @@ export async function PUT(request, { params }) {
   return NextResponse.json({ success: true })
 }
 
-export async function DELETE(_request, { params }) {
+export async function DELETE(request, { params }) {
   const { id } = await params
   const supabase = await getAuthSupabase(request)
   if (!supabase) return unauthorized()

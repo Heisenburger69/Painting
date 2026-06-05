@@ -21,22 +21,14 @@ export async function POST(request) {
   if (!supabase) return unauthorized()
   const body = await request.json()
 
-  let artistId = body.artist_id
-  if (artistId === 'undefined' || artistId === 'null' || artistId === '') artistId = null
-  if (!artistId) {
-    const { data: profiles } = await supabase.from('artist_profile').select('id')
-    if (profiles && profiles.length > 0) artistId = profiles[0].id
-  }
-  if (!artistId) return NextResponse.json({ error: 'Could not resolve artist' }, { status: 500 })
-
   const collectionId = body.id && body.id !== 'undefined' && body.id !== 'null' ? body.id : uuid()
 
   const { error } = await supabase.from('collections').upsert({
     id: collectionId,
-    artist_id: artistId,
     title: body.title,
     description: body.description || '',
     cover_image: body.cover_image || '',
+    accent_color: body.accent_color || '#3B82F6',
     sort_order: body.sort_order || 0,
     is_published: body.is_published !== undefined ? body.is_published : true,
   })

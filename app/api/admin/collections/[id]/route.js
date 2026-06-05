@@ -26,6 +26,7 @@ export async function PUT(request, { params }) {
     title: body.title,
     description: body.description,
     cover_image: body.cover_image,
+    accent_color: body.accent_color,
     sort_order: body.sort_order,
     is_published: body.is_published,
   }).eq('id', id)
