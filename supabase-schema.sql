@@ -57,7 +57,6 @@ CREATE TABLE IF NOT EXISTS artworks (
   depth_cm NUMERIC,
   description TEXT DEFAULT '',
   price NUMERIC DEFAULT 0,
-  currency TEXT DEFAULT 'EGP',
   status TEXT NOT NULL DEFAULT 'available' CHECK (status IN ('available', 'reserved', 'sold', 'not_for_sale')),
   is_featured BOOLEAN DEFAULT false,
   is_published BOOLEAN DEFAULT true,
@@ -95,7 +94,6 @@ CREATE TABLE IF NOT EXISTS order_items (
   order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   artwork_id UUID NOT NULL REFERENCES artworks(id),
   price NUMERIC NOT NULL,
-  currency TEXT DEFAULT 'EGP',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

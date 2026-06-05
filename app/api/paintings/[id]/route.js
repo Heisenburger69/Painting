@@ -14,7 +14,7 @@ export async function PUT(request, { params }) {
     depth_cm: body.depth_cm,
     description: body.description,
     price: body.price,
-    currency: body.currency,
+    description: body.description, price: body.price,
     status: body.status,
     is_featured: body.is_featured,
     is_published: body.is_published,

@@ -26,7 +26,7 @@ function formatArtwork(row) {
   return {
     id: row.id, title: row.title, year: row.year, medium: row.medium, width_cm: row.width_cm, height_cm: row.height_cm, depth_cm: row.depth_cm,
     size: [row.width_cm, row.height_cm].filter(Boolean).join(' × ') + (row.width_cm ? ' cm' : ''),
-    description: row.description, price: row.price, currency: row.currency || 'EGP', status: row.status || 'available',
+    description: row.description, price: row.price, status: row.status || 'available',
     sold: row.status === 'sold', featured: row.is_featured, published: row.is_published,
     image: primary ? primary.url : null, images: (row.artwork_images || []).map((img) => img.url), sort_order: row.sort_order,
   }

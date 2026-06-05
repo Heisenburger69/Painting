@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getServiceSupabase } from '@/lib/supabase'
+import { getAuthSupabase, unauthorized } from '@/lib/admin-auth'
 
 export async function POST(request) {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
 
   const formData = await request.formData()
   const file = formData.get('file')
@@ -38,8 +38,8 @@ export async function POST(request) {
 }
 
 export async function DELETE(request) {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
 
   const { imageId } = await request.json()
   if (!imageId) return NextResponse.json({ error: 'Missing imageId' }, { status: 400 })
@@ -50,8 +50,8 @@ export async function DELETE(request) {
 }
 
 export async function PUT(request) {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
 
   const { imageId, artworkId } = await request.json()
   if (!imageId || !artworkId) return NextResponse.json({ error: 'Missing imageId or artworkId' }, { status: 400 })

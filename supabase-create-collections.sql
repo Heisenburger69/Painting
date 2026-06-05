@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS collections (
   title TEXT NOT NULL,
   description TEXT DEFAULT '',
   cover_image TEXT DEFAULT '',
+  accent_color TEXT DEFAULT '#3B82F6',
   sort_order INTEGER DEFAULT 0,
   is_published BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -26,5 +27,8 @@ ALTER TABLE artworks ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT NULL;
 CREATE INDEX IF NOT EXISTS idx_collections_artist_id ON collections(artist_id);
 CREATE INDEX IF NOT EXISTS idx_artworks_collection_id ON artworks(collection_id);
 
--- 4. Disable RLS
+-- 4. Add accent_color to existing collections (if table already exists)
+ALTER TABLE collections ADD COLUMN IF NOT EXISTS accent_color TEXT DEFAULT '#3B82F6';
+
+-- 5. Disable RLS
 ALTER TABLE collections DISABLE ROW LEVEL SECURITY;

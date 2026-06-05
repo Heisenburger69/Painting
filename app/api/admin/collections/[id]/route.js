@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
-import { getServiceSupabase } from '@/lib/supabase'
+import { getAuthSupabase, unauthorized } from '@/lib/admin-auth'
 
 export async function GET(request, { params }) {
   const { id } = await params
   if (!id || id === 'undefined' || id === 'null') {
     return NextResponse.json({ error: 'Invalid collection ID' }, { status: 400 })
   }
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
   const { data, error } = await supabase.from('collections').select('*, artworks(*, artwork_images(*))').eq('id', id).maybeSingle()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -19,8 +19,8 @@ export async function PUT(request, { params }) {
   if (!id || id === 'undefined' || id === 'null') {
     return NextResponse.json({ error: 'Invalid collection ID' }, { status: 400 })
   }
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
   const body = await request.json()
   const { error } = await supabase.from('collections').update({
     title: body.title,
@@ -38,8 +38,8 @@ export async function DELETE(request, { params }) {
   if (!id || id === 'undefined' || id === 'null') {
     return NextResponse.json({ error: 'Invalid collection ID' }, { status: 400 })
   }
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
   const { error } = await supabase.from('collections').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
