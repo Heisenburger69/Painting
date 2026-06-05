@@ -31,7 +31,7 @@ export default async function PaintingPage({ params }) {
               <div className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : 'AVAILABLE'}</div>
               <h1 className="detail-title">{artwork.title}</h1>
               {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}
-              {artwork.size && <p className="detail-dimensions">{artwork.size}</p>}
+              {artwork.size && <p className="detail-dimensions">{artwork.size} {artwork.size_inches && <span className="detail-inches">| {artwork.size_inches}</span>}</p>}
               {artwork.collection_name && (
                 <p style={{ fontSize: 13, color: 'var(--coffee)', fontStyle: 'italic' }}>
                   From the collection: <Link href="/#gallery" style={{ color: 'var(--caput-mortuum)', fontWeight: 600, textDecoration: 'none', borderBottom: '1px solid var(--tan)' }}>{artwork.collection_name}</Link>
@@ -43,7 +43,7 @@ export default async function PaintingPage({ params }) {
                 </div>
               )}
               <div className="detail-price">
-                {artwork.sold ? 'SOLD' : `${artwork.currency} ${(artwork.price || 0).toLocaleString()}`}
+                {artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}
               </div>
               <div style={{ fontSize: 12, color: 'var(--slate-gray)', marginTop: -8 }}>
                 {artwork.sold ? 'Sold' : artwork.stock === 0 ? 'Out of stock' : artwork.stock ? `${artwork.stock} in stock` : 'Single piece — available'}

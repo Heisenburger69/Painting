@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getServiceSupabase } from '@/lib/supabase'
+import { getAuthSupabase, unauthorized } from '@/lib/admin-auth'
 
 export async function POST(request) {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
 
   const formData = await request.formData()
   const file = formData.get('file')

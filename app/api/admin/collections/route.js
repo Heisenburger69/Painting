@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { getServiceSupabase } from '@/lib/supabase'
+import { getAuthSupabase, unauthorized } from '@/lib/admin-auth'
 
 function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
@@ -8,17 +8,17 @@ function uuid() {
   })
 }
 
-export async function GET() {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+export async function GET(request) {
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
   const { data, error } = await supabase.from('collections').select('*, artworks(*, artwork_images(*))').order('sort_order', { ascending: true })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function POST(request) {
-  const supabase = getServiceSupabase()
-  if (!supabase) return NextResponse.json({ error: 'Supabase not configured' }, { status: 500 })
+  const supabase = await getAuthSupabase(request)
+  if (!supabase) return unauthorized()
   const body = await request.json()
 
   let artistId = body.artist_id

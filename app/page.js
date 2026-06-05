@@ -18,7 +18,7 @@ export default async function HomePage() {
       <section id="home" className="hero">
         <div className="hero-content">
           <h1>Atelier</h1>
-          <p>Original paintings — where light meets pigment, and every canvas tells a story</p>
+          <p>Portfolio &amp; Painting Store</p>
           <div className="hero-buttons">
             <a href="#gallery" className="btn-square" title="Browse Gallery">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.9)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
@@ -67,7 +67,7 @@ export default async function HomePage() {
                 {featured.collection_name && <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Collection: {featured.collection_name}</p>}
                 <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 20, color: 'rgba(255,255,255,0.85)' }}>{featured.description}</p>
                 <div style={{ fontSize: 24, fontWeight: 900, color: featured.sold ? 'var(--caput-mortuum)' : 'var(--tan)', marginBottom: 16 }}>
-                  {featured.sold ? 'SOLD' : `${featured.currency} ${(featured.price || 0).toLocaleString()}`}
+                  {featured.sold ? 'SOLD' : `EGP ${(featured.price || 0).toLocaleString()}`}
                 </div>
                 {!featured.sold && <Link href={`/painting/${featured.id}`} className="btn btn-primary">View Artwork</Link>}
               </div>
@@ -142,13 +142,19 @@ export default async function HomePage() {
           ) : (
             <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
               {pastExhibitions.map((ex) => {
-                const year = ex.start_date ? new Date(ex.start_date).getFullYear() : ''
+                const d = (s) => s ? new Date(s + 'T00:00:00') : null
+                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''
+                const start = d(ex.start_date)
+                const end = d(ex.end_date)
+                const dateRange = start && end && start.toDateString() === end.toDateString() ? fmt(start)
+                  : start && end ? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — ${fmt(end)}`
+                  : start ? fmt(start) : end ? `Until ${fmt(end)}` : ''
                 return (
                   <div className="info-card" key={ex.id}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                       <h3 style={{ margin: 0, fontSize: 16 }}>{ex.title}</h3>
-                      {year && <span style={{ color: 'var(--coffee)', fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap' }}>{year}</span>}
                     </div>
+                    {dateRange && <p style={{ fontSize: 12, color: 'var(--coffee)', fontWeight: 600, marginBottom: 6 }}>{dateRange}</p>}
                     <p style={{ fontSize: 13, marginBottom: 8, color: 'var(--slate-gray)' }}>{[ex.venue, ex.location].filter(Boolean).join(', ')}</p>
                     {ex.description && <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{ex.description}</p>}
                   </div>
@@ -165,9 +171,11 @@ export default async function HomePage() {
           <div className="section-header"><h2>Research & Academic Work</h2></div>
           {profile?.research_academic ? (
             <div className="info-card-dark" style={{ maxWidth: 900, margin: '0 auto' }}>
-              {profile.research_academic.split('\n').filter(Boolean).map((p, i) => (
-                <p key={i} style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 16 }}>{p}</p>
-              ))}
+              <ul className="research-list">
+                {profile.research_academic.split('\n').filter(Boolean).map((p, i) => (
+                  <li key={i}>{p}</li>
+                ))}
+              </ul>
             </div>
           ) : (
             <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>Research & academic work coming soon.</p>
@@ -184,13 +192,21 @@ export default async function HomePage() {
           ) : (
             <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
               {upcomingExhibitions.map((ex) => {
+                const d = (s) => s ? new Date(s + 'T00:00:00') : null
+                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''
+                const start = d(ex.start_date)
+                const end = d(ex.end_date)
+                const dateRange = start && end && start.toDateString() === end.toDateString() ? fmt(start)
+                  : start && end ? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — ${fmt(end)}`
+                  : start ? fmt(start) : end ? `Until ${fmt(end)}` : ''
                 const badgeColor = ex.status === 'upcoming' ? 'var(--tan)' : ex.status === 'current' ? 'var(--coffee)' : 'var(--space-cadet)'
                 const badgeText = ex.status === 'upcoming' ? 'Upcoming' : ex.status === 'current' ? 'Current' : 'Event'
                 return (
                   <div className="info-card" key={ex.id}>
                     <span style={{ display: 'inline-block', background: badgeColor, color: badgeColor === 'var(--space-cadet)' ? 'var(--tan)' : badgeColor === 'var(--coffee)' ? '#fff' : 'var(--space-cadet)', fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 4, marginBottom: 12 }}>{badgeText}</span>
                     <h3 style={{ fontSize: 16, marginBottom: 8 }}>{ex.title}</h3>
-                    {ex.start_date && <p style={{ fontSize: 13, marginBottom: 8, color: 'var(--slate-gray)' }}>{new Date(ex.start_date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })} — {[ex.venue, ex.location].filter(Boolean).join(', ')}</p>}
+                    {dateRange && <p style={{ fontSize: 13, marginBottom: 6, color: 'var(--slate-gray)' }}>{dateRange}</p>}
+                    <p style={{ fontSize: 13, marginBottom: 8, color: 'var(--slate-gray)' }}>{[ex.venue, ex.location].filter(Boolean).join(', ')}</p>
                     {ex.description && <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{ex.description}</p>}
                   </div>
                 )
