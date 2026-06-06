@@ -12,7 +12,7 @@ export default function ImageSlideshow({ images, title }) {
 
   return (
     <div>
-      <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-lg)', aspectRatio: '4/3', background: '#f0ede5' }}>
+      <div style={{ position: 'relative', borderRadius: 12, overflow: 'hidden', boxShadow: 'var(--shadow-lg)', aspectRatio: '4/3', background: '#E2E6EC' }}>
         <img src={images[index]} alt={`${title} ${index + 1}`} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
         {images.length > 1 && (
           <>

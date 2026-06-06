@@ -12,9 +12,9 @@ export default async function PaintingPage({ params }) {
 
   return (
     <main className="main-content">
-      <section className="section" style={{ paddingTop: 120 }}>
+      <section className="section" style={{ padding: '0 0 16px' }}>
         <div className="container">
-          <div style={{ marginBottom: 40 }}>
+          <div style={{ paddingTop: 4, marginBottom: 8 }}>
             <Link href="/#gallery" style={{ fontSize: 13, color: 'var(--coffee)', textDecoration: 'none' }}>&larr; Back to Gallery</Link>
           </div>
 
@@ -28,7 +28,15 @@ export default async function PaintingPage({ params }) {
             </div>
 
             <div className="painting-detail-info">
-              <div className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : 'AVAILABLE'}</div>
+              <div className="detail-price-row">
+                <span className="detail-price">{artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}</span>
+                <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : 'AVAILABLE'}</span>
+              </div>
+              {artwork.stock ? (
+                <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>{artwork.stock} in stock</div>
+              ) : artwork.sold ? null : (
+                <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Single piece</div>
+              )}
               <h1 className="detail-title">{artwork.title}</h1>
               {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}
               {artwork.size && <p className="detail-dimensions">{artwork.size} {artwork.size_inches && <span className="detail-inches">| {artwork.size_inches}</span>}</p>}
@@ -42,14 +50,8 @@ export default async function PaintingPage({ params }) {
                   {artwork.description.split('\n').filter(Boolean).map((p, i) => (<p key={i}>{p}</p>))}
                 </div>
               )}
-              <div className="detail-price">
-                {artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}
-              </div>
-              <div style={{ fontSize: 12, color: 'var(--slate-gray)', marginTop: -8 }}>
-                {artwork.sold ? 'Sold' : artwork.stock === 0 ? 'Out of stock' : artwork.stock ? `${artwork.stock} in stock` : 'Single piece — available'}
-              </div>
               <div className="detail-actions">
-                <a href="/#contacts" className="btn btn-primary">Inquire About This Work</a>
+                <a href="/#contacts" className="btn btn-primary">Inquire</a>
                 <Link href="/#gallery" className="btn btn-secondary">Back to Gallery</Link>
               </div>
             </div>
