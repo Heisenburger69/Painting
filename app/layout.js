@@ -1,7 +1,6 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import ScrollToTop from '@/components/ScrollToTop';
 
 export const metadata = {
   title: 'Atelier — Original Paintings & Fine Art Gallery',
@@ -14,7 +13,6 @@ export default function RootLayout({ children }) {
       <body>
         <div className="bg-stars" />
         <div className="wrapper">
-          <ScrollToTop />
           <Navbar />
           <main>{children}</main>
           <Footer />
