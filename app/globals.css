@@ -975,24 +975,25 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .painting-detail-info {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
+}
+
+.detail-price-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .detail-badge {
-    display: inline-block;
-    align-self: flex-start;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 1.5px;
-    padding: 5px 14px;
+    padding: 4px 12px;
     border-radius: 20px;
     text-transform: uppercase;
     background: var(--coffee);
     color: #fff;
 }
-
-.detail-badge.sold,
-.detail-badge:has(+ h1 .sold) { background: var(--slate-gray); }
 
 .detail-title {
     font-family: 'Playfair Display', Georgia, serif;
@@ -1022,17 +1023,16 @@ p { color: var(--space-cadet); line-height: 1.8; }
 
 .detail-description {
     font-size: 15px;
-    line-height: 1.9;
+    line-height: 1.7;
     color: var(--space-cadet);
 }
 
-.detail-description p { margin-bottom: 12px; }
+.detail-description p { margin-bottom: 6px; }
 
 .detail-price {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 900;
     color: var(--caput-mortuum);
-    margin-top: 8px;
 }
 
 .detail-price.sold {
@@ -1042,9 +1042,47 @@ p { color: var(--space-cadet); line-height: 1.8; }
 
 .detail-actions {
     display: flex;
-    gap: 12px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-top: 12px;
+    margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+    .painting-detail {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    .painting-detail-image {
+        position: static;
+    }
+    .detail-title {
+        font-size: clamp(24px, 6vw, 34px);
+    }
+    .detail-price {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .painting-detail {
+        gap: 12px;
+    }
+    .detail-badge { font-size: 10px; padding: 3px 10px; }
+    .detail-title { font-size: 22px; }
+    .detail-price { font-size: 20px; }
+    .detail-subtitle {
+        font-size: 16px;
+    }
+    .detail-description {
+        font-size: 14px;
+    }
+    .detail-actions {
+        flex-direction: column;
+    }
+    .detail-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
 }
 
 /* ─── ADMIN FORM ─── */
