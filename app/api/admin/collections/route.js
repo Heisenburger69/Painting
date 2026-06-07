@@ -28,7 +28,6 @@ export async function POST(request) {
     title: body.title,
     description: body.description || '',
     cover_image: body.cover_image || '',
-    accent_color: body.accent_color || '#3B82F6',
     sort_order: body.sort_order || 0,
     is_published: body.is_published !== undefined ? body.is_published : true,
   })
