@@ -499,13 +499,13 @@ p { color: var(--space-cadet); line-height: 1.8; }
 }
 
 .coll-collection-slot .coll-grid-item-inner {
-    padding: 14px 12px;
+    padding: 10px;
     align-items: center;
 }
 
 .coll-gi-cover {
     width: 100%;
-    max-width: 140px;
+    max-width: none;
     aspect-ratio: 4 / 5;
     border-radius: 8px;
     overflow: hidden;
@@ -513,7 +513,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 10px;
+    margin: 0 0 8px;
 }
 
 .coll-gi-cover img {
@@ -671,23 +671,38 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .coll-detail-hero {
     position: relative;
     width: 100%;
-    min-height: 560px;
+    min-height: 400px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     margin-bottom: 32px;
-    background: #000;
+    background: var(--space-cadet);
 }
 
-.coll-detail-hero-bg {
+.coll-detail-hero-image {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    object-position: center;
-    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coll-detail-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.coll-detail-hero-image-fallback {
+    font-size: 48px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.08);
+    font-family: 'Playfair Display', Georgia, serif;
+    letter-spacing: 2px;
 }
 
 .coll-detail-hero-overlay {
@@ -699,21 +714,15 @@ p { color: var(--space-cadet); line-height: 1.8; }
         rgba(26, 26, 58, 0.55) 40%,
         rgba(26, 26, 58, 0.85) 100%
     );
+    z-index: 1;
 }
 
-.coll-detail-hero-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, transparent 0%, rgba(26, 26, 58, 0.4) 100%);
-}
-
-.coll-detail-hero-content {
+.coll-detail-hero-body {
     position: relative;
     z-index: 2;
     text-align: center;
     max-width: 700px;
-    padding: 100px 20px;
+    padding: 80px 20px;
 }
 
 .coll-detail-hero-title {
@@ -745,24 +754,53 @@ p { color: var(--space-cadet); line-height: 1.8; }
     backdrop-filter: blur(4px);
 }
 
-.coll-detail-hero-cover-fallback {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 48px;
-    font-weight: 700;
-    color: rgba(255,255,255,0.08);
-    font-family: 'Playfair Display', Georgia, serif;
-    letter-spacing: 2px;
-}
-
 @media (max-width: 480px) {
-    .coll-detail-hero { min-height: 400px; }
-    .coll-detail-hero-content { padding: 80px 16px; }
+    .coll-detail-hero { min-height: 300px; }
+    .coll-detail-hero-body { padding: 60px 16px; }
     .coll-detail-hero-title { font-size: 26px; }
     .coll-detail-hero-desc { font-size: 14px; }
+}
+
+@media (min-width: 768px) {
+    .coll-detail-hero {
+        min-height: 0;
+        height: 360px;
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+
+    .coll-detail-hero-image {
+        position: relative;
+        flex: 0 0 40%;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .coll-detail-hero-image img {
+        object-fit: contain;
+        padding: 24px;
+    }
+
+    .coll-detail-hero-image-fallback {
+        position: relative;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .coll-detail-hero-body {
+        flex: 1;
+        text-align: left;
+        padding: 40px 48px;
+        max-width: none;
+    }
+
+    .coll-detail-hero-title {
+        font-size: 32px;
+    }
+
+    .coll-detail-hero-desc {
+        font-size: 15px;
+        max-width: 500px;
+    }
 }
 
 .research-list {
@@ -786,8 +824,6 @@ p { color: var(--space-cadet); line-height: 1.8; }
 /* Tight mobile: reduce sizing */
 @media (max-width: 480px) {
     .coll-grid-slot { gap: 10px; }
-    .coll-collection-slot .coll-grid-item-inner { padding: 10px; }
-    .coll-gi-cover { max-width: 100px; }
     .coll-gi-cover img { padding: 8px; }
     .coll-gi-title { font-size: 13px; }
     .coll-art-inner { padding: 10px; }

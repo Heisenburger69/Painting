@@ -13,12 +13,16 @@ export default async function CollectionPage({ params }) {
     <main className="main-content">
       <div className="coll-detail-hero">
         {collection.cover_image ? (
-          <img className="coll-detail-hero-bg" src={collection.cover_image} alt="" />
+          <div className="coll-detail-hero-image">
+            <img src={collection.cover_image} alt="" />
+          </div>
         ) : (
-          <div className="coll-detail-hero-cover-fallback">{collection.title}</div>
+          <div className="coll-detail-hero-image coll-detail-hero-image-fallback">
+            <span>{collection.title}</span>
+          </div>
         )}
         <div className="coll-detail-hero-overlay" />
-        <div className="coll-detail-hero-content">
+        <div className="coll-detail-hero-body">
           <h1 className="coll-detail-hero-title">{collection.title}</h1>
           {collection.description && (
             <p className="coll-detail-hero-desc">{collection.description}</p>
