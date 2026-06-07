@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
-  { label: 'Gallery', href: '/#gallery' },
-  { label: 'Statement', href: '/#statement' },
   { label: 'Biography', href: '/#biography' },
-  { label: 'Exhibitions', href: '/#exhibitions' },
-  { label: 'Research', href: '/#research' },
-  { label: 'News', href: '/#news' },
+  { label: 'Statement', href: '/#statement' },
+  { label: 'Gallery', href: '/#gallery' },
   { label: 'Featured', href: '/#featured' },
+  { label: 'Research', href: '/#research' },
+  { label: 'Exhibitions', href: '/#exhibitions' },
+  { label: 'News', href: '/#news' },
   { label: 'Contacts', href: '/#contacts' },
 ];
 

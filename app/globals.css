@@ -718,11 +718,11 @@ p { color: var(--space-cadet); line-height: 1.8; }
     font-size: 15px;
     line-height: 1.8;
     margin-bottom: 8px;
-    color: var(--tan);
+    color: var(--text-dark);
 }
 
 .research-list li::marker {
-    color: var(--tan);
+    color: var(--text-dark);
     opacity: 0.6;
 }
 

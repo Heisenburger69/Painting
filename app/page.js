@@ -33,6 +33,63 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* BIOGRAPHY */}
+      <section id="biography" className="section">
+        <div className="container">
+          <div className="section-header"><h2>Biography</h2></div>
+          {credentials.length === 0 ? (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 40 }}>Biography details coming soon.</p>
+          ) : (
+            <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
+              {['education', 'certificate', 'work'].map((type) => {
+                const items = credentials.filter((c) => c.type === type)
+                if (items.length === 0) return null
+                const label = type === 'education' ? 'Education & Training' : type === 'certificate' ? 'Certificates' : 'Professional Experience'
+                return (
+                  <div className="info-card" key={type}>
+                    <h3 style={{ marginBottom: 16, fontSize: 14, color: 'var(--coffee)' }}>{label}</h3>
+                    <ul className="info-list">
+                      {items.map((c) => (
+                        <li key={c.id}>
+                          <strong style={{ color: 'var(--space-cadet)' }}>{c.title}</strong>
+                          {c.institution ? ` — ${c.institution}` : ''}
+                          {c.start_year ? <span style={{ color: 'var(--coffee)', fontWeight: 600 }}> ({c.start_year}{c.end_year ? `–${c.end_year}` : ''})</span> : ''}
+                          {c.description ? <br /> : ''}
+                          {c.description ? <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>{c.description}</span> : ''}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ARTIST STATEMENT */}
+      <section id="statement" className="section-dark">
+        <div className="container">
+          <div className="section-header"><h2>Artist Statement</h2></div>
+          <div className="info-card-dark" style={{ maxWidth: 900, margin: '0 auto' }}>
+            {profile?.artist_statement ? (
+              profile.artist_statement.split('\n').filter(Boolean).map((p, i) => (
+                <p key={i} style={{ fontSize: 16, lineHeight: 1.9, marginBottom: 20 }}>{p}</p>
+              ))
+            ) : (
+              <p style={{ fontSize: 16, lineHeight: 1.9, color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>
+                Artist statement coming soon.
+              </p>
+            )}
+            {profile?.name && (
+              <div style={{ textAlign: 'right', marginTop: 30, fontStyle: 'italic', color: 'var(--tan)' }}>
+                — {profile.name}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* GALLERY — COLLECTIONS SHOWCASE */}
       <section id="gallery" className="section">
         <div className="container">
@@ -76,69 +133,30 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ARTIST STATEMENT */}
-      <section id="statement" className="section">
+      {/* RESEARCH & ACADEMIC */}
+      <section id="research" className="section">
         <div className="container">
-          <div className="section-header"><h2>Artist Statement</h2></div>
-          <div className="info-card" style={{ maxWidth: 900, margin: '0 auto' }}>
-            {profile?.artist_statement ? (
-              profile.artist_statement.split('\n').filter(Boolean).map((p, i) => (
-                <p key={i} style={{ fontSize: 16, lineHeight: 1.9, marginBottom: 20 }}>{p}</p>
-              ))
-            ) : (
-              <p style={{ fontSize: 16, lineHeight: 1.9, color: 'var(--slate-gray)', textAlign: 'center' }}>
-                Artist statement coming soon.
-              </p>
-            )}
-            {profile?.name && (
-              <div style={{ textAlign: 'right', marginTop: 30, fontStyle: 'italic', color: 'var(--coffee)' }}>
-                — {profile.name}
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* BIOGRAPHY */}
-      <section id="biography" className="section-dark">
-        <div className="container">
-          <div className="section-header"><h2>Biography</h2></div>
-          {credentials.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>Biography details coming soon.</p>
-          ) : (
-            <div className="grid grid-2" style={{ gap: 40, alignItems: 'start' }}>
-              {['education', 'certificate', 'work'].map((type) => {
-                const items = credentials.filter((c) => c.type === type)
-                if (items.length === 0) return null
-                const label = type === 'education' ? 'Education & Training' : type === 'certificate' ? 'Certificates' : 'Professional Experience'
-                return (
-                  <div className="info-card-dark" key={type}>
-                    <h3 style={{ marginBottom: 16, fontSize: 14, color: 'var(--tan)' }}>{label}</h3>
-                    <ul className="info-list">
-                      {items.map((c) => (
-                        <li key={c.id}>
-                          <strong style={{ color: '#fff' }}>{c.title}</strong>
-                          {c.institution ? ` — ${c.institution}` : ''}
-                          {c.start_year ? ` (${c.start_year}${c.end_year ? `–${c.end_year}` : ''})` : ''}
-                          {c.description ? <br /> : ''}
-                          {c.description ? <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{c.description}</span> : ''}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )
-              })}
+          <div className="section-header"><h2>Research & Academic Work</h2></div>
+          {profile?.research_academic ? (
+            <div className="info-card" style={{ maxWidth: 900, margin: '0 auto' }}>
+              <ul className="research-list">
+                {profile.research_academic.split('\n').filter(Boolean).map((p, i) => (
+                  <li key={i}>{p}</li>
+                ))}
+              </ul>
             </div>
+          ) : (
+            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 40 }}>Research & academic work coming soon.</p>
           )}
         </div>
       </section>
 
       {/* EXHIBITIONS (Past) */}
-      <section id="exhibitions" className="section">
+      <section id="exhibitions" className="section-dark">
         <div className="container">
           <div className="section-header"><h2>Exhibitions</h2></div>
           {pastExhibitions.length === 0 ? (
-            <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 40 }}>No past exhibitions yet.</p>
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>No past exhibitions yet.</p>
           ) : (
             <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
               {pastExhibitions.map((ex) => {
@@ -150,35 +168,17 @@ export default async function HomePage() {
                   : start && end ? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — ${fmt(end)}`
                   : start ? fmt(start) : end ? `Until ${fmt(end)}` : ''
                 return (
-                  <div className="info-card" key={ex.id}>
+                  <div className="info-card-dark" key={ex.id}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                       <h3 style={{ margin: 0, fontSize: 16 }}>{ex.title}</h3>
                     </div>
                     {dateRange && <p style={{ fontSize: 12, color: 'var(--coffee)', fontWeight: 600, marginBottom: 6 }}>{dateRange}</p>}
-                    <p style={{ fontSize: 13, marginBottom: 8, color: 'var(--slate-gray)' }}>{[ex.venue, ex.location].filter(Boolean).join(', ')}</p>
-                    {ex.description && <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{ex.description}</p>}
+                    <p style={{ fontSize: 13, marginBottom: 8, color: 'rgba(255,255,255,0.6)' }}>{[ex.venue, ex.location].filter(Boolean).join(', ')}</p>
+                    {ex.description && <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>{ex.description}</p>}
                   </div>
                 )
               })}
             </div>
-          )}
-        </div>
-      </section>
-
-      {/* RESEARCH & ACADEMIC */}
-      <section id="research" className="section-dark">
-        <div className="container">
-          <div className="section-header"><h2>Research & Academic Work</h2></div>
-          {profile?.research_academic ? (
-            <div className="info-card-dark" style={{ maxWidth: 900, margin: '0 auto' }}>
-              <ul className="research-list">
-                {profile.research_academic.split('\n').filter(Boolean).map((p, i) => (
-                  <li key={i}>{p}</li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.5)', padding: 40 }}>Research & academic work coming soon.</p>
           )}
         </div>
       </section>
