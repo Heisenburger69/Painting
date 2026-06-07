@@ -14,8 +14,10 @@ export default function RootLayout({ children }) {
         <div className="bg-stars" />
         <div className="wrapper">
           <Navbar />
-          <main>{children}</main>
-          <Footer />
+          <div className="content-clip">
+            <main>{children}</main>
+            <Footer />
+          </div>
         </div>
       </body>
     </html>

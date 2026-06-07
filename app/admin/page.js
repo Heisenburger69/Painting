@@ -557,13 +557,12 @@ function CollectionsManager({ setError, setSuccess }) {
       if (form.id) {
         const payload = {
           title: form.title, description: form.description, cover_image: coverUrl,
-          accent_color: form.accent_color || '#3B82F6',
           sort_order: form.sort_order || 0, is_published: form.is_published !== undefined ? form.is_published : true,
         }
         const { error } = await supabase.from('collections').update(payload).eq('id', form.id)
         if (error) throw error
       } else {
-        const { error } = await supabase.from('collections').insert({ title: form.title, description: form.description, cover_image: coverUrl, accent_color: form.accent_color || '#3B82F6', sort_order: form.sort_order || 0, is_published: form.is_published !== undefined ? form.is_published : true })
+        const { error } = await supabase.from('collections').insert({ title: form.title, description: form.description, cover_image: coverUrl, sort_order: form.sort_order || 0, is_published: form.is_published !== undefined ? form.is_published : true })
         if (error) throw error
       }
 
@@ -626,7 +625,7 @@ function CollectionsManager({ setError, setSuccess }) {
 }
 
 function CollectionForm({ item, onSave, onCancel, busy }) {
-  const [form, setForm] = useState({ id: item.id || null, title: item.title || '', description: item.description || '', cover_image: item.cover_image || '', accent_color: item.accent_color || '#3B82F6', sort_order: item.sort_order || 0, is_published: item.is_published !== undefined ? item.is_published : true, coverFile: null })
+  const [form, setForm] = useState({ id: item.id || null, title: item.title || '', description: item.description || '', cover_image: item.cover_image || '', sort_order: item.sort_order || 0, is_published: item.is_published !== undefined ? item.is_published : true, coverFile: null })
   const [uploading, setUploading] = useState(false)
 
   const handleSave = async () => {
@@ -643,13 +642,7 @@ function CollectionForm({ item, onSave, onCancel, busy }) {
           <label>Collection Title</label>
           <input placeholder="e.g. Abstract Landscapes" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </div>
-        <div className="admin-field">
-          <label>Accent Color</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <input type="color" value={form.accent_color} onChange={(e) => setForm({ ...form, accent_color: e.target.value })} style={{ width: 40, height: 40, padding: 0, border: 'none', cursor: 'pointer' }} />
-            <span style={{ fontSize: 13, color: 'var(--slate-gray)' }}>{form.accent_color}</span>
-          </div>
-        </div>
+
         <div className="admin-field">
           <label>Cover Image</label>
           {form.cover_image && <img src={form.cover_image} alt="Cover" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 6, marginBottom: 6, display: 'block' }} />}
