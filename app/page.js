@@ -17,7 +17,7 @@ export default async function HomePage() {
       {/* HERO */}
       <section id="home" className="hero">
         <div className="hero-content">
-          <h1>Atelier</h1>
+          <h1>Hala Salah</h1>
           <p>Portfolio &amp; Painting Store</p>
           <div className="hero-buttons">
             <a href="#gallery" className="btn-square" title="Browse Gallery">
