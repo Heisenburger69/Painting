@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS artist_profile (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL DEFAULT '',
   artist_statement TEXT DEFAULT '',
+  biography TEXT DEFAULT '',
   research_academic TEXT DEFAULT '',
   contact_email TEXT DEFAULT '',
   contact_phone TEXT DEFAULT '',
@@ -31,7 +32,7 @@ CREATE TABLE IF NOT EXISTS credentials (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
--- 3. Exhibitions (includes both past and upcoming)
+-- 3. Exhibitions & Events
 CREATE TABLE IF NOT EXISTS exhibitions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   artist_id UUID NOT NULL REFERENCES artist_profile(id) ON DELETE CASCADE,
@@ -41,7 +42,8 @@ CREATE TABLE IF NOT EXISTS exhibitions (
   start_date DATE,
   end_date DATE,
   description TEXT DEFAULT '',
-  status TEXT NOT NULL DEFAULT 'past' CHECK (status IN ('past', 'current', 'upcoming')),
+  category TEXT NOT NULL DEFAULT 'exhibition' CHECK (category IN ('exhibition', 'event')),
+  sort_order INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

@@ -30,12 +30,14 @@ export default async function PaintingPage({ params }) {
             <div className="painting-detail-info">
               <div className="detail-price-row">
                 <span className="detail-price">{artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}</span>
-                <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : 'AVAILABLE'}</span>
+                <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : artwork.status === 'not_for_sale' ? 'NOT FOR SALE' : 'AVAILABLE'}</span>
               </div>
-              {artwork.stock ? (
-                <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>{artwork.stock} in stock</div>
-              ) : artwork.sold ? null : (
-                <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Single piece</div>
+              {artwork.status !== 'not_for_sale' && artwork.status !== 'reserved' && (
+                artwork.stock ? (
+                  <div style={{ fontSize: 13, color: 'var(--slate-gray)', fontWeight: 600 }}>Stock: {artwork.stock}</div>
+                ) : artwork.sold ? null : (
+                  <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Single piece</div>
+                )
               )}
               <h1 className="detail-title">{artwork.title}</h1>
               {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}

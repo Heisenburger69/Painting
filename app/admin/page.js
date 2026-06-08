@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { getBrowserSupabase } from '@/lib/supabase'
 import { getAdminClient } from '@/lib/admin-client'
 
-const TABS = ['Artworks', 'Collections', 'Profile', 'Credentials', 'Exhibitions']
+const TABS = ['Artworks', 'Collections', 'Profile', 'Exhibitions', 'Events']
 
 export default function AdminPage() {
   const [tab, setTab] = useState('Artworks')
@@ -42,8 +42,8 @@ export default function AdminPage() {
         {tab === 'Artworks' && <ArtworksManager setError={setError} setSuccess={setSuccess} />}
         {tab === 'Collections' && <CollectionsManager setError={setError} setSuccess={setSuccess} />}
         {tab === 'Profile' && <ProfileManager setError={setError} setSuccess={setSuccess} />}
-        {tab === 'Credentials' && <CredentialsManager setError={setError} setSuccess={setSuccess} />}
         {tab === 'Exhibitions' && <ExhibitionsManager setError={setError} setSuccess={setSuccess} />}
+        {tab === 'Events' && <EventsManager setError={setError} setSuccess={setSuccess} />}
       </div>
     </main>
   )
@@ -348,7 +348,7 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
   const [form, setForm] = useState({
     id: item.id || null, title: item.title || '', collection_id: item.collection_id || '',
     year: item.year || '', medium: item.medium || '',
-    width_cm: item.width_cm || '', height_cm: item.height_cm || '', depth_cm: item.depth_cm || '',
+    width_cm: item.width_cm || '', height_cm: item.height_cm || '',
     description: item.description || '', price: item.price || '',
     status: item.status || 'available', is_featured: item.is_featured || false,
     is_published: item.is_published !== undefined ? item.is_published : true,
@@ -417,11 +417,6 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
           {form.height_cm && <span className="inch-hint">≈ {cmToIn(form.height_cm)} in</span>}
         </div>
         <div className="admin-field">
-          <label>Depth (cm)</label>
-          <input placeholder="0" type="number" value={form.depth_cm} onChange={setNum('depth_cm')} />
-          {form.depth_cm && <span className="inch-hint">≈ {cmToIn(form.depth_cm)} in</span>}
-        </div>
-        <div className="admin-field">
           <label>Price</label>
           <input placeholder="0" type="number" value={form.price} onChange={setNum('price')} />
         </div>
@@ -431,10 +426,12 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
             <option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="not_for_sale">Not for Sale</option>
           </select>
         </div>
+        {form.status !== 'not_for_sale' && form.status !== 'reserved' && (
         <div className="admin-field">
           <label>Stock</label>
           <input placeholder="Leave empty = single piece" type="number" value={form.stock} onChange={setNum('stock')} />
         </div>
+        )}
         <div className="admin-checkboxes">
           <label><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} /> Featured</label>
           <label><input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} /> Published</label>
@@ -666,7 +663,7 @@ function CollectionForm({ item, onSave, onCancel, busy }) {
 
 /* ─── Profile ─── */
 function ProfileManager({ setError, setSuccess }) {
-  const [form, setForm] = useState({ name: '', artist_statement: '', research_academic: '', contact_email: '', contact_phone: '', instagram_url: '', tiktok_url: '' })
+  const [form, setForm] = useState({ name: '', artist_statement: '', biography: '', research_academic: '', contact_email: '', contact_phone: '', instagram_url: '', tiktok_url: '' })
   const [busy, setBusy] = useState(false)
 
   useEffect(() => {
@@ -710,6 +707,10 @@ function ProfileManager({ setError, setSuccess }) {
           <textarea placeholder="Write your artist statement..." value={form.artist_statement} onChange={(e) => setForm({ ...form, artist_statement: e.target.value })} style={{ minHeight: 120 }} />
         </div>
         <div className="admin-field full">
+          <label>Biography</label>
+          <textarea placeholder="Write your biography..." value={form.biography} onChange={(e) => setForm({ ...form, biography: e.target.value })} style={{ minHeight: 120 }} />
+        </div>
+        <div className="admin-field full">
           <label>Research & Academic</label>
           <textarea placeholder="Academic background, research interests..." value={form.research_academic} onChange={(e) => setForm({ ...form, research_academic: e.target.value })} style={{ minHeight: 100 }} />
         </div>
@@ -735,8 +736,18 @@ function ProfileManager({ setError, setSuccess }) {
   )
 }
 
-/* ─── Credentials ─── */
-function CredentialsManager({ setError, setSuccess }) {
+/* ─── Exhibitions ─── */
+function ExhibitionsManager({ setError, setSuccess }) {
+  return <CategoryManager category="exhibition" label="Exhibition" setError={setError} setSuccess={setSuccess} />
+}
+
+/* ─── Events ─── */
+function EventsManager({ setError, setSuccess }) {
+  return <CategoryManager category="event" label="Event" setError={setError} setSuccess={setSuccess} />
+}
+
+/* ─── Reusable category manager (exhibitions / events) ─── */
+function CategoryManager({ category, label, setError, setSuccess }) {
   const [items, setItems] = useState([])
   const [edit, setEdit] = useState(null)
   const [busy, setBusy] = useState(false)
@@ -746,7 +757,7 @@ function CredentialsManager({ setError, setSuccess }) {
   const load = async () => {
     try {
       const supabase = await getAdminClient()
-      const { data, error } = await supabase.from('credentials').select('*').order('sort_order', { ascending: true })
+      const { data, error } = await supabase.from('exhibitions').select('*').eq('category', category).order('sort_order', { ascending: true })
       if (error) throw error
       setItems(data || [])
       setDirty(false)
@@ -789,7 +800,7 @@ function CredentialsManager({ setError, setSuccess }) {
     setBusy(true)
     try {
       const supabase = await getAdminClient()
-      await Promise.all(items.map((item, i) => supabase.from('credentials').update({ sort_order: i }).eq('id', item.id)))
+      await Promise.all(items.map((item, i) => supabase.from('exhibitions').update({ sort_order: i }).eq('id', item.id)))
       setSuccess('Order saved!')
       setDirty(false)
     } catch (e) { setError(e.message) }
@@ -800,107 +811,9 @@ function CredentialsManager({ setError, setSuccess }) {
     setBusy(true); setError(''); setSuccess('')
     try {
       const supabase = await getAdminClient()
-      if (form.id) {
-        const { error } = await supabase.from('credentials').update(form).eq('id', form.id)
-        if (error) throw error
-      } else {
-        const { error } = await supabase.from('credentials').insert(form)
-        if (error) throw error
-      }
-      setSuccess('Saved'); setEdit(null); load()
-    } catch (e) { setError(e.message) }
-    setBusy(false)
-  }
-
-  const handleDelete = async (id) => {
-    if (!confirm('Delete?')) return
-    try {
-      const supabase = await getAdminClient()
-      const { error } = await supabase.from('credentials').delete().eq('id', id)
-      if (error) throw error
-      setSuccess('Deleted'); load()
-    } catch (e) { setError(e.message) }
-  }
-
-  return (
-    <div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-        <button className="btn btn-primary" onClick={() => setEdit({ type: 'education' })}>+ New Credential</button>
-        {dirty && (
-          <>
-            <button className="btn btn-primary" onClick={saveOrder} disabled={busy} style={{ background: 'var(--coffee)', color: '#fff' }}>
-              {busy ? 'Saving...' : 'Save Order'}
-            </button>
-            <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Unsaved changes</span>
-          </>
-        )}
-      </div>
-      {edit && <InlineForm fields={['title', 'institution', 'type', 'start_year', 'end_year', 'description']} item={edit} onSave={handleSave} onCancel={() => setEdit(null)} busy={busy} />}
-      {items.map((c, i) => (
-        <div key={c.id} className="admin-list-item" draggable={!busy}
-          onDragStart={(e) => handleDragStart(e, i)}
-          onDragOver={handleDragOver}
-          onDrop={(e) => handleDrop(e, i)}
-          style={{ cursor: 'grab' }}
-        >
-          <div className="admin-list-item-info" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ cursor: 'grab', fontSize: 16, color: 'var(--slate-gray)' }}>&#x22EE;</span>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <button disabled={busy} onClick={() => arrowUp(i)} style={arrowMini}>&#9650;</button>
-              <button disabled={busy} onClick={() => arrowDown(i)} style={arrowMini}>&#9660;</button>
-            </div>
-            <div>
-              <strong>{c.title}</strong>{c.institution ? ` — ${c.institution}` : ''} <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}>({c.type})</span>
-            </div>
-          </div>
-          <div className="admin-list-item-actions">
-            <button className="btn btn-secondary" style={{ fontSize: 12, padding: '2px 10px' }} onClick={() => setEdit(c)}>Edit</button>
-            <button className="btn btn-secondary" style={{ fontSize: 12, padding: '2px 10px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(c.id)}>Del</button>
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-/* ─── Exhibitions ─── */
-function ExhibitionsManager({ setError, setSuccess }) {
-  const [items, setItems] = useState([])
-  const [edit, setEdit] = useState(null)
-  const [busy, setBusy] = useState(false)
-
-  const load = async () => {
-    try {
-      const supabase = await getAdminClient()
-      const { data, error } = await supabase.from('exhibitions').select('*').order('start_date', { ascending: false })
-      if (error) throw error
-      setItems(data || [])
-    } catch (e) { setError(e.message) }
-  }
-  useEffect(() => { load() }, [])
-
-  const handleSave = async (form) => {
-    setBusy(true); setError(''); setSuccess('')
-    try {
-      const supabase = await getAdminClient()
-      const data = { ...form }
+      const data = { ...form, category }
       if (data.start_date) data.start_date = convertToDbDate(data.start_date)
       if (data.end_date) data.end_date = convertToDbDate(data.end_date)
-
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      const start = data.start_date ? new Date(data.start_date + 'T00:00:00') : null
-      const end = data.end_date ? new Date(data.end_date + 'T00:00:00') : null
-      if (start && start > today) {
-        data.status = 'upcoming'
-      } else if (end && end < today) {
-        data.status = 'past'
-      } else if (start && end && start <= today && end >= today) {
-        data.status = 'current'
-      } else if (start && !end) {
-        data.status = start > today ? 'upcoming' : 'current'
-      }
-
       if (form.id) {
         const { error } = await supabase.from('exhibitions').update(data).eq('id', form.id)
         if (error) throw error
@@ -925,12 +838,36 @@ function ExhibitionsManager({ setError, setSuccess }) {
 
   return (
     <div>
-      <button className="btn btn-primary" onClick={() => setEdit({})} style={{ marginBottom: 16 }}>+ New Exhibition</button>
+      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <button className="btn btn-primary" onClick={() => setEdit({ category })}>+ New {label}</button>
+        {dirty && (
+          <>
+            <button className="btn btn-primary" onClick={saveOrder} disabled={busy} style={{ background: 'var(--coffee)', color: '#fff' }}>
+              {busy ? 'Saving...' : 'Save Order'}
+            </button>
+            <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Unsaved changes</span>
+          </>
+        )}
+      </div>
       {edit && <InlineForm fields={['title', 'venue', 'location', 'start_date', 'end_date', 'description']} item={edit} onSave={handleSave} onCancel={() => setEdit(null)} busy={busy} />}
-      {items.map((ex) => (
-        <div key={ex.id} className="admin-list-item">
-          <div className="admin-list-item-info">
-            <strong>{ex.title}</strong> — {ex.venue} <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}>{ex.status}{ex.start_date ? `, ${new Date(ex.start_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}{ex.end_date ? ` – ${new Date(ex.end_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}` : ''}</span>
+      {items.map((ex, i) => (
+        <div key={ex.id} className="admin-list-item" draggable={!busy}
+          onDragStart={(e) => handleDragStart(e, i)}
+          onDragOver={handleDragOver}
+          onDrop={(e) => handleDrop(e, i)}
+          style={{ cursor: 'grab' }}
+        >
+          <div className="admin-list-item-info" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span style={{ cursor: 'grab', fontSize: 16, color: 'var(--slate-gray)' }}>&#x22EE;</span>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <button disabled={busy} onClick={() => arrowUp(i)} style={arrowMini}>&#9650;</button>
+              <button disabled={busy} onClick={() => arrowDown(i)} style={arrowMini}>&#9660;</button>
+            </div>
+            <div>
+              <strong>{ex.title}</strong>{ex.venue ? ` — ${ex.venue}` : ''}
+              {ex.start_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> — {new Date(ex.start_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : ''}
+              {ex.end_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> – {new Date(ex.end_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : ''}
+            </div>
           </div>
           <div className="admin-list-item-actions">
             <button className="btn btn-secondary" style={{ fontSize: 12, padding: '2px 10px' }} onClick={() => setEdit(ex)}>Edit</button>
@@ -966,20 +903,6 @@ function InlineForm({ fields, item, onSave, onCancel, busy }) {
             <div key={f} className="admin-field">
               <label>{f.replace(/_/g, ' ')}</label>
               <input type="text" placeholder="DD/MM/YYYY" value={form[f]} onChange={(e) => setForm({ ...form, [f]: e.target.value })} />
-            </div>
-          ) : f === 'type' ? (
-            <div key={f} className="admin-field">
-              <label>Type</label>
-              <select value={form[f]} onChange={(e) => setForm({ ...form, [f]: e.target.value })}>
-                {['education', 'certificate', 'work'].map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
-            </div>
-          ) : f === 'status' ? (
-            <div key={f} className="admin-field">
-              <label>Status</label>
-              <select value={form[f]} onChange={(e) => setForm({ ...form, [f]: e.target.value })}>
-                {['past', 'upcoming', 'current'].map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-              </select>
             </div>
           ) : (
             <div key={f} className="admin-field">

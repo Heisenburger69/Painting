@@ -59,11 +59,13 @@ export default async function CollectionPage({ params }) {
 function ArtworkCard({ artwork }) {
   const priceLabel = artwork.sold
     ? 'SOLD'
-    : artwork.stock === 0
-      ? 'OUT'
-      : artwork.stock
-        ? `${artwork.stock}`
-        : `EGP ${(artwork.price || 0).toLocaleString()}`
+    : artwork.status === 'not_for_sale'
+      ? 'Not for Sale'
+      : artwork.status === 'reserved'
+        ? 'Reserved'
+        : artwork.stock
+          ? `Stock: ${artwork.stock}`
+          : `EGP ${(artwork.price || 0).toLocaleString()}`
 
   return (
     <Link
