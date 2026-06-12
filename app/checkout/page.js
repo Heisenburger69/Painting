@@ -24,22 +24,36 @@ export default function CheckoutPage() {
     if (cart.length === 0) return alert('Your cart is empty.');
     setLoading(true);
 
+    const customerInfo = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      governorate: form.governorate,
+      city: form.city,
+      street: form.street,
+      building: form.building,
+      apartment: form.apartment
+    };
+
     try {
-      const res = await fetch('/api/checkout', {
+      const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart, customerInfo: form })
+        body: JSON.stringify({ cart, customerInfo })
       });
-      const data = await res.json();
 
-      if (data.success) {
-        clearCart(); // Clean browser storage array before relocating window context
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "Something went wrong during checkout initialization.");
+      }
+
+      if (data.redirectUrl) {
+        clearCart();
         window.location.href = data.redirectUrl;
-      } else {
-        alert(`Checkout operation rejected: ${data.error}`);
       }
     } catch (err) {
-      alert('Network communication failure routing checkout transaction.');
+      alert(`Checkout operation rejected: ${err.message}`);
     } finally {
       setLoading(false);
     }
