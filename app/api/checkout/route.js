@@ -88,11 +88,18 @@ export async function POST(req) {
         amount: totalAmountCents,
         currency: 'EGP',
         payment_methods: [5723260, 5723390],
-        items: cart.map((i) => ({
-          name: i.title || 'Artwork',
-          amount: Math.round(i.price * 100),
-          quantity: 1,
-        })),
+        items: [
+          ...cart.map((i) => ({
+            name: i.title || 'Artwork',
+            amount: Math.round(Number(i.price) * 100),
+            quantity: 1,
+          })),
+          ...(totalShipping > 0 ? [{
+            name: 'Shipping Fee',
+            amount: Math.round(totalShipping * 100),
+            quantity: 1,
+          }] : [])
+        ],
         billing_data: billingData,
         customer: {
           first_name: billingData.first_name,
