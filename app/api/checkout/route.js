@@ -2,69 +2,17 @@
 import { getServiceSupabase } from '@/lib/supabase';
 import { calculateFedExShipping } from '@/lib/shipping';
 
-// ─── Paymob Integration Config ───────────────────────────────────────────────
-const INTEGRATION_MAP = {
-  card: {
-    id: Number(process.env.PAYMOB_INTEGRATION_ID_CARD),
-    iframeId: process.env.PAYMOB_IFRAME_ID_CARD,
-  },
-  kiosk: {
-    id: Number(process.env.PAYMOB_INTEGRATION_ID_KIOSK),
-    iframeId: null,
-  },
-};
-
-// ─── Billing Data Builders ───────────────────────────────────────────────────
-function buildCardBillingData(customerInfo) {
-  const nameParts = (customerInfo.name || '').trim().split(' ');
-  return {
-    first_name: nameParts[0] || 'Guest',
-    last_name: nameParts.slice(1).join(' ') || 'Customer',
-    phone_number: customerInfo.phone || '+201001234567',
-    email: customerInfo.email || 'guest@example.com',
-    country: 'EG',
-    state: customerInfo.governorate || 'Cairo',
-    city: customerInfo.city || 'Cairo',
-    street: customerInfo.street || 'NA',
-    building: customerInfo.building || '1',
-    floor: '1',
-    apartment: customerInfo.apartment || '1',
-    shipping_method: 'PKG',
-    postal_code: 'NA',
-  };
-}
-
-function buildKioskBillingData(customerInfo) {
-  const phone = (customerInfo.phone || '01001234567').replace(/^\+20/, '0');
-  const nameParts = (customerInfo.name || '').trim().split(' ');
-  return {
-    first_name: nameParts[0] || 'Guest',
-    last_name: nameParts.slice(1).join(' ') || 'Customer',
-    phone_number: phone,
-    email: customerInfo.email || 'guest@example.com',
-    country: 'EG',
-    state: customerInfo.governorate || 'Cairo',
-    city: customerInfo.city || 'Cairo',
-    street: customerInfo.street || 'NA',
-    building: customerInfo.building || '1',
-    floor: '1',
-    apartment: customerInfo.apartment || '1',
-    shipping_method: 'PKG',
-    postal_code: 'NA',
-  };
-}
-
-// ─── Route Handler ────────────────────────────────────────────────────────────
 export async function POST(req) {
   try {
-    const { cart, customerInfo, paymentType = 'card' } = await req.json();
+    const { cart, customerInfo } = await req.json();
     const supabase = getServiceSupabase();
     if (!supabase) throw new Error('Server service key configuration missing.');
 
-    // ── Validate integration selection ──
-    const integration = INTEGRATION_MAP[paymentType];
-    if (!integration || !integration.id || isNaN(integration.id)) {
-      throw new Error(`Unsupported or misconfigured payment type: ${paymentType}`);
+    // ── Env vars ──
+    const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
+    const PAYMOB_PUBLIC_KEY = process.env.PAYMOB_PUBLIC_KEY;
+    if (!PAYMOB_SECRET || !PAYMOB_PUBLIC_KEY) {
+      throw new Error('Paymob credentials missing from environment.');
     }
 
     // ── Calculate totals ──
@@ -99,7 +47,6 @@ export async function POST(req) {
         calculated_weight: billableWeight,
         currency: 'EGP',
         status: 'pending',
-        payment_method: paymentType,
       })
       .select()
       .single();
@@ -110,73 +57,68 @@ export async function POST(req) {
       cart.map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price }))
     );
 
-    // ── Paymob: Step 1 — Auth ──
-    const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ api_key: process.env.PAYMOB_SECRET_KEY }),
-    });
-    if (!authRes.ok) throw new Error('Paymob auth token retrieval failed.');
-    const { token: authToken } = await authRes.json();
+    // ── Build billing data ──
+    const nameParts = (customerInfo.name || '').trim().split(' ');
+    const billingData = {
+      first_name: nameParts[0] || 'Guest',
+      last_name: nameParts.slice(1).join(' ') || 'Customer',
+      phone_number: customerInfo.phone || '+201001234567',
+      email: customerInfo.email || 'guest@example.com',
+      country: 'EG',
+      state: customerInfo.governorate || 'Cairo',
+      city: customerInfo.city || 'Cairo',
+      street: customerInfo.street || 'NA',
+      building: customerInfo.building || '1',
+      floor: '1',
+      apartment: customerInfo.apartment || '1',
+      postal_code: 'NA',
+    };
 
-    // ── Paymob: Step 2 — Create Order ──
-    const paymobOrderRes = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
+    // ── Paymob: Create Intention (Unified Checkout) ──
+    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intentions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${PAYMOB_SECRET}`,
+      },
       body: JSON.stringify({
-        auth_token: authToken,
-        delivery_needed: 'false',
-        amount_cents: totalAmountCents,
+        amount: totalAmountCents,
         currency: 'EGP',
-        merchant_order_id: order.id,
+        payment_methods: ['card', 'wallet', 'aman'],
         items: cart.map((i) => ({
           name: i.title || 'Artwork',
-          amount_cents: Math.round(i.price * 100),
+          amount: Math.round(i.price * 100),
           quantity: 1,
         })),
-      }),
-    });
-    if (!paymobOrderRes.ok) throw new Error('Paymob order reference generation failed.');
-    const paymobOrderData = await paymobOrderRes.json();
-
-    // ── Paymob: Step 3 — Payment Key ──
-    const billingData =
-      paymentType === 'kiosk'
-        ? buildKioskBillingData(customerInfo)
-        : buildCardBillingData(customerInfo);
-
-    const paymentKeyRes = await fetch('https://accept.paymob.com/api/acceptance/payment_keys', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        auth_token: authToken,
-        amount_cents: totalAmountCents,
-        expiration: 3600,
-        order_id: paymobOrderData.id,
         billing_data: billingData,
-        currency: 'EGP',
-        integration_id: integration.id,
+        customer: {
+          first_name: billingData.first_name,
+          last_name: billingData.last_name,
+          email: billingData.email,
+          phone_number: billingData.phone_number,
+        },
+        merchant_order_id: order.id,
       }),
     });
-    if (!paymentKeyRes.ok) throw new Error('Paymob secure key token allocation failed.');
-    const paymentKeyData = await paymentKeyRes.json();
 
-    // ── Update Supabase order with Paymob order ID ──
-    await supabase
-      .from('orders')
-      .update({ paymob_order_id: paymobOrderData.id })
-      .eq('id', order.id);
-
-    // ── Step 4 — Build response by payment type ──
-    if (paymentType === 'kiosk') {
-      const billRef = paymentKeyData?.id || paymentKeyData?.bill_reference || null;
-      return NextResponse.json({ success: true, paymentType: 'kiosk', billReference: billRef });
+    if (!intentionRes.ok) {
+      const errorData = await intentionRes.json();
+      throw new Error(`Paymob intention creation failed: ${errorData.message || 'Unknown error'}`);
     }
 
-    const iframeId = integration.iframeId;
-    if (!iframeId) throw new Error('Paymob iFrame ID missing for card integration.');
-    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/${iframeId}?payment_token=${paymentKeyData.token}`;
-    return NextResponse.json({ success: true, paymentType: 'card', redirectUrl: checkoutUrl });
+    const intentionData = await intentionRes.json();
+    const { id: intentionId, client_secret: clientSecret } = intentionData;
+
+    // ── Store intention data in Supabase ──
+    await supabase
+      .from('orders')
+      .update({ paymob_order_id: intentionId, paymob_client_secret: clientSecret })
+      .eq('id', order.id);
+
+    // ── Build Unified Checkout URL ──
+    const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
+
+    return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
