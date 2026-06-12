@@ -55,13 +55,7 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    if (true || !PAYMOB_SECRET || !CARD_INTEGRATION) {
-      return NextResponse.json({ 
-        success: true, 
-        redirectUrl: `/?status=success&orderId=${order.id}` 
-      });
-    }
-
+    // Standard authentication fetch
     const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -71,6 +65,7 @@ export async function POST(req) {
     if (!authRes.ok) throw new Error("Paymob Auth Token retrieval failed.");
     const { token: authToken } = await authRes.json();
 
+    // Register transaction order with Paymob
     const paymobOrderRes = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -80,13 +75,14 @@ export async function POST(req) {
         amount_cents: totalAmountCents,
         currency: "EGP",
         merchant_order_id: order.id,
-        items: cart.map(i => ({ name: i.title, amount_cents: Math.round(i.price * 100), quantity: 1 }))
+        items: cart.map(i => ({ name: i.title || "Artwork", amount_cents: Math.round(i.price * 100), quantity: 1 }))
       })
     });
 
     if (!paymobOrderRes.ok) throw new Error("Paymob order reference generation failed.");
     const paymobOrderData = await paymobOrderRes.json();
 
+    // Generate acceptance payment key token with explicit iframe binding
     const paymentKeyRes = await fetch('https://accept.paymob.com/api/acceptance/payment_keys', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -96,14 +92,14 @@ export async function POST(req) {
         expiration: 3600,
         order_id: paymobOrderData.id,
         billing_data: {
-          first_name: customerInfo.name ? (customerInfo.name.split(' ')[0] || "Guest") : "Guest",
+          first_name: customerInfo.name ? (customerInfo.name.split(' ')[0] || "Youssef") : "Youssef",
           last_name: customerInfo.name ? (customerInfo.name.split(' ')[1] || "Customer") : "Customer",
           phone_number: customerInfo.phone && customerInfo.phone.trim() !== "" ? customerInfo.phone : "+201001234567",
           email: customerInfo.email && customerInfo.email.trim() !== "" ? customerInfo.email : "test@example.com",
           country: "EG",
           governorate: customerInfo.governorate && customerInfo.governorate.trim() !== "" ? customerInfo.governorate : "Cairo",
           city: customerInfo.city && customerInfo.city.trim() !== "" ? customerInfo.city : "Nasr City",
-          street: customerInfo.street && customerInfo.street.trim() !== "" ? customerInfo.street : "Building Street",
+          street: customerInfo.street && customerInfo.street.trim() !== "" ? customerInfo.street : "Street Address",
           building: customerInfo.building && customerInfo.building.trim() !== "" ? customerInfo.building : "1",
           room: "N/A",
           floor: "N/A",
@@ -115,11 +111,17 @@ export async function POST(req) {
       })
     });
 
-    if (!paymentKeyRes.ok) throw new Error("Paymob secure key token allocation failed.");
+    if (!paymentKeyRes.ok) {
+      const rawErrorText = await paymentKeyRes.text();
+      console.error("Paymob payment key rejection body:", rawErrorText);
+      throw new Error(`Paymob secure key token allocation failed: ${rawErrorText}`);
+    }
+
     const { token: paymentToken } = await paymentKeyRes.json();
 
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
+    // Sandbox URL routing destination
     const checkoutUrl = `https://accept.paymobsolutions.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
