@@ -119,7 +119,7 @@ export async function POST(req) {
 
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
-    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
+    const checkoutUrl = `https://accept.paymobsolutions.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
