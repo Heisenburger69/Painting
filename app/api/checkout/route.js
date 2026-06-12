@@ -107,7 +107,7 @@ export async function POST(req) {
         },
         currency: "EGP",
         integration_id: Number(CARD_INTEGRATION),
-        iframe_id: 100
+        iframe_id: 1051886
       })
     });
 
@@ -122,7 +122,7 @@ export async function POST(req) {
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
     // Sandbox URL routing destination
-    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
+    const checkoutUrl = `https://accept-alpha.paymob.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
