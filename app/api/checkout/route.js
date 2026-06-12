@@ -110,7 +110,8 @@ export async function POST(req) {
           postal_code: "12345"
         },
         currency: "EGP",
-        integration_id: Number(CARD_INTEGRATION)
+        integration_id: Number(CARD_INTEGRATION),
+        iframe_id: 100
       })
     });
 
