@@ -55,18 +55,18 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    // 1. Authenticate with the Alpha endpoints server
-    const authRes = await fetch('https://accept-alpha.paymob.com/api/auth/tokens', {
+    // 1. Authenticate with standard server
+    const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ api_key: PAYMOB_SECRET })
     });
     
-    if (!authRes.ok) throw new Error("Paymob Alpha Auth Token retrieval failed.");
+    if (!authRes.ok) throw new Error("Paymob Auth Token retrieval failed.");
     const { token: authToken } = await authRes.json();
 
-    // 2. Create the Order entity on the Alpha system
-    const paymobOrderRes = await fetch('https://accept-alpha.paymob.com/api/ecommerce/orders', {
+    // 2. Register standard ecommerce order tracking sequence
+    const paymobOrderRes = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -79,11 +79,11 @@ export async function POST(req) {
       })
     });
 
-    if (!paymobOrderRes.ok) throw new Error("Paymob Alpha order reference generation failed.");
+    if (!paymobOrderRes.ok) throw new Error("Paymob order reference generation failed.");
     const paymobOrderData = await paymobOrderRes.json();
 
-    // 3. Allocate Payment Key on the Alpha layout server
-    const paymentKeyRes = await fetch('https://accept-alpha.paymob.com/api/acceptance/payment_keys', {
+    // 3. Allocate standard configuration token
+    const paymentKeyRes = await fetch('https://accept.paymob.com/api/acceptance/payment_keys', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -112,16 +112,14 @@ export async function POST(req) {
 
     if (!paymentKeyRes.ok) {
       const rawErrorText = await paymentKeyRes.text();
-      throw new Error(`Paymob Alpha payment key token allocation failed: ${rawErrorText}`);
+      throw new Error(`Paymob secure key token allocation failed: ${rawErrorText}`);
     }
 
     const { token: paymentToken } = await paymentKeyRes.json();
-
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
-    // 4. Clean, verified structural redirection layout path match
-    const checkoutUrl = `https://accept-alpha.paymob.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
-    return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
+    // Return the clean tokens directly to the client instead of executing a browser domain redirect
+    return NextResponse.json({ success: true, paymentToken, order });
 
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

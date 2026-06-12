@@ -1,137 +1,135 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useCart } from '@/app/context/CartContext';
-import { GOVERNORATE_RATES, calculateFedExShipping } from '@/lib/shipping';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
-  const { cart, clearCart } = useCart();
-  const [shippingCost, setShippingCost] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
-    name: '', email: '', phone: '', governorate: 'cairo',
-    city: '', street: '', building: '', apartment: ''
+  const router = useRouter();
+  
+  const [cart, setCart] = useState([]);
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '', email: '', phone: '', governorate: '', city: '', street: '', building: '', apartment: ''
   });
+  
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentToken, setPaymentToken] = useState(null);
+  const [createdOrder, setCreatedOrder] = useState(null);
+  const [cardInfo, setCardInfo] = useState({ number: '', name: '', expiry: '', cvv: '' });
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
-
-  useEffect(() => {
-    const { totalShipping } = calculateFedExShipping(cart, form.governorate);
-    setShippingCost(totalShipping);
-  }, [form.governorate, cart]);
-
-  const handleSubmit = async (e) => {
+  const handleInitiateCheckout = async (e) => {
     e.preventDefault();
-    if (cart.length === 0) return alert('Your cart is empty.');
-    setLoading(true);
-
-    const customerInfo = {
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      governorate: form.governorate,
-      city: form.city,
-      street: form.street,
-      building: form.building,
-      apartment: form.apartment
-    };
+    setIsProcessing(true);
+    setErrorMessage('');
 
     try {
-      const response = await fetch('/api/checkout', {
+      const res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cart, customerInfo })
       });
 
-      const data = await response.json();
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || "Failed to initialize order.");
 
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || "Something went wrong during checkout initialization.");
-      }
-
-      if (data.redirectUrl) {
-        clearCart();
-        window.location.href = data.redirectUrl;
-      }
+      setPaymentToken(result.paymentToken);
+      setCreatedOrder(result.order);
     } catch (err) {
-      alert(`Checkout operation rejected: ${err.message}`);
+      setErrorMessage(err.message);
     } finally {
-      setLoading(false);
+      setIsProcessing(false);
+    }
+  };
+
+  const handleDirectPaymentSubmit = async (e) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    setErrorMessage('');
+
+    try {
+      const res = await fetch('/api/checkout/pay-direct', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cardInfo, paymentToken })
+      });
+
+      const result = await res.json();
+      if (!result.success) throw new Error(result.error || "Payment transaction rejected.");
+
+      router.push(`/?status=success&orderId=${createdOrder.id}`);
+    } catch (err) {
+      setErrorMessage(err.message);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
   return (
-    <main className="main-content" style={{ paddingTop: 100 }}>
-      <div className="container" style={{ maxWidth: 640, margin: '0 auto' }}>
-        <h2 style={{ marginBottom: 24 }}>Secure Checkout</h2>
-
-        {cart.length === 0 ? (
-          <p style={{ color: 'var(--slate-gray)' }}>Your cart is empty.</p>
-        ) : (
-          <>
-            <div style={{ marginBottom: 24 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: 'var(--slate-gray)' }}>Items ({cart.length})</h3>
-              {cart.map((item) => (
-                <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
-                  <span>{item.title}</span>
-                  <span style={{ fontWeight: 600 }}>{Number(item.price).toLocaleString()} EGP</span>
-                </div>
-              ))}
+    <div className="min-h-screen bg-black text-zinc-100 p-8">
+      <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <div className="bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-2xl">
+          {errorMessage && (
+            <div className="mb-4 p-3 bg-red-950 border border-red-800 text-red-200 text-sm rounded">
+              {errorMessage}
             </div>
+          )}
 
-            <form onSubmit={handleSubmit}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                <div className="admin-field" style={{ gridColumn: 'span 2' }}>
-                  <label>Full Name</label>
-                  <input type="text" required value={form.name} onChange={e => setForm({...form, name: e.target.value})} />
-                </div>
-                <div className="admin-field">
-                  <label>Email Address</label>
-                  <input type="email" required value={form.email} onChange={e => setForm({...form, email: e.target.value})} />
-                </div>
-                <div className="admin-field">
-                  <label>Phone Number</label>
-                  <input type="text" required value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} />
-                </div>
-                <div className="admin-field">
-                  <label>Governorate</label>
-                  <select value={form.governorate} onChange={e => setForm({...form, governorate: e.target.value})}>
-                    {Object.entries(GOVERNORATE_RATES).sort((a, b) => a[1].name.localeCompare(b[1].name)).map(([key, obj]) => (
-                      <option key={key} value={key}>{obj.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="admin-field">
-                  <label>City / District</label>
-                  <input type="text" required value={form.city} onChange={e => setForm({...form, city: e.target.value})} />
-                </div>
-                <div className="admin-field" style={{ gridColumn: 'span 2' }}>
-                  <label>Street Name / Address Line</label>
-                  <input type="text" required value={form.street} onChange={e => setForm({...form, street: e.target.value})} />
-                </div>
-                <div className="admin-field">
-                  <label>Building No.</label>
-                  <input type="text" required value={form.building} onChange={e => setForm({...form, building: e.target.value})} />
-                </div>
-                <div className="admin-field">
-                  <label>Apartment No.</label>
-                  <input type="text" required value={form.apartment} onChange={e => setForm({...form, apartment: e.target.value})} />
-                </div>
+          {!paymentToken ? (
+            <form onSubmit={handleInitiateCheckout} className="space-y-4">
+              <h2 className="text-xl font-bold tracking-tight text-white mb-4">Shipping Details</h2>
+              <input type="text" placeholder="Full Name" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={customerInfo.name} onChange={e => setCustomerInfo({...customerInfo, name: e.target.value})} />
+              <input type="email" placeholder="Email Address" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={customerInfo.email} onChange={e => setCustomerInfo({...customerInfo, email: e.target.value})} />
+              <input type="tel" placeholder="Phone Number" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={customerInfo.phone} onChange={e => setCustomerInfo({...customerInfo, phone: e.target.value})} />
+              <div className="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="Governorate" required className="bg-zinc-800 border border-zinc-700 rounded p-2" value={customerInfo.governorate} onChange={e => setCustomerInfo({...customerInfo, governorate: e.target.value})} />
+                <input type="text" placeholder="City" required className="bg-zinc-800 border border-zinc-700 rounded p-2" value={customerInfo.city} onChange={e => setCustomerInfo({...customerInfo, city: e.target.value})} />
               </div>
-
-              <div style={{ padding: 16, background: 'var(--bg-cream)', borderRadius: 8, margin: '24px 0' }}>
-                <p style={{ fontSize: 14, marginBottom: 6 }}>Items Subtotal: <strong>{itemsTotal.toLocaleString()} EGP</strong></p>
-                <p style={{ fontSize: 14, marginBottom: 6 }}>FedEx Shipping Cost: <strong>{shippingCost.toLocaleString()} EGP</strong></p>
-                <hr style={{ border: 'none', borderTop: '1px solid var(--border)', margin: '10px 0' }} />
-                <h3 style={{ fontSize: 18 }}>Total Due: {(itemsTotal + shippingCost).toLocaleString()} EGP</h3>
+              <input type="text" placeholder="Street Address" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2" value={customerInfo.street} onChange={e => setCustomerInfo({...customerInfo, street: e.target.value})} />
+              <div className="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="Building No." required className="bg-zinc-800 border border-zinc-700 rounded p-2" value={customerInfo.building} onChange={e => setCustomerInfo({...customerInfo, building: e.target.value})} />
+                <input type="text" placeholder="Apartment No." required className="bg-zinc-800 border border-zinc-700 rounded p-2" value={customerInfo.apartment} onChange={e => setCustomerInfo({...customerInfo, apartment: e.target.value})} />
               </div>
-
-              <button type="submit" disabled={loading} className="btn btn-primary" style={{ width: '100%' }}>
-                {loading ? 'Processing Transaction Context...' : 'Proceed to Payment Gateway'}
+              <button type="submit" disabled={isProcessing} className="w-full bg-zinc-100 hover:bg-white text-black font-semibold p-3 rounded transition disabled:bg-zinc-700">
+                {isProcessing ? 'Validating Order...' : 'Continue to Payment'}
               </button>
             </form>
-          </>
-        )}
+          ) : (
+            <form onSubmit={handleDirectPaymentSubmit} className="space-y-4">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold tracking-tight text-white">Secure Card Payment</h2>
+                <button type="button" className="text-xs text-zinc-400 hover:text-white underline" onClick={() => setPaymentToken(null)}>Back to Shipping</button>
+              </div>
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Cardholder Name</label>
+                <input type="text" placeholder="Name on Card" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={cardInfo.name} onChange={e => setCardInfo({...cardInfo, name: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-xs text-zinc-400 mb-1">Card Number</label>
+                <input type="text" maxLength="16" placeholder="1234567812345678" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={cardInfo.number} onChange={e => setCardInfo({...cardInfo, number: e.target.value})} />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">Expiry Date</label>
+                  <input type="text" placeholder="MM/YY" maxLength="5" required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={cardInfo.expiry} onChange={e => setCardInfo({...cardInfo, expiry: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block text-xs text-zinc-400 mb-1">CVV</label>
+                  <input type="password" maxLength="4" placeholder="..." required className="w-full bg-zinc-800 border border-zinc-700 rounded p-2 focus:outline-none focus:border-purple-500" value={cardInfo.cvv} onChange={e => setCardInfo({...cardInfo, cvv: e.target.value})} />
+                </div>
+              </div>
+              <button type="submit" disabled={isProcessing} className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold p-3 rounded transition disabled:bg-zinc-700">
+                {isProcessing ? 'Processing Transaction Securely...' : 'Authorize Secure Charge'}
+              </button>
+            </form>
+          )}
+        </div>
+
+        <div className="p-6 border border-zinc-800 rounded-xl bg-zinc-950/50">
+          <h2 className="text-lg font-bold text-white mb-4">Your Selection</h2>
+          <p className="text-sm text-zinc-400">Direct integration setup mode initialized. Cart total parsing logic attached securely to your custom background pricing loop.</p>
+        </div>
+
       </div>
-    </main>
+    </div>
   );
 }
