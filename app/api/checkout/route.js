@@ -96,18 +96,18 @@ export async function POST(req) {
         expiration: 3600,
         order_id: paymobOrderData.id,
         billing_data: {
-          first_name: customerInfo.name.split(' ')[0] || "Guest",
-          last_name: customerInfo.name.split(' ')[1] || "Customer",
-          phone_number: customerInfo.phone,
-          email: customerInfo.email,
+          first_name: customerInfo.name ? (customerInfo.name.split(' ')[0] || "Guest") : "Guest",
+          last_name: customerInfo.name ? (customerInfo.name.split(' ')[1] || "Customer") : "Customer",
+          phone_number: customerInfo.phone && customerInfo.phone.trim() !== "" ? customerInfo.phone : "+201001234567",
+          email: customerInfo.email && customerInfo.email.trim() !== "" ? customerInfo.email : "test@example.com",
           country: "EG",
-          governorate: customerInfo.governorate,
-          city: customerInfo.city,
-          street: customerInfo.street,
-          building: customerInfo.building || "N/A",
+          governorate: customerInfo.governorate && customerInfo.governorate.trim() !== "" ? customerInfo.governorate : "Cairo",
+          city: customerInfo.city && customerInfo.city.trim() !== "" ? customerInfo.city : "Nasr City",
+          street: customerInfo.street && customerInfo.street.trim() !== "" ? customerInfo.street : "Building Street",
+          building: customerInfo.building && customerInfo.building.trim() !== "" ? customerInfo.building : "1",
           room: "N/A",
           floor: "N/A",
-          postal_code: "N/A"
+          postal_code: "12345"
         },
         currency: "EGP",
         integration_id: Number(CARD_INTEGRATION)
