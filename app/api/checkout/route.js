@@ -16,10 +16,8 @@ export async function POST(req) {
     }
 
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
-    const roundedShipping = Math.ceil(totalShipping / 5) * 5;
-
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
-    const finalTotalAmount = itemsTotal + roundedShipping;
+    const finalTotalAmount = itemsTotal + totalShipping;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
     const { data: order, error: orderErr } = await supabase
@@ -40,7 +38,7 @@ export async function POST(req) {
         street_address: customerInfo.street,
         building_number: customerInfo.building,
         apartment_number: customerInfo.apartment,
-        shipping_cost: roundedShipping,
+        shipping_cost: totalShipping,
         subtotal: itemsTotal,
         total_items_cost: itemsTotal,
         total: finalTotalAmount,
@@ -73,25 +71,32 @@ export async function POST(req) {
       postal_code: 'NA',
     };
 
+    // Exact endpoint format from image_68b4bf.png
+    console.log('INTEGRATIONS:', {
+      card: process.env.PAYMOB_INTEGRATION_ID_CARD,
+      kiosk: process.env.PAYMOB_INTEGRATION_ID_KIOSK,
+      secret_prefix: process.env.PAYMOB_SECRET_KEY?.slice(0, 15),
+      public_prefix: process.env.PAYMOB_PUBLIC_KEY?.slice(0, 15),
+    });
     const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${PAYMOB_SECRET}`,
+        'Authorization': `Token ${PAYMOB_SECRET.trim()}`,
       },
       body: JSON.stringify({
         amount: totalAmountCents,
         currency: 'EGP',
-        payment_methods: [5723390],
+        payment_methods: [5723260, 5723390],
         items: [
           ...cart.map((i) => ({
             name: i.title || 'Artwork',
             amount: Math.round(Number(i.price) * 100),
             quantity: 1,
           })),
-          ...(roundedShipping > 0 ? [{
+          ...(totalShipping > 0 ? [{
             name: 'Shipping Fee',
-            amount: Math.round(roundedShipping * 100),
+            amount: Math.round(totalShipping * 100),
             quantity: 1,
           }] : [])
         ],
@@ -103,7 +108,6 @@ export async function POST(req) {
           phone_number: billingData.phone_number,
         },
         merchant_order_id: String(order.id),
-        redirection_url: `${req.nextUrl.origin}/checkout/success?order_id=${order.id}`
       }),
     });
 
@@ -120,6 +124,7 @@ export async function POST(req) {
       .update({ paymob_order_id: intentionId, paymob_client_secret: clientSecret })
       .eq('id', order.id);
 
+    // Dynamic redirect URL construction from image_68ad3e.png
     const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 

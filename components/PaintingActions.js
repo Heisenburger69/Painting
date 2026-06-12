@@ -31,8 +31,8 @@ export default function PaintingActions({ artwork }) {
         {renderButton()}
         <Link href="/#gallery" className="btn btn-secondary">Back to Gallery</Link>
       </div>
-      <p style={{ marginTop: 16, fontSize: 13, color: 'var(--slate-gray)' }}>
-        If ordering from abroad, <a href="/#contacts" style={{ color: 'var(--coffee)', fontWeight: 600, textDecoration: 'underline' }}>contact us</a>.
+      <p style={{ marginTop: 16, padding: '10px 14px', background: 'var(--bg-cream)', borderRadius: 6, fontSize: 13, fontWeight: 500, color: 'var(--slate-gray)', border: '1px solid var(--border)' }}>
+        <strong style={{ color: 'var(--coffee)' }}>Ordering from abroad?</strong> <a href="/#contacts" style={{ color: 'var(--coffee)', fontWeight: 600, textDecoration: 'underline' }}>Contact us</a> for shipping arrangements.
       </p>
     </div>
   )
