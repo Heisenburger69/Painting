@@ -55,7 +55,7 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    if (!PAYMOB_SECRET || PAYMOB_SECRET === "mock_secret_key_for_testing" || !CARD_INTEGRATION) {
+    if (true || !PAYMOB_SECRET || !CARD_INTEGRATION) {
       return NextResponse.json({ 
         success: true, 
         redirectUrl: `/checkout/mock-success?orderId=${order.id}` 
