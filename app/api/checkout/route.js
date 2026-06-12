@@ -58,7 +58,7 @@ export async function POST(req) {
     if (true || !PAYMOB_SECRET || !CARD_INTEGRATION) {
       return NextResponse.json({ 
         success: true, 
-        redirectUrl: `/checkout/mock-success?orderId=${order.id}` 
+        redirectUrl: `/?status=success&orderId=${order.id}` 
       });
     }
 
