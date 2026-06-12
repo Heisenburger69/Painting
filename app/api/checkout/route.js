@@ -75,7 +75,7 @@ export async function POST(req) {
     };
 
     // Paymob Intention API initialization
-    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intention', {
+    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intentions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
