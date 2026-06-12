@@ -75,7 +75,7 @@ export async function POST(req) {
     };
 
     // ── Paymob: Create Intention (Unified Checkout) ──
-    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intentions', {
+    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intention/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
