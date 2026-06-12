@@ -9,7 +9,8 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '', email: '', phone: '', governorate: 'cairo',
-    city: '', street: '', building: '', apartment: ''
+    city: '', street: '', building: '', apartment: '',
+    paymentType: 'card'
   });
 
   const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
@@ -39,19 +40,23 @@ export default function CheckoutPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ cart, customerInfo })
+        body: JSON.stringify({ cart, customerInfo, paymentType: form.paymentType })
       });
 
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.error || "Something went wrong during checkout initialization.");
+        throw new Error(data.error || 'Something went wrong during checkout initialization.');
       }
 
-      if (data.redirectUrl) {
+      if (data.paymentType === 'kiosk') {
+        clearCart();
+        alert(`Your Kiosk payment reference is: ${data.billReference}\n\nPay at any Aman or Masary outlet and show this number to the cashier.`);
+      } else if (data.redirectUrl) {
         clearCart();
         window.location.href = data.redirectUrl;
       }
+
     } catch (err) {
       alert(`Checkout operation rejected: ${err.message}`);
     } finally {
@@ -115,6 +120,43 @@ export default function CheckoutPage() {
                 <div className="admin-field">
                   <label>Apartment No.</label>
                   <input type="text" required value={form.apartment} onChange={e => setForm({...form, apartment: e.target.value})} />
+                </div>
+
+                {/* ── Payment Method Selector ── */}
+                <div className="admin-field" style={{ gridColumn: 'span 2' }}>
+                  <label>Payment Method</label>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+                    {[
+                      { value: 'card', label: 'Credit / Debit Card' },
+                      { value: 'kiosk', label: 'Kiosk (Aman / Masary)' },
+                    ].map(({ value, label }) => (
+                      <label
+                        key={value}
+                        style={{
+                          flex: 1,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 8,
+                          padding: '10px 14px',
+                          border: `2px solid ${form.paymentType === value ? 'var(--primary, #000)' : 'var(--border)'}`,
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          fontWeight: form.paymentType === value ? 600 : 400,
+                          transition: 'border-color 0.15s',
+                        }}
+                      >
+                        <input
+                          type="radio"
+                          name="paymentType"
+                          value={value}
+                          checked={form.paymentType === value}
+                          onChange={e => setForm({...form, paymentType: e.target.value})}
+                          style={{ accentColor: 'var(--primary, #000)' }}
+                        />
+                        {label}
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </div>
 
