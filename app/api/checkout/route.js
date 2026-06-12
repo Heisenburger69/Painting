@@ -54,6 +54,7 @@ export async function POST(req) {
 
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
+    if (!CARD_INTEGRATION) throw new Error("Missing Paymob integration ID in environment.");
 
     const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
@@ -90,15 +91,18 @@ export async function POST(req) {
         order_id: paymobOrderData.id,
         billing_data: {
           first_name: customerInfo.name ? (customerInfo.name.split(' ')[0] || "Guest") : "Guest",
-          last_name: customerInfo.name ? (customerInfo.name.split(' ')[1] || "Customer") : "Customer",
+          last_name: customerInfo.name ? (customerInfo.name.split(' ').slice(1).join(' ') || "Customer") : "Customer",
           phone_number: customerInfo.phone || "+201001234567",
           email: customerInfo.email || "test@example.com",
           country: "EG",
-          governorate: customerInfo.governorate || "Cairo",
+          state: customerInfo.governorate || "Cairo",
           city: customerInfo.city || "Cairo",
-          street: customerInfo.street || "N/A",
+          street: customerInfo.street || "NA",
           building: customerInfo.building || "1",
-          apartment: customerInfo.apartment || "1"
+          floor: "1",
+          apartment: customerInfo.apartment || "1",
+          shipping_method: "PKG",
+          postal_code: "NA"
         },
         currency: "EGP",
         integration_id: Number(CARD_INTEGRATION)
