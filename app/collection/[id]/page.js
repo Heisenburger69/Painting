@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getCollectionById } from '@/lib/db'
 import { notFound } from 'next/navigation'
+import ArtworkCard from '@/components/ArtworkCard'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,7 +41,7 @@ export default async function CollectionPage({ params }) {
           </div>
 
           {collection.artworks.length > 0 ? (
-            <div className="coll-grid-slot">
+            <div className="coll-art-masonry">
               {collection.artworks.map((artwork) => (
                 <ArtworkCard key={artwork.id} artwork={artwork} />
               ))}
@@ -53,51 +54,5 @@ export default async function CollectionPage({ params }) {
         </div>
       </section>
     </main>
-  )
-}
-
-function ArtworkCard({ artwork }) {
-  const priceLabel = artwork.sold
-    ? 'SOLD'
-    : artwork.status === 'not_for_sale'
-      ? 'Not for Sale'
-      : artwork.status === 'reserved'
-        ? 'Reserved'
-        : artwork.stock
-          ? `Stock: ${artwork.stock}`
-          : `EGP ${(artwork.price || 0).toLocaleString()}`
-
-  return (
-    <Link
-      href={`/painting/${artwork.id}`}
-      className="coll-grid-item coll-art-grid-item"
-    >
-      <div className="coll-grid-item-inner coll-art-inner">
-        <div className="coll-agi-frame">
-          <div className="coll-agi-frame-inner">
-            <div className="coll-agi-image">
-              {artwork.image ? (
-                <img src={artwork.image} alt={artwork.title} />
-              ) : (
-                <div className="coll-agi-noimg">No Image</div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="coll-agi-body">
-          <div className={`coll-agi-title${artwork.sold ? ' sold' : ''}`}>
-            {artwork.title}
-          </div>
-          <div className="coll-agi-medium">{artwork.medium}</div>
-          <div className="coll-agi-meta">
-            {artwork.year && <span>{artwork.year}</span>}
-            {artwork.size && <span>{artwork.size}</span>}
-          </div>
-          <div className={`coll-agi-price${artwork.sold ? ' sold' : ''}`}>
-            {priceLabel}
-          </div>
-        </div>
-      </div>
-    </Link>
   )
 }

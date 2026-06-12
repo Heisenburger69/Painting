@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getArtworkById } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import ImageSlideshow from '@/components/ImageSlideshow'
+import PaintingActions from '@/components/PaintingActions'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,13 +33,6 @@ export default async function PaintingPage({ params }) {
                 <span className="detail-price">{artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}</span>
                 <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : artwork.status === 'not_for_sale' ? 'NOT FOR SALE' : 'AVAILABLE'}</span>
               </div>
-              {artwork.status !== 'not_for_sale' && artwork.status !== 'reserved' && (
-                artwork.stock ? (
-                  <div style={{ fontSize: 13, color: 'var(--slate-gray)', fontWeight: 600 }}>Stock: {artwork.stock}</div>
-                ) : artwork.sold ? null : (
-                  <div style={{ fontSize: 12, color: 'var(--slate-gray)' }}>Single piece</div>
-                )
-              )}
               <h1 className="detail-title">{artwork.title}</h1>
               {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}
               {artwork.size && <p className="detail-dimensions">{artwork.size} {artwork.size_inches && <span className="detail-inches">| {artwork.size_inches}</span>}</p>}
@@ -52,10 +46,7 @@ export default async function PaintingPage({ params }) {
                   {artwork.description.split('\n').filter(Boolean).map((p, i) => (<p key={i}>{p}</p>))}
                 </div>
               )}
-              <div className="detail-actions">
-                <a href="/#contacts" className="btn btn-primary">Inquire</a>
-                <Link href="/#gallery" className="btn btn-secondary">Back to Gallery</Link>
-              </div>
+              <PaintingActions artwork={artwork} />
             </div>
           </div>
         </div>

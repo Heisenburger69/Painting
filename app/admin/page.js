@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
-import { getBrowserSupabase } from '@/lib/supabase'
+import { getBrowserSupabase, getServiceSupabase } from '@/lib/supabase'
 import { getAdminClient } from '@/lib/admin-client'
 
-const TABS = ['Artworks', 'Collections', 'Profile', 'Exhibitions', 'Events']
+const TABS = ['Artworks', 'Collections', 'Profile', 'Exhibitions', 'Events', 'Orders']
 
 export default function AdminPage() {
   const [tab, setTab] = useState('Artworks')
@@ -44,6 +44,7 @@ export default function AdminPage() {
         {tab === 'Profile' && <ProfileManager setError={setError} setSuccess={setSuccess} />}
         {tab === 'Exhibitions' && <ExhibitionsManager setError={setError} setSuccess={setSuccess} />}
         {tab === 'Events' && <EventsManager setError={setError} setSuccess={setSuccess} />}
+        {tab === 'Orders' && <OrdersManager setError={setError} setSuccess={setSuccess} />}
       </div>
     </main>
   )
@@ -182,10 +183,9 @@ function ArtworksManager({ setError, setSuccess }) {
       const artworkId = form.id || (crypto.randomUUID?.() || 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16) }))
       const payload = {
         id: artworkId, title: form.title, year: form.year, medium: form.medium,
-        width_cm: form.width_cm || null, height_cm: form.height_cm || null, depth_cm: form.depth_cm || null,
+        width_cm: form.width_cm || null, height_cm: form.height_cm || null, depth_cm: form.depth_cm || null, weight_kg: form.weight_kg || null,
         description: form.description, price: form.price || 0,
         status: form.status || 'available',
-        stock: form.stock !== '' && form.stock !== undefined ? form.stock : null,
         is_featured: form.is_featured || false,
         is_published: form.is_published !== undefined ? form.is_published : true,
         sort_order: form.sort_order || 0, collection_id: form.collection_id || null,
@@ -348,11 +348,11 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
   const [form, setForm] = useState({
     id: item.id || null, title: item.title || '', collection_id: item.collection_id || '',
     year: item.year || '', medium: item.medium || '',
-    width_cm: item.width_cm || '', height_cm: item.height_cm || '',
+    width_cm: item.width_cm || '', height_cm: item.height_cm || '', depth_cm: item.depth_cm || '', weight_kg: item.weight_kg || '',
     description: item.description || '', price: item.price || '',
     status: item.status || 'available', is_featured: item.is_featured || false,
     is_published: item.is_published !== undefined ? item.is_published : true,
-    sort_order: item.sort_order ?? (item.id ? item.sort_order : 0), stock: item.stock ?? '', files: null,
+    sort_order: item.sort_order ?? (item.id ? item.sort_order : 0), files: null,
   })
   const [existingImages, setExistingImages] = useState(item.artwork_images || [])
   const [imageBusy, setImageBusy] = useState(false)
@@ -417,6 +417,14 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
           {form.height_cm && <span className="inch-hint">≈ {cmToIn(form.height_cm)} in</span>}
         </div>
         <div className="admin-field">
+          <label>Depth (cm)</label>
+          <input placeholder="Frame thickness in cm" type="number" value={form.depth_cm} onChange={setNum('depth_cm')} />
+        </div>
+        <div className="admin-field">
+          <label>Weight (kg)</label>
+          <input placeholder="e.g., 2.5" type="number" value={form.weight_kg} onChange={setNum('weight_kg')} />
+        </div>
+        <div className="admin-field">
           <label>Price</label>
           <input placeholder="0" type="number" value={form.price} onChange={setNum('price')} />
         </div>
@@ -426,12 +434,6 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
             <option value="available">Available</option><option value="reserved">Reserved</option><option value="sold">Sold</option><option value="not_for_sale">Not for Sale</option>
           </select>
         </div>
-        {form.status !== 'not_for_sale' && form.status !== 'reserved' && (
-        <div className="admin-field">
-          <label>Stock</label>
-          <input placeholder="Leave empty = single piece" type="number" value={form.stock} onChange={setNum('stock')} />
-        </div>
-        )}
         <div className="admin-checkboxes">
           <label><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} /> Featured</label>
           <label><input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} /> Published</label>
@@ -654,8 +656,96 @@ function CollectionForm({ item, onSave, onCancel, busy }) {
         </div>
       </div>
       <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
-        <button className="btn btn-primary" onClick={handleSave} disabled={busy || uploading}>{uploading ? 'Uploading...' : busy ? 'Saving...' : 'Save'}</button>
+        <button className="btn btn-primary" onClick={() => onSave(form)} disabled={busy}>{busy ? 'Saving...' : 'Save'}</button>
         <button className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Orders ─── */
+function OrdersManager({ setError, setSuccess }) {
+  const [items, setItems] = useState([])
+  const [busy, setBusy] = useState(false)
+  const [filter, setFilter] = useState('')
+
+  const STATUSES = ['pending', 'paid', 'still packaging', 'sent to shipping', 'completed', 'cancelled']
+
+  const load = async () => {
+    try {
+      const supabase = await getServiceSupabase()
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*, order_items(*, artworks(title))')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      setItems(data || [])
+    } catch (e) { setError(e.message) }
+  }
+  useEffect(() => { load() }, [])
+
+  const updateStatus = async (id, status) => {
+    setBusy(true)
+    try {
+      const supabase = await getServiceSupabase()
+      const { error } = await supabase.from('orders').update({ status }).eq('id', id)
+      if (error) throw error
+      setSuccess(`Order ${id.slice(0, 8)} → ${status}`)
+      load()
+    } catch (e) { setError(e.message) }
+    setBusy(false)
+  }
+
+  const filtered = filter ? items.filter((o) => o.status === filter) : items
+
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+        <strong style={{ fontSize: 13 }}>Filter:</strong>
+        <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: !filter ? 'var(--coffee)' : '', color: !filter ? '#fff' : '' }} onClick={() => setFilter('')}>All</button>
+        {STATUSES.map((s) => (
+          <button key={s} className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: filter === s ? 'var(--coffee)' : '', color: filter === s ? '#fff' : '' }} onClick={() => setFilter(s)}>{s}</button>
+        ))}
+        <span style={{ fontSize: 12, color: 'var(--slate-gray)', marginLeft: 8 }}>{filtered.length} orders</span>
+      </div>
+
+      <div className="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Total</th><th>Artworks</th><th>Status</th><th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={9} style={{ padding: 20, textAlign: 'center', color: 'var(--slate-gray)', fontSize: 13 }}>No orders found</td></tr>
+            )}
+            {filtered.map((o) => (
+              <tr key={o.id}>
+                <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.id.slice(0, 8)}</td>
+                <td>{o.customer_name}</td>
+                <td>{o.customer_email}</td>
+                <td>{o.customer_phone}</td>
+                <td style={{ fontSize: 12 }}>
+                  {[o.street_address, o.building_number, o.apartment_number, o.customer_city, o.customer_governorate].filter(Boolean).join(', ')}
+                </td>
+                <td>{o.total_items_cost ? `${o.total_items_cost} EGP` : '\u2014'}</td>
+                <td style={{ fontSize: 12 }}>
+                  {(o.order_items || []).map((oi) => oi.artworks?.title).filter(Boolean).join(', ') || '\u2014'}
+                </td>
+                <td>
+                  <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} disabled={busy}
+                    style={{ padding: '4px 6px', borderRadius: 4, border: '1px solid var(--border)', fontSize: 12, background: '#fff', cursor: 'pointer' }}>
+                    {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </td>
+                <td style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+                  {new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )

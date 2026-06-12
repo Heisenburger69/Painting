@@ -102,7 +102,6 @@ export default async function HomePage() {
                   : <div style={{ width: '100%', height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f0e8', color: '#999' }}>No Image</div>}
               </div>
               <div>
-                <h3 style={{ fontSize: 13, letterSpacing: 2, marginBottom: 8, color: 'var(--tan)' }}>Featured Work</h3>
                 <h2 style={{ fontSize: 28, marginBottom: 8, color: '#fff' }}>{featured.title}</h2>
                 <p style={{ fontSize: 14, color: 'var(--tan)', fontStyle: 'italic', marginBottom: 16 }}>{featured.medium} — {featured.size} — {featured.year}</p>
                 {featured.collection_name && <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Collection: {featured.collection_name}</p>}
