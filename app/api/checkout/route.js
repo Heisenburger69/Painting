@@ -14,23 +14,34 @@ export async function POST(req) {
     const finalTotalAmount = itemsTotal + totalShipping;
     const totalAmountCents = finalTotalAmount * 100; // Paymob requires amount in cents
 
+    // Create a fallback JSON address block to satisfy the database constraint
+    const fullShippingJSON = {
+      governorate: customerInfo.governorate,
+      city: customerInfo.city,
+      street: customerInfo.street,
+      building: customerInfo.building,
+      apartment: customerInfo.apartment,
+      phone: customerInfo.phone
+    };
+
     // 2. Create the pending order record using your exact column names
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
-        buyer_name: customerInfo.name,          // Matched to schema
-        buyer_email: customerInfo.email,        // Matched to schema
+        buyer_name: customerInfo.name,
+        buyer_email: customerInfo.email,
+        shipping_address: fullShippingJSON,     // Bundled object to satisfy NOT-NULL constraint
         customer_governorate: customerInfo.governorate,
         customer_city: customerInfo.city,
         street_address: customerInfo.street,
         building_number: customerInfo.building,
         apartment_number: customerInfo.apartment,
         shipping_cost: totalShipping,
-        subtotal: itemsTotal,                   // Matched to schema
+        subtotal: itemsTotal,
         total_items_cost: itemsTotal,
-        total: finalTotalAmount,                // Matched to schema
+        total: finalTotalAmount,
         calculated_weight: billableWeight,
-        currency: 'EGP',                        // Matched to schema
+        currency: 'EGP',
         status: 'pending'
       })
       .select().single();
@@ -49,7 +60,6 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    // Simulation Trigger: If API keys do not exist in env context yet, fallback to local sandbox route
     if (!PAYMOB_SECRET || PAYMOB_SECRET === "mock_secret_key_for_testing" || !CARD_INTEGRATION) {
       return NextResponse.json({ 
         success: true, 
@@ -88,7 +98,6 @@ export async function POST(req) {
       throw new Error(paymobData.message || "Failed to generate Paymob client secret.");
     }
 
-    // Assign the external tracking key to the parent order record
     await supabase.from('orders').update({ paymob_order_id: paymobData.id }).eq('id', order.id);
 
     const checkoutUrl = `https://checkout.paymob.com/unifiedcheckout/?client_secret=${paymobData.client_secret}`;
