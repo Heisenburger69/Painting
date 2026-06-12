@@ -101,8 +101,8 @@ export async function POST(req) {
           city: customerInfo.city && customerInfo.city.trim() !== "" ? customerInfo.city : "Nasr City",
           street: customerInfo.street && customerInfo.street.trim() !== "" ? customerInfo.street : "Street Address",
           building: customerInfo.building && customerInfo.building.trim() !== "" ? customerInfo.building : "1",
-          room: "N/A",
-          floor: "N/A",
+          apartment: customerInfo.apartment && customerInfo.apartment.trim() !== "" ? customerInfo.apartment : "1",
+          floor: "1",
           postal_code: "12345"
         },
         currency: "EGP",
