@@ -15,13 +15,11 @@ export async function POST(req) {
       throw new Error('Paymob credentials missing from environment variables.');
     }
 
-    // Calculate totals
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
     const finalTotalAmount = itemsTotal + totalShipping;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
-    // Create Supabase order record
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
@@ -57,7 +55,6 @@ export async function POST(req) {
       cart.map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price }))
     );
 
-    // Build standard billing object
     const nameParts = (customerInfo.name || '').trim().split(' ');
     const billingData = {
       first_name: nameParts[0] || 'Guest',
@@ -74,8 +71,8 @@ export async function POST(req) {
       postal_code: 'NA',
     };
 
-    // Paymob Intention API initialization
-    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intentions', {
+    // Exact endpoint format from image_68b4bf.png
+    const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,12 +106,12 @@ export async function POST(req) {
     const intentionData = await intentionRes.json();
     const { id: intentionId, client_secret: clientSecret } = intentionData;
 
-    // Save token response mapping metadata back to your database
     await supabase
       .from('orders')
       .update({ paymob_order_id: intentionId, paymob_client_secret: clientSecret })
       .eq('id', order.id);
 
+    // Dynamic redirect URL construction from image_68ad3e.png
     const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
