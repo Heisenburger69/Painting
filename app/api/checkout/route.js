@@ -55,7 +55,6 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    // 1. Authenticate with standard server
     const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -65,7 +64,6 @@ export async function POST(req) {
     if (!authRes.ok) throw new Error("Paymob Auth Token retrieval failed.");
     const { token: authToken } = await authRes.json();
 
-    // 2. Register standard ecommerce order tracking sequence
     const paymobOrderRes = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -82,7 +80,6 @@ export async function POST(req) {
     if (!paymobOrderRes.ok) throw new Error("Paymob order reference generation failed.");
     const paymobOrderData = await paymobOrderRes.json();
 
-    // 3. Allocate standard configuration token
     const paymentKeyRes = await fetch('https://accept.paymob.com/api/acceptance/payment_keys', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -118,8 +115,8 @@ export async function POST(req) {
     const { token: paymentToken } = await paymentKeyRes.json();
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
-    // Return the clean tokens directly to the client instead of executing a browser domain redirect
-    return NextResponse.json({ success: true, paymentToken, order });
+    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/1051886?payment_token=${paymentToken}`;
+    return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
