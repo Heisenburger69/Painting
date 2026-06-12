@@ -11,23 +11,26 @@ export async function POST(req) {
     // 1. Securely recalculate financial and shipping parameters on the server
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
-    const totalAmountCents = (itemsTotal + totalShipping) * 100; // Paymob requires amount in cents
+    const finalTotalAmount = itemsTotal + totalShipping;
+    const totalAmountCents = finalTotalAmount * 100; // Paymob requires amount in cents
 
-    // 2. Create the pending order record in Supabase (RLS Bypass via service role)
+    // 2. Create the pending order record using your exact column names
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
-        customer_name: customerInfo.name,
-        customer_email: customerInfo.email,
-        customer_phone: customerInfo.phone,
+        buyer_name: customerInfo.name,          // Matched to schema
+        buyer_email: customerInfo.email,        // Matched to schema
         customer_governorate: customerInfo.governorate,
         customer_city: customerInfo.city,
         street_address: customerInfo.street,
         building_number: customerInfo.building,
         apartment_number: customerInfo.apartment,
         shipping_cost: totalShipping,
+        subtotal: itemsTotal,                   // Matched to schema
         total_items_cost: itemsTotal,
+        total: finalTotalAmount,                // Matched to schema
         calculated_weight: billableWeight,
+        currency: 'EGP',                        // Matched to schema
         status: 'pending'
       })
       .select().single();
