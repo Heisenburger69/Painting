@@ -75,7 +75,7 @@ export async function POST(req) {
     };
 
     // ── Paymob: Create Intention (Unified Checkout) ──
-    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intention/', {
+    const intentionRes = await fetch('https://accept.paymob.com/api/v1/intention', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +84,7 @@ export async function POST(req) {
       body: JSON.stringify({
         amount: totalAmountCents,
         currency: 'EGP',
-        payment_methods: ['card', 'wallet', 'aman'],
+        payment_methods: [5723390],
         items: cart.map((i) => ({
           name: i.title || 'Artwork',
           amount: Math.round(i.price * 100),
