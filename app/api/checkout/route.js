@@ -8,20 +8,20 @@ export async function POST(req) {
     const supabase = getServiceSupabase();
     if (!supabase) throw new Error('Server service key configuration missing.');
 
-    // ── Env vars ──
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const PAYMOB_PUBLIC_KEY = process.env.PAYMOB_PUBLIC_KEY;
+
     if (!PAYMOB_SECRET || !PAYMOB_PUBLIC_KEY) {
-      throw new Error('Paymob credentials missing from environment.');
+      throw new Error('Paymob credentials missing from environment variables.');
     }
 
-    // ── Calculate totals ──
+    // Calculate totals
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
     const finalTotalAmount = itemsTotal + totalShipping;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
-    // ── Create Supabase order ──
+    // Create Supabase order record
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
@@ -57,7 +57,7 @@ export async function POST(req) {
       cart.map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price }))
     );
 
-    // ── Build billing data ──
+    // Build standard billing object
     const nameParts = (customerInfo.name || '').trim().split(' ');
     const billingData = {
       first_name: nameParts[0] || 'Guest',
@@ -74,7 +74,7 @@ export async function POST(req) {
       postal_code: 'NA',
     };
 
-    // ── Paymob: Create Intention (Unified Checkout) ──
+    // Paymob Intention API initialization
     const intentionRes = await fetch('https://accept.paymob.com/api/v1/intention', {
       method: 'POST',
       headers: {
@@ -97,30 +97,29 @@ export async function POST(req) {
           email: billingData.email,
           phone_number: billingData.phone_number,
         },
-        merchant_order_id: order.id,
+        merchant_order_id: String(order.id),
       }),
     });
 
     if (!intentionRes.ok) {
-      const errorData = await intentionRes.json();
-      throw new Error(`Paymob intention creation failed: ${errorData.message || 'Unknown error'}`);
+      const errorText = await intentionRes.text();
+      throw new Error(`Paymob Intention Error (${intentionRes.status}): ${errorText}`);
     }
 
     const intentionData = await intentionRes.json();
     const { id: intentionId, client_secret: clientSecret } = intentionData;
 
-    // ── Store intention data in Supabase ──
+    // Save token response mapping metadata back to your database
     await supabase
       .from('orders')
       .update({ paymob_order_id: intentionId, paymob_client_secret: clientSecret })
       .eq('id', order.id);
 
-    // ── Build Unified Checkout URL ──
     const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
-
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
+    console.error('Checkout processing failure details:', error.message);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
