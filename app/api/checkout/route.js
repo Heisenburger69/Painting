@@ -72,6 +72,12 @@ export async function POST(req) {
     };
 
     // Exact endpoint format from image_68b4bf.png
+    console.log('INTEGRATIONS:', {
+      card: process.env.PAYMOB_INTEGRATION_ID_CARD,
+      kiosk: process.env.PAYMOB_INTEGRATION_ID_KIOSK,
+      secret_prefix: process.env.PAYMOB_SECRET_KEY?.slice(0, 15),
+      public_prefix: process.env.PAYMOB_PUBLIC_KEY?.slice(0, 15),
+    });
     const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
       method: 'POST',
       headers: {
