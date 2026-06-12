@@ -71,7 +71,7 @@ export default function AdminOrdersPage() {
                 <tr key={o.id}>
                   <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.id.slice(0, 8)}</td>
                   <td>{o.customer_name}</td>
-                  <td>{o.customer_email}</td>
+                  <td>{o.buyer_email}</td>
                   <td>{o.customer_phone}</td>
                   <td style={{ fontSize: 12 }}>
                     {[o.street_address, o.building_number, o.apartment_number, o.customer_city, o.customer_governorate].filter(Boolean).join(', ')}

@@ -8,13 +8,11 @@ export async function POST(req) {
     const supabase = getServiceSupabase();
     if (!supabase) throw new Error("Server service key configuration missing.");
 
-    // 1. Securely recalculate financial and shipping parameters on the server
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
     const finalTotalAmount = itemsTotal + totalShipping;
-    const totalAmountCents = finalTotalAmount * 100; // Paymob requires amount in cents
+    const totalAmountCents = Math.round(finalTotalAmount * 100);
 
-    // Create a fallback JSON address block to satisfy the database constraint
     const fullShippingJSON = {
       governorate: customerInfo.governorate,
       city: customerInfo.city,
@@ -24,13 +22,12 @@ export async function POST(req) {
       phone: customerInfo.phone
     };
 
-    // 2. Create the pending order record using your exact column names
     const { data: order, error: orderErr } = await supabase
       .from('orders')
       .insert({
         buyer_name: customerInfo.name,
         buyer_email: customerInfo.email,
-        shipping_address: fullShippingJSON,     // Bundled object to satisfy NOT-NULL constraint
+        shipping_address: fullShippingJSON,
         customer_governorate: customerInfo.governorate,
         customer_city: customerInfo.city,
         street_address: customerInfo.street,
@@ -48,7 +45,6 @@ export async function POST(req) {
 
     if (orderErr) throw orderErr;
 
-    // 3. Insert individual items linked to this specific order reference
     const orderItemsPayload = cart.map((item) => ({
       order_id: order.id,
       artwork_id: item.id,
@@ -56,7 +52,6 @@ export async function POST(req) {
     }));
     await supabase.from('order_items').insert(orderItemsPayload);
 
-    // 4. PAYMOB INTEGRATION & FALLBACK HANDLING
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
@@ -67,17 +62,39 @@ export async function POST(req) {
       });
     }
 
-    const paymobRes = await fetch('https://api.paymob.com/v1/intention/', {
+    const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
-      headers: {
-        'Authorization': `Token ${PAYMOB_SECRET}`,
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ api_key: PAYMOB_SECRET })
+    });
+    
+    if (!authRes.ok) throw new Error("Paymob Auth Token retrieval failed.");
+    const { token: authToken } = await authRes.json();
+
+    const paymobOrderRes = await fetch('https://accept.paymob.com/api/ecommerce/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: totalAmountCents,
+        auth_token: authToken,
+        delivery_needed: "false",
+        amount_cents: totalAmountCents,
         currency: "EGP",
-        payment_methods: [Number(CARD_INTEGRATION)],
-        items: cart.map(i => ({ name: i.title, amount: i.price * 100, quantity: 1 })),
+        merchant_order_id: order.id,
+        items: cart.map(i => ({ name: i.title, amount_cents: Math.round(i.price * 100), quantity: 1 }))
+      })
+    });
+
+    if (!paymobOrderRes.ok) throw new Error("Paymob order reference generation failed.");
+    const paymobOrderData = await paymobOrderRes.json();
+
+    const paymentKeyRes = await fetch('https://accept.paymob.com/api/acceptance/payment_keys', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        auth_token: authToken,
+        amount_cents: totalAmountCents,
+        expiration: 3600,
+        order_id: paymobOrderData.id,
         billing_data: {
           first_name: customerInfo.name.split(' ')[0] || "Guest",
           last_name: customerInfo.name.split(' ')[1] || "Customer",
@@ -86,21 +103,23 @@ export async function POST(req) {
           country: "EG",
           governorate: customerInfo.governorate,
           city: customerInfo.city,
-          street: customerInfo.street
+          street: customerInfo.street,
+          building: customerInfo.building || "N/A",
+          room: "N/A",
+          floor: "N/A",
+          postal_code: "N/A"
         },
-        extras: { internal_order_id: order.id }
+        currency: "EGP",
+        integration_id: Number(CARD_INTEGRATION)
       })
     });
 
-    const paymobData = await paymobRes.json();
+    if (!paymentKeyRes.ok) throw new Error("Paymob secure key token allocation failed.");
+    const { token: paymentToken } = await paymentKeyRes.json();
 
-    if (!paymobData.client_secret) {
-      throw new Error(paymobData.message || "Failed to generate Paymob client secret.");
-    }
+    await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
-    await supabase.from('orders').update({ paymob_order_id: paymobData.id }).eq('id', order.id);
-
-    const checkoutUrl = `https://checkout.paymob.com/unifiedcheckout/?client_secret=${paymobData.client_secret}`;
+    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
