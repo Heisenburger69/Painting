@@ -55,13 +55,6 @@ export async function POST(req) {
     const PAYMOB_SECRET = process.env.PAYMOB_SECRET_KEY;
     const CARD_INTEGRATION = process.env.NEXT_PUBLIC_PAYMOB_INTEGRATION_ID_CARD;
 
-    if (!PAYMOB_SECRET || PAYMOB_SECRET === "mock_secret_key_for_testing" || !CARD_INTEGRATION) {
-      return NextResponse.json({ 
-        success: true, 
-        redirectUrl: `/checkout/mock-success?orderId=${order.id}` 
-      });
-    }
-
     const authRes = await fetch('https://accept.paymob.com/api/auth/tokens', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -80,7 +73,7 @@ export async function POST(req) {
         amount_cents: totalAmountCents,
         currency: "EGP",
         merchant_order_id: order.id,
-        items: cart.map(i => ({ name: i.title, amount_cents: Math.round(i.price * 100), quantity: 1 }))
+        items: cart.map(i => ({ name: i.title || "Artwork", amount_cents: Math.round(i.price * 100), quantity: 1 }))
       })
     });
 
@@ -98,16 +91,14 @@ export async function POST(req) {
         billing_data: {
           first_name: customerInfo.name ? (customerInfo.name.split(' ')[0] || "Guest") : "Guest",
           last_name: customerInfo.name ? (customerInfo.name.split(' ')[1] || "Customer") : "Customer",
-          phone_number: customerInfo.phone && customerInfo.phone.trim() !== "" ? customerInfo.phone : "+201001234567",
-          email: customerInfo.email && customerInfo.email.trim() !== "" ? customerInfo.email : "test@example.com",
+          phone_number: customerInfo.phone || "+201001234567",
+          email: customerInfo.email || "test@example.com",
           country: "EG",
-          governorate: customerInfo.governorate && customerInfo.governorate.trim() !== "" ? customerInfo.governorate : "Cairo",
-          city: customerInfo.city && customerInfo.city.trim() !== "" ? customerInfo.city : "Nasr City",
-          street: customerInfo.street && customerInfo.street.trim() !== "" ? customerInfo.street : "Building Street",
-          building: customerInfo.building && customerInfo.building.trim() !== "" ? customerInfo.building : "1",
-          room: "N/A",
-          floor: "N/A",
-          postal_code: "12345"
+          governorate: customerInfo.governorate || "Cairo",
+          city: customerInfo.city || "Cairo",
+          street: customerInfo.street || "N/A",
+          building: customerInfo.building || "1",
+          apartment: customerInfo.apartment || "1"
         },
         currency: "EGP",
         integration_id: Number(CARD_INTEGRATION)
@@ -119,7 +110,7 @@ export async function POST(req) {
 
     await supabase.from('orders').update({ paymob_order_id: paymobOrderData.id }).eq('id', order.id);
 
-    const checkoutUrl = `https://accept.paymobsolutions.com/api/acceptance/iframes/v1/?payment_token=${paymentToken}`;
+    const checkoutUrl = `https://accept.paymob.com/api/acceptance/iframes/1051886?payment_token=${paymentToken}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
 
   } catch (error) {
