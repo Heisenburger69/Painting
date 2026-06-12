@@ -76,7 +76,7 @@ export async function POST(req) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${PAYMOB_SECRET}`,
+        'Authorization': `Token ${PAYMOB_SECRET.trim()}`,
       },
       body: JSON.stringify({
         amount: totalAmountCents,
