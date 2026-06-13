@@ -1022,7 +1022,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
 @media (min-width: 768px) {
     .coll-detail-hero {
         min-height: 0;
-        height: 360px;
+        height: 460px;
         flex-direction: row;
         justify-content: flex-start;
     }
