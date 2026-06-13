@@ -695,15 +695,20 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .coll-collection-slot {
     background: #D6DCE4;
     cursor: pointer;
-}
-
-.coll-collection-slot:hover {
-    box-shadow: var(--shadow-md);
+    align-self: flex-start;
 }
 
 .coll-collection-slot .coll-grid-item-inner {
     padding: 10px;
     align-items: center;
+}
+
+.coll-collection-slot .coll-gi-desc {
+    max-height: 14px;
+}
+
+.coll-collection-slot:hover {
+    box-shadow: var(--shadow-md);
 }
 
 .coll-gi-cover {
