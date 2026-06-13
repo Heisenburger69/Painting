@@ -85,7 +85,7 @@ export async function POST(req) {
       body: JSON.stringify({
         amount: totalAmountCents,
         currency: 'EGP',
-        payment_methods: [5723390],
+        payment_methods: [Number(process.env.PAYMOB_INTEGRATION_ID_CARD), Number(process.env.PAYMOB_INTEGRATION_ID_KIOSK)].filter(Boolean),
         items: [
           ...cart.map((i) => ({
             name: i.title || 'Artwork',
