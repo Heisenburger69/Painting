@@ -1,9 +1,24 @@
 'use client';
+import { Suspense } from 'react';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <main className="main-content" style={{ paddingTop: 120, textAlign: 'center' }}>
+        <div className="container" style={{ maxWidth: 520, margin: '0 auto' }}>
+          <p style={{ fontSize: 18, color: 'var(--slate-gray)' }}>Loading order details...</p>
+        </div>
+      </main>
+    }>
+      <SuccessContent />
+    </Suspense>
+  );
+}
+
+function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get('order_id');
   const [status, setStatus] = useState('verifying');
