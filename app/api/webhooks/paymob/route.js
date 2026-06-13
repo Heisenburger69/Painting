@@ -1,11 +1,23 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
+import crypto from 'crypto';
 
 export async function POST(req) {
   try {
-    const body = await req.json();
+    const rawBody = await req.text();
+    const body = JSON.parse(rawBody);
     const supabase = getServiceSupabase();
     if (!supabase) return NextResponse.json({ error: 'Database instance missing' }, { status: 500 });
+
+    const hmacSecret = process.env.PAYMOB_HMAC_SECRET;
+    if (hmacSecret) {
+      const calculatedHmac = crypto.createHmac('sha512', hmacSecret).update(rawBody).digest('hex');
+      const receivedHmac = body.hmac;
+      if (!receivedHmac || calculatedHmac !== receivedHmac) {
+        console.error('HMAC verification failed');
+        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
+      }
+    }
 
     const transactionObj = body.obj || body;
     const isSuccess = transactionObj.success === true || transactionObj.success === "true";

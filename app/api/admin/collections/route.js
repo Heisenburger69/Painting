@@ -23,8 +23,13 @@ export async function POST(request) {
 
   const collectionId = body.id && body.id !== 'undefined' && body.id !== 'null' ? body.id : uuid()
 
+  // Fetch the single artist profile to satisfy the NOT NULL artist_id FK constraint
+  const { data: profile } = await supabase.from('artist_profile').select('id').maybeSingle()
+  if (!profile) return NextResponse.json({ error: 'No artist profile found' }, { status: 400 })
+
   const { error } = await supabase.from('collections').upsert({
     id: collectionId,
+    artist_id: profile.id,
     title: body.title,
     description: body.description || '',
     cover_image: body.cover_image || '',

@@ -561,7 +561,9 @@ function CollectionsManager({ setError, setSuccess }) {
         const { error } = await supabase.from('collections').update(payload).eq('id', form.id)
         if (error) throw error
       } else {
-        const { error } = await supabase.from('collections').insert({ title: form.title, description: form.description, cover_image: coverUrl, sort_order: form.sort_order || 0, is_published: form.is_published !== undefined ? form.is_published : true })
+        const { data: profile } = await supabase.from('artist_profile').select('id').maybeSingle()
+        if (!profile) throw new Error('No artist profile found')
+        const { error } = await supabase.from('collections').insert({ artist_id: profile.id, title: form.title, description: form.description, cover_image: coverUrl, sort_order: form.sort_order || 0, is_published: form.is_published !== undefined ? form.is_published : true })
         if (error) throw error
       }
 
