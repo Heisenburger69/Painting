@@ -695,7 +695,6 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .coll-collection-slot {
     background: #D6DCE4;
     cursor: pointer;
-    align-self: flex-start;
 }
 
 .coll-collection-slot:hover {
@@ -759,6 +758,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 100%;
+    width: 100%;
 }
 
 .coll-gi-count {
