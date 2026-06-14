@@ -65,7 +65,7 @@ export default function ArtworkCard({ artwork }) {
   }
 
   return (
-    <div className="coll-grid-item coll-art-grid-item">
+    <div className="coll-grid-item coll-art-grid-item break-inside-avoid inline-block w-full mb-4">
       <div className="coll-grid-item-inner coll-art-inner">
         <Link href={`/painting/${artwork.id}`} className="coll-art-link">
           <div className="coll-agi-frame">
