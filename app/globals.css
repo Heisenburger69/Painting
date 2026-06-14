@@ -369,7 +369,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
     text-align: center;
     padding: 60px 20px;
     position: relative;
-    background: linear-gradient(135deg, rgba(111, 78, 55, 0.1) 0%, rgba(111, 78, 55, 0.05) 100%);
+    background-color: var(--space-cadet);
     isolation: isolate;
 }
 
@@ -377,7 +377,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
     content: '';
     position: absolute;
     inset: 0;
-    background: url('/assets/images/herofr.webp') center/cover no-repeat;
+    background: url('/assets/images/herofr.webp') center/contain no-repeat;
     z-index: -2;
 }
 
