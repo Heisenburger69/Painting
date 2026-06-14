@@ -41,10 +41,27 @@ export default async function CollectionPage({ params }) {
           </div>
 
           {collection.artworks.length > 0 ? (
-            <div className="coll-art-masonry">
-              {collection.artworks.map((artwork) => (
-                <ArtworkCard key={artwork.id} artwork={artwork} />
-              ))}
+            <div className="flex flex-wrap md:flex-nowrap gap-6 w-full items-start justify-start">
+              <div className="flex flex-col gap-6 flex-1 w-full min-w-[250px]">
+                {collection.artworks.filter((_, idx) => idx % 4 === 0).map((artwork) => (
+                  <ArtworkCard key={artwork.id} artwork={artwork} />
+                ))}
+              </div>
+              <div className="flex flex-col gap-6 flex-1 w-full min-w-[250px] hidden sm:flex">
+                {collection.artworks.filter((_, idx) => idx % 4 === 1).map((artwork) => (
+                  <ArtworkCard key={artwork.id} artwork={artwork} />
+                ))}
+              </div>
+              <div className="flex flex-col gap-6 flex-1 w-full min-w-[250px] hidden md:flex">
+                {collection.artworks.filter((_, idx) => idx % 4 === 2).map((artwork) => (
+                  <ArtworkCard key={artwork.id} artwork={artwork} />
+                ))}
+              </div>
+              <div className="flex flex-col gap-6 flex-1 w-full min-w-[250px] hidden lg:flex">
+                {collection.artworks.filter((_, idx) => idx % 4 === 3).map((artwork) => (
+                  <ArtworkCard key={artwork.id} artwork={artwork} />
+                ))}
+              </div>
             </div>
           ) : (
             <p style={{ textAlign: 'center', color: 'var(--slate-gray)', fontSize: 14, marginTop: 40, opacity: 0.6 }}>

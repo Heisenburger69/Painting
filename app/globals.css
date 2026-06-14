@@ -90,6 +90,18 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .inline-block { display: inline-block; }
 .w-full { width: 100%; }
 .mb-4 { margin-bottom: 16px; }
+.mb-6 { margin-bottom: 24px; }
+.flex-1 { flex: 1; }
+.hidden { display: none; }
+.gap-6 { gap: 24px; }
+.min-w-\[250px\] { min-width: 250px; }
+
+@media (min-width: 640px) { .sm\:flex { display: flex; } }
+@media (min-width: 768px) {
+  .md\:flex { display: flex; }
+  .md\:flex-nowrap { flex-wrap: nowrap; }
+}
+@media (min-width: 1024px) { .lg\:flex { display: flex; } }
 
 .grid { display: grid; gap: 24px; }
 .grid-auto { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
