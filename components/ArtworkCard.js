@@ -24,8 +24,7 @@ export default function ArtworkCard({ artwork }) {
 
   const imageStyle = {
     aspectRatio: `${artwork.width_cm || 1}/${artwork.height_cm || 1}`,
-    minHeight: 120,
-    maxHeight: 420,
+    width: '100%',
   }
 
   const renderButton = () => {

@@ -99,6 +99,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
 @media (min-width: 640px) { .sm\:flex { display: flex; } }
 @media (min-width: 768px) {
   .md\:flex { display: flex; }
+  .md\:hidden { display: none; }
   .md\:flex-nowrap { flex-wrap: nowrap; }
 }
 @media (min-width: 1024px) { .lg\:flex { display: flex; } }
