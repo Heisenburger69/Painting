@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getBrowserSupabase } from '@/lib/supabase';
 
 const NAV_ITEMS = [
   { label: 'Biography', href: '/#biography' },
@@ -18,7 +19,16 @@ const NAV_ITEMS = [
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('gallery');
+  const [artistName, setArtistName] = useState('');
   const pathname = usePathname();
+
+  useEffect(() => {
+    getBrowserSupabase()?.from('artist_profile').select('name').maybeSingle().then(({ data }) => {
+      if (data?.name) setArtistName(data.name);
+    });
+  }, []);
+
+  useEffect(() => {
     if (pathname === '/admin') return;
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -55,8 +65,7 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="container">
         <Link href="/" className="logo">
-        <Link href="/" className="logo">
-          Hala Salah Elhosary
+          {artistName || 'Hala Salah Elhosary'}
         </Link>
         <ul className={`nav-links${menuOpen ? ' active' : ''}`}>
           {NAV_ITEMS.map((item) => (
