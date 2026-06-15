@@ -11,7 +11,7 @@ function uuid() {
 export async function GET(request) {
   const supabase = await getAuthSupabase(request)
   if (!supabase) return unauthorized()
-  const { data, error } = await supabase.from('collections').select('*, artworks(*, artwork_images(*))').order('sort_order', { ascending: true })
+  const { data, error } = await supabase.from('collections').select('*, artworks(*, artwork_images(*))').order('sort_order', { ascending: true }).order('sort_order', { ascending: true, referencedTable: 'artworks' })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
