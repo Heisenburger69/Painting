@@ -60,7 +60,9 @@ function ArtworksManager({ setError, setSuccess }) {
   const [edit, setEdit] = useState(null)
   const [busy, setBusy] = useState(false)
   const [dirty, setDirty] = useState(false)
+  const [tick, setTick] = useState(0)
   const dragSrc = useRef(null)
+  const allArtsRef = useRef([])
 
   const load = async () => {
     try {
@@ -82,6 +84,7 @@ function ArtworksManager({ setError, setSuccess }) {
       const unc = allArts.filter((a) => !a.collection_id).sort((a, b) => a.sort_order - b.sort_order)
 
       const onSaleArts = allArts.filter((a) => a.is_on_sale).sort((a, b) => (a.on_sale_sort_order ?? 0) - (b.on_sale_sort_order ?? 0))
+      allArtsRef.current = allArts
       setOnSaleArts(onSaleArts)
       setGrouped(grp)
       setUncollected(unc)
@@ -251,18 +254,21 @@ function ArtworksManager({ setError, setSuccess }) {
     URL.revokeObjectURL(url)
   }
 
-  const toggleField = async (id, field) => {
+  const toggleField = (id, field) => {
+    const item = allArtsRef.current.find(a => a.id === id)
+    if (!item) return
+    item[field] = !item[field]
+    setTick((c) => c + 1)
     setBusy(true)
-    try {
-      const supabase = await getAdminClient()
-      const item = allArts.find(a => a.id === id)
-      if (!item) return
-      const { error } = await supabase.from('artworks').update({ [field]: !item[field] }).eq('id', id)
+    getAdminClient().then((supabase) =>
+      supabase.from('artworks').update({ [field]: item[field] }).eq('id', id)
+    ).then(({ error }) => {
       if (error) throw error
+    }).catch((e) => {
       item[field] = !item[field]
-      setDirtyCount((c) => c + 1)
-    } catch (e) { setError(e.message) }
-    setBusy(false)
+      setTick((c) => c + 1)
+      setError(e.message)
+    }).finally(() => setBusy(false))
   }
 
   return (
@@ -281,18 +287,18 @@ function ArtworksManager({ setError, setSuccess }) {
       {edit && <ArtworkForm item={edit} collections={collections}
         onSave={handleSave} onCancel={() => setEdit(null)} busy={busy} />}
 
-      <div className="admin-table-wrap">
+      <div className="admin-table-wrap artworks-table">
         <table>
           <thead>
             <tr>
-              <th style={{ width: 70 }}>#</th><th>Image</th><th>Title</th><th>Collection</th><th>Year</th><th>Status</th><th>Price</th><th>Featured</th><th>On Sale</th><th>Published</th><th>Actions</th>
+              <th style={{ width: 70 }}>#</th><th>Image</th><th>Title</th><th>Collection</th><th>Year</th><th>Status</th><th>Price</th><th>Featured</th><th>On Sale</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {onSaleArts.length > 0 && (
               <Fragment>
                 <tr className="admin-group-header">
-                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: '#dc2626', background: '#fef2f2' }}>
+                  <td colSpan={10} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: '#dc2626', background: '#fef2f2' }}>
                     On Sale
                   </td>
                 </tr>
@@ -314,9 +320,13 @@ function ArtworksManager({ setError, setSuccess }) {
                     <td>{a.year}</td>
                     <td>{a.status}</td>
                     <td>EGP {a.price?.toLocaleString()}</td>
-                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
-                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
-                    <td>{a.is_published ? 'Yes' : ''}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /><span className="ml">Featured</span></label>
+                    </td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /><span className="ml">On Sale</span></label>
+                    </td>
+                    
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(a.id)} disabled={busy}>Delete</button>
@@ -328,12 +338,12 @@ function ArtworksManager({ setError, setSuccess }) {
             {grouped.map((g) => (
               <Fragment key={g.collection.id}>
                 <tr className="admin-group-header">
-                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--coffee)', background: '#f5f0e8' }}>
+                  <td colSpan={10} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--coffee)', background: '#f5f0e8' }}>
                     {g.collection.title}
                   </td>
                 </tr>
                 {g.artworks.length === 0 && (
-                  <tr><td colSpan={11} style={{ padding: 6, fontSize: 12, color: 'var(--slate-gray)', fontStyle: 'italic' }}>No artworks in this collection</td></tr>
+                  <tr><td colSpan={10} style={{ padding: 6, fontSize: 12, color: 'var(--slate-gray)', fontStyle: 'italic' }}>No artworks in this collection</td></tr>
                 )}
                 {g.artworks.map((a, ai) => (
                   <tr key={a.id} draggable={!busy}
@@ -353,9 +363,13 @@ function ArtworksManager({ setError, setSuccess }) {
                     <td>{a.year}</td>
                     <td>{a.status}</td>
                     <td>EGP {a.price?.toLocaleString()}</td>
-                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
-                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
-                    <td>{a.is_published ? 'Yes' : ''}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /><span className="ml">Featured</span></label>
+                    </td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /><span className="ml">On Sale</span></label>
+                    </td>
+                    
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(a.id)} disabled={busy}>Delete</button>
@@ -367,7 +381,7 @@ function ArtworksManager({ setError, setSuccess }) {
             {uncollected.length > 0 && (
               <Fragment>
                 <tr className="admin-group-header">
-                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--slate-gray)', background: '#f5f0e8', fontStyle: 'italic' }}>No Collection</td>
+                  <td colSpan={10} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--slate-gray)', background: '#f5f0e8', fontStyle: 'italic' }}>No Collection</td>
                 </tr>
                 {uncollected.map((a, ai) => (
                   <tr key={a.id} draggable={!busy}
@@ -387,9 +401,13 @@ function ArtworksManager({ setError, setSuccess }) {
                     <td>{a.year}</td>
                     <td>{a.status}</td>
                     <td>EGP {a.price?.toLocaleString()}</td>
-                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
-                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
-                    <td>{a.is_published ? 'Yes' : ''}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /><span className="ml">Featured</span></label>
+                    </td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <label style={{ marginRight: 10 }}><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /><span className="ml">On Sale</span></label>
+                    </td>
+                    
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(a.id)} disabled={busy}>Delete</button>

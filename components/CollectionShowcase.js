@@ -20,7 +20,7 @@ function CollectionSlot({ collection }) {
     <Link
       href={`/collection/${collection.id}`}
       className="coll-grid-item coll-collection-slot"
-      style={isOnSale ? { background: '#fef2f2' } : undefined}
+      style={isOnSale ? { background: '#fecaca' } : undefined}
     >
       <div className="coll-grid-item-inner" style={isOnSale ? {} : undefined}>
         <div className="coll-gi-cover">
