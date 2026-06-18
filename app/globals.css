@@ -835,6 +835,20 @@ p { color: var(--space-cadet); line-height: 1.8; }
         inset 1px 0 0 rgba(255,255,255,0.06);
 }
 
+.coll-agi-frame-inner.on-sale {
+    border-color: #991b1b;
+}
+
+.coll-agi-badge {
+    position: absolute;
+    bottom: -4px;
+    right: -4px;
+    z-index: 10;
+    transform: rotate(-8deg);
+    pointer-events: none;
+    user-select: none;
+}
+
 .coll-agi-image {
     width: 100%;
     display: flex;
@@ -900,6 +914,7 @@ p { color: var(--space-cadet); line-height: 1.8; }
 }
 
 .coll-agi-price.sold { color: var(--slate-gray); }
+.coll-agi-price.on-sale { color: #dc2626; font-weight: 900; }
 
 .art-card-actions {
     margin-top: 10px;
@@ -1369,6 +1384,11 @@ p { color: var(--space-cadet); line-height: 1.8; }
     border-radius: 20px;
     text-transform: uppercase;
     background: var(--coffee);
+    color: #fff;
+}
+
+.detail-badge.on-sale {
+    background: #991b1b;
     color: #fff;
 }
 

@@ -32,6 +32,7 @@ export default async function PaintingPage({ params }) {
               <div className="detail-price-row">
                 <span className="detail-price">{artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}</span>
                 <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : artwork.status === 'not_for_sale' ? 'NOT FOR SALE' : 'AVAILABLE'}</span>
+                {artwork.is_on_sale && <span className="detail-badge on-sale">ON SALE</span>}
               </div>
               <h1 className="detail-title">{artwork.title}</h1>
               {artwork.medium && <p className="detail-subtitle">{artwork.medium} — {artwork.year}</p>}

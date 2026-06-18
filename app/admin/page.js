@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Fragment } from 'react'
 import { useRouter } from 'next/navigation'
 import { getBrowserSupabase, getServiceSupabase } from '@/lib/supabase'
 import { getAdminClient } from '@/lib/admin-client'
+import { ON_SALE_COLLECTION_ID } from '@/lib/db'
 
 const TABS = ['Artworks', 'Collections', 'Profile', 'Exhibitions', 'Events', 'Orders']
 
@@ -55,6 +56,7 @@ function ArtworksManager({ setError, setSuccess }) {
   const [grouped, setGrouped] = useState([])
   const [uncollected, setUncollected] = useState([])
   const [collections, setCollections] = useState([])
+  const [onSaleArts, setOnSaleArts] = useState([])
   const [edit, setEdit] = useState(null)
   const [busy, setBusy] = useState(false)
   const [dirty, setDirty] = useState(false)
@@ -79,6 +81,8 @@ function ArtworksManager({ setError, setSuccess }) {
       }))
       const unc = allArts.filter((a) => !a.collection_id).sort((a, b) => a.sort_order - b.sort_order)
 
+      const onSaleArts = allArts.filter((a) => a.is_on_sale).sort((a, b) => (a.on_sale_sort_order ?? 0) - (b.on_sale_sort_order ?? 0))
+      setOnSaleArts(onSaleArts)
       setGrouped(grp)
       setUncollected(unc)
       setCollections(sortedColls)
@@ -123,6 +127,13 @@ function ArtworksManager({ setError, setSuccess }) {
         next.splice(targetIndex, 0, moved)
         return next
       })
+    } else if (src.groupId === 'on-sale') {
+      setOnSaleArts(prev => {
+        const next = [...prev]
+        const [moved] = next.splice(src.index, 1)
+        next.splice(targetIndex, 0, moved)
+        return next
+      })
     } else {
       setGrouped(prev => prev.map(g => {
         if (g.collection.id !== src.groupId) return g
@@ -139,6 +150,8 @@ function ArtworksManager({ setError, setSuccess }) {
   const arrowUp = (groupId, index, isUncollected) => {
     if (isUncollected) {
       setUncollected(prev => moveUp(prev, index))
+    } else if (groupId === 'on-sale') {
+      setOnSaleArts(prev => moveUp(prev, index))
     } else {
       setGrouped(prev => prev.map(g => {
         if (g.collection.id !== groupId) return g
@@ -150,6 +163,8 @@ function ArtworksManager({ setError, setSuccess }) {
   const arrowDown = (groupId, index, isUncollected) => {
     if (isUncollected) {
       setUncollected(prev => moveDown(prev, index))
+    } else if (groupId === 'on-sale') {
+      setOnSaleArts(prev => moveDown(prev, index))
     } else {
       setGrouped(prev => prev.map(g => {
         if (g.collection.id !== groupId) return g
@@ -169,6 +184,7 @@ function ArtworksManager({ setError, setSuccess }) {
         g.artworks.forEach((a, i) => updates.push(supabase.from('artworks').update({ sort_order: i }).eq('id', a.id)))
       }
       uncollected.forEach((a, i) => updates.push(supabase.from('artworks').update({ sort_order: i }).eq('id', a.id)))
+      onSaleArts.forEach((a, i) => updates.push(supabase.from('artworks').update({ on_sale_sort_order: i }).eq('id', a.id)))
       await Promise.all(updates)
       setSuccess('Order saved!')
       setDirty(false)
@@ -186,7 +202,7 @@ function ArtworksManager({ setError, setSuccess }) {
         width_cm: form.width_cm || null, height_cm: form.height_cm || null, depth_cm: form.depth_cm || null, weight_kg: form.weight_kg || null,
         description: form.description, price: form.price || 0,
         status: form.status || 'available',
-        is_featured: form.is_featured || false,
+        is_featured: form.is_featured || false, is_on_sale: form.is_on_sale || false,
         is_published: form.is_published !== undefined ? form.is_published : true,
         sort_order: form.sort_order || 0, collection_id: form.collection_id || null,
       }
@@ -235,6 +251,20 @@ function ArtworksManager({ setError, setSuccess }) {
     URL.revokeObjectURL(url)
   }
 
+  const toggleField = async (id, field) => {
+    setBusy(true)
+    try {
+      const supabase = await getAdminClient()
+      const item = allArts.find(a => a.id === id)
+      if (!item) return
+      const { error } = await supabase.from('artworks').update({ [field]: !item[field] }).eq('id', id)
+      if (error) throw error
+      item[field] = !item[field]
+      setDirtyCount((c) => c + 1)
+    } catch (e) { setError(e.message) }
+    setBusy(false)
+  }
+
   return (
     <div>
       <div style={{ display: 'flex', gap: 10, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -255,19 +285,55 @@ function ArtworksManager({ setError, setSuccess }) {
         <table>
           <thead>
             <tr>
-              <th style={{ width: 70 }}>#</th><th>Title</th><th>Collection</th><th>Year</th><th>Status</th><th>Price</th><th>Featured</th><th>Published</th><th>Actions</th>
+              <th style={{ width: 70 }}>#</th><th>Image</th><th>Title</th><th>Collection</th><th>Year</th><th>Status</th><th>Price</th><th>Featured</th><th>On Sale</th><th>Published</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
+            {onSaleArts.length > 0 && (
+              <Fragment>
+                <tr className="admin-group-header">
+                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: '#dc2626', background: '#fef2f2' }}>
+                    On Sale
+                  </td>
+                </tr>
+                {onSaleArts.map((a, ai) => (
+                  <tr key={a.id} draggable={!busy}
+                    onDragStart={(e) => handleDragStart(e, 'on-sale', ai, false)}
+                    onDragOver={handleDragOver}
+                    onDrop={(e) => handleDrop(e, 'on-sale', ai, false)}
+                    style={{ cursor: 'grab' }}
+                  >
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <span style={{ cursor: 'grab', fontSize: 14, color: 'var(--slate-gray)', marginRight: 4 }}>&#x22EE;</span>
+                      <button disabled={busy} onClick={() => arrowUp('on-sale', ai, false)} style={arrowMini}>&#9650;</button>
+                      <button disabled={busy} onClick={() => arrowDown('on-sale', ai, false)} style={arrowMini}>&#9660;</button>
+                    </td>
+                    <td>{a.artwork_images?.[0]?.url ? <img src={a.artwork_images[0].url} alt="" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : '—'}</td>
+                    <td>{a.title}</td>
+                    <td style={{ fontSize: 12, color: 'var(--slate-gray)' }}>{a.collection_id ? 'Mixed' : '—'}</td>
+                    <td>{a.year}</td>
+                    <td>{a.status}</td>
+                    <td>EGP {a.price?.toLocaleString()}</td>
+                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
+                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
+                    <td>{a.is_published ? 'Yes' : ''}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
+                      <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(a.id)} disabled={busy}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </Fragment>
+            )}
             {grouped.map((g) => (
               <Fragment key={g.collection.id}>
                 <tr className="admin-group-header">
-                  <td colSpan={9} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--coffee)', background: '#f5f0e8' }}>
+                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--coffee)', background: '#f5f0e8' }}>
                     {g.collection.title}
                   </td>
                 </tr>
                 {g.artworks.length === 0 && (
-                  <tr><td colSpan={9} style={{ padding: 6, fontSize: 12, color: 'var(--slate-gray)', fontStyle: 'italic' }}>No artworks in this collection</td></tr>
+                  <tr><td colSpan={11} style={{ padding: 6, fontSize: 12, color: 'var(--slate-gray)', fontStyle: 'italic' }}>No artworks in this collection</td></tr>
                 )}
                 {g.artworks.map((a, ai) => (
                   <tr key={a.id} draggable={!busy}
@@ -281,12 +347,14 @@ function ArtworksManager({ setError, setSuccess }) {
                       <button disabled={busy} onClick={() => arrowUp(g.collection.id, ai, false)} style={arrowMini}>&#9650;</button>
                       <button disabled={busy} onClick={() => arrowDown(g.collection.id, ai, false)} style={arrowMini}>&#9660;</button>
                     </td>
+                    <td>{a.artwork_images?.[0]?.url ? <img src={a.artwork_images[0].url} alt="" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : '—'}</td>
                     <td>{a.title}</td>
                     <td style={{ fontSize: 12, color: 'var(--slate-gray)' }}>{g.collection.title}</td>
                     <td>{a.year}</td>
                     <td>{a.status}</td>
                     <td>EGP {a.price?.toLocaleString()}</td>
-                    <td>{a.is_featured ? 'Yes' : ''}</td>
+                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
+                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
                     <td>{a.is_published ? 'Yes' : ''}</td>
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
@@ -299,7 +367,7 @@ function ArtworksManager({ setError, setSuccess }) {
             {uncollected.length > 0 && (
               <Fragment>
                 <tr className="admin-group-header">
-                  <td colSpan={9} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--slate-gray)', background: '#f5f0e8', fontStyle: 'italic' }}>No Collection</td>
+                  <td colSpan={11} style={{ padding: '8px 12px', fontWeight: 700, fontSize: 13, color: 'var(--slate-gray)', background: '#f5f0e8', fontStyle: 'italic' }}>No Collection</td>
                 </tr>
                 {uncollected.map((a, ai) => (
                   <tr key={a.id} draggable={!busy}
@@ -313,12 +381,14 @@ function ArtworksManager({ setError, setSuccess }) {
                       <button disabled={busy} onClick={() => arrowUp('unc', ai, true)} style={arrowMini}>&#9650;</button>
                       <button disabled={busy} onClick={() => arrowDown('unc', ai, true)} style={arrowMini}>&#9660;</button>
                     </td>
+                    <td>{a.artwork_images?.[0]?.url ? <img src={a.artwork_images[0].url} alt="" style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} /> : '—'}</td>
                     <td>{a.title}</td>
                     <td style={{ fontSize: 12, color: 'var(--slate-gray)' }}>—</td>
                     <td>{a.year}</td>
                     <td>{a.status}</td>
                     <td>EGP {a.price?.toLocaleString()}</td>
-                    <td>{a.is_featured ? 'Yes' : ''}</td>
+                    <td><input type="checkbox" checked={!!a.is_featured} disabled={busy} onChange={() => toggleField(a.id, 'is_featured')} /></td>
+                    <td><input type="checkbox" checked={!!a.is_on_sale} disabled={busy} onChange={() => toggleField(a.id, 'is_on_sale')} /></td>
                     <td>{a.is_published ? 'Yes' : ''}</td>
                     <td style={{ whiteSpace: 'nowrap' }}>
                       <button className="btn btn-secondary" style={{ fontSize: 12, padding: '4px 12px', marginRight: 6 }} onClick={() => setEdit(a)}>Edit</button>
@@ -350,7 +420,7 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
     year: item.year || '', medium: item.medium || '',
     width_cm: item.width_cm || '', height_cm: item.height_cm || '', depth_cm: item.depth_cm || '', weight_kg: item.weight_kg || '',
     description: item.description || '', price: item.price || '',
-    status: item.status || 'available', is_featured: item.is_featured || false,
+    status: item.status || 'available', is_featured: item.is_featured || false, is_on_sale: item.is_on_sale || false,
     is_published: item.is_published !== undefined ? item.is_published : true,
     sort_order: item.sort_order ?? (item.id ? item.sort_order : 0), files: null,
   })
@@ -436,6 +506,7 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
         </div>
         <div className="admin-checkboxes">
           <label><input type="checkbox" checked={form.is_featured} onChange={(e) => setForm({ ...form, is_featured: e.target.checked })} /> Featured</label>
+          <label><input type="checkbox" checked={form.is_on_sale} onChange={(e) => setForm({ ...form, is_on_sale: e.target.checked })} /> Mark Painting as On Sale</label>
           <label><input type="checkbox" checked={form.is_published} onChange={(e) => setForm({ ...form, is_published: e.target.checked })} /> Published</label>
         </div>
         <div className="admin-field full">
@@ -485,9 +556,47 @@ function CollectionsManager({ setError, setSuccess }) {
   const load = async () => {
     try {
       const supabase = await getAdminClient()
-      const { data, error } = await supabase.from('collections').select('*, artworks(*)').order('sort_order', { ascending: true })
-      if (error) throw error
-      setItems(data || [])
+      const [collsResp, onSaleCountResp] = await Promise.all([
+        supabase.from('collections').select('*, artworks(*)').order('sort_order', { ascending: true }),
+        supabase.from('artworks').select('id', { count: 'exact', head: true }).eq('is_on_sale', true).is('deleted_at', null),
+      ])
+      if (collsResp.error) throw collsResp.error
+
+      const allColls = collsResp.data || []
+      const onSaleDb = allColls.find((c) => c.id === ON_SALE_COLLECTION_ID)
+      const dbColls = allColls.filter((c) => c.id !== ON_SALE_COLLECTION_ID)
+
+      // If the On Sale DB row is missing, re-create it
+      if (!onSaleDb) {
+        const { data: profile } = await supabase.from('artist_profile').select('id').maybeSingle()
+        await supabase.from('collections').insert({
+          id: ON_SALE_COLLECTION_ID,
+          artist_id: profile?.id || '00000000-0000-0000-0000-000000000000',
+          title: 'On Sale',
+          description: 'Artworks currently on sale',
+          sort_order: -1,
+          is_published: true,
+        })
+        return load()
+      }
+
+      // Build the On Sale entry using DB data but with dynamic artwork count
+      const onSaleEntry = {
+        ...onSaleDb,
+        artworks: [],
+        _onSaleCount: onSaleCountResp.count || 0,
+      }
+
+      // Insert at correct position based on sort_order
+      dbColls.sort((a, b) => a.sort_order - b.sort_order)
+      const insertIdx = dbColls.findIndex((c) => c.sort_order > onSaleEntry.sort_order)
+      if (insertIdx === -1) {
+        setItems([...dbColls, onSaleEntry])
+      } else {
+        const sorted = [...dbColls]
+        sorted.splice(insertIdx, 0, onSaleEntry)
+        setItems(sorted)
+      }
       setDirty(false)
     } catch (e) { setError(e.message) }
   }
@@ -596,7 +705,9 @@ function CollectionsManager({ setError, setSuccess }) {
         )}
       </div>
       {edit && <CollectionForm item={edit} onSave={handleSave} onCancel={() => setEdit(null)} busy={busy} />}
-      {items.map((c, i) => (
+      {items.map((c, i) => {
+        const isOnSale = c.id === ON_SALE_COLLECTION_ID
+        return (
         <div key={c.id} className="admin-list-item" draggable={!busy}
           onDragStart={(e) => handleDragStart(e, i)}
           onDragOver={handleDragOver}
@@ -604,14 +715,14 @@ function CollectionsManager({ setError, setSuccess }) {
           style={{ cursor: 'grab' }}
         >
           <div className="admin-list-item-info" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ cursor: 'grab', fontSize: 16, color: 'var(--slate-gray)' }}>&#x22EE;</span>
+            <span style={{ fontSize: 16, color: isOnSale ? '#dc2626' : 'var(--slate-gray)' }}>{'\u22EE'}</span>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               <button disabled={busy} onClick={() => arrowUp(i)} style={arrowMini}>&#9650;</button>
               <button disabled={busy} onClick={() => arrowDown(i)} style={arrowMini}>&#9660;</button>
             </div>
             <div>
-              <strong>{c.title}</strong>
-              <span style={{ fontSize: 12, color: 'var(--slate-gray)', marginLeft: 6 }}>({(c.artworks || []).length} artworks)</span>
+              <strong style={{ color: isOnSale ? '#dc2626' : 'inherit' }}>{c.title}</strong>
+              <span style={{ fontSize: 12, color: 'var(--slate-gray)', marginLeft: 6 }}>({isOnSale ? (c._onSaleCount || 0) : (c.artworks || []).length} artworks)</span>
               {c.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>{c.description.slice(0, 100)}</p>}
             </div>
           </div>
@@ -620,7 +731,8 @@ function CollectionsManager({ setError, setSuccess }) {
             <button className="btn btn-secondary" style={{ fontSize: 12, padding: '2px 10px', background: 'var(--caput-mortuum)', color: '#fff' }} onClick={() => handleDelete(c.id)}>Del</button>
           </div>
         </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

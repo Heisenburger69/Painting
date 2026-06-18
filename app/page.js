@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getArtistProfile, getExhibitions, getEvents, getArtworks, getFeaturedArtworks, getCollections } from '@/lib/db'
+import { getArtistProfile, getExhibitions, getEvents, getArtworks, getFeaturedArtworks, getCollections, ON_SALE_COLLECTION_ID } from '@/lib/db'
 import ContactCard from '@/components/ContactCard'
 import CollectionShowcase from '@/components/CollectionShowcase'
 
@@ -11,6 +11,21 @@ export default async function HomePage() {
   ])
 
   const featured = featuredList.length > 0 ? featuredList[0] : artworks[0]
+  const onSaleArtworks = artworks.filter((a) => a.is_on_sale && !a.sold)
+  const onSaleDb = collections.find((c) => c.id === ON_SALE_COLLECTION_ID)
+  const regularColls = collections.filter((c) => c.id !== ON_SALE_COLLECTION_ID)
+
+  // Build the On Sale collection from DB metadata + dynamic artworks
+  const onSaleEntry = onSaleArtworks.length > 0 ? {
+    id: 'on-sale',
+    title: onSaleDb?.title || 'On Sale',
+    description: onSaleDb?.description || 'Artworks currently on sale',
+    cover_image: onSaleDb?.cover_image || null,
+    sort_order: onSaleDb?.sort_order ?? -1,
+    artworks: onSaleArtworks,
+  } : null
+
+  const allCollections = [onSaleEntry, ...regularColls].filter(Boolean).sort((a, b) => a.sort_order - b.sort_order)
 
   return (
     <>
@@ -81,8 +96,8 @@ export default async function HomePage() {
             <h2>Collections</h2>
             <p style={{ fontSize: 14, color: 'var(--slate-gray)' }}>Click a collection to explore its artworks</p>
           </div>
-          {collections.length > 0 ? (
-            <CollectionShowcase collections={collections} />
+          {(allCollections.length > 0) ? (
+            <CollectionShowcase collections={allCollections} />
           ) : (
             <p style={{ textAlign: 'center', color: 'var(--slate-gray)', padding: 60 }}>No collections yet — check back soon.</p>
           )}
