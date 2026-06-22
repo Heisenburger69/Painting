@@ -15,8 +15,7 @@ export async function POST(req) {
       throw new Error('Paymob credentials missing from environment variables.');
     }
 
-    // FedEx retail cash-customer rate with volumetric /3000, surcharges, and 5-EGP rounding
-    const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate, { packageHeight: 7 });
+    const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
 
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
     const finalTotalAmount = itemsTotal + totalShipping;

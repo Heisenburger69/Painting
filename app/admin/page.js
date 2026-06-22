@@ -506,7 +506,7 @@ function ArtworkForm({ item, collections, onSave, onCancel, busy }) {
         </div>
         <div className="admin-field">
           <label>Depth (cm)</label>
-          <input placeholder="Frame thickness in cm" type="number" value={form.depth_cm} onChange={setNum('depth_cm')} />
+          <input placeholder="Depth in cm" type="number" value={form.depth_cm} onChange={setNum('depth_cm')} />
         </div>
         <div className="admin-field">
           <label>Weight (kg)</label>
