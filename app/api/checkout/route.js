@@ -15,14 +15,11 @@ export async function POST(req) {
       throw new Error('Paymob credentials missing from environment variables.');
     }
 
-    // Pass an options object specifying the strict 7cm package wrapping thickness
+    // FedEx retail cash-customer rate with volumetric /3000, surcharges, and 5-EGP rounding
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate, { packageHeight: 7 });
 
-    // Always round delivery costs up to the nearest multiple of 5
-    const roundedShipping = Math.ceil(totalShipping / 5) * 5;
-
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
-    const finalTotalAmount = itemsTotal + roundedShipping;
+    const finalTotalAmount = itemsTotal + totalShipping;
     const totalAmountCents = Math.round(finalTotalAmount * 100);
 
     const { data: order, error: orderErr } = await supabase
@@ -43,7 +40,7 @@ export async function POST(req) {
         street_address: customerInfo.street,
         building_number: customerInfo.building,
         apartment_number: customerInfo.apartment,
-        shipping_cost: roundedShipping,
+        shipping_cost: totalShipping,
         subtotal: itemsTotal,
         total_items_cost: itemsTotal,
         total: finalTotalAmount,
@@ -92,9 +89,9 @@ export async function POST(req) {
             amount: Math.round(Number(i.price) * 100),
             quantity: 1,
           })),
-          ...(roundedShipping > 0 ? [{
+          ...(totalShipping > 0 ? [{
             name: 'Shipping Fee',
-            amount: Math.round(roundedShipping * 100),
+            amount: Math.round(totalShipping * 100),
             quantity: 1,
           }] : [])
         ],
