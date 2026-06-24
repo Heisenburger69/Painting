@@ -30,7 +30,7 @@ export async function POST(req) {
 
     const transactionObj = body.obj || body;
     const isSuccess = transactionObj.success === true || transactionObj.success === "true";
-    const merchantOrderId = transactionObj.merchant_order_id;
+    const merchantOrderId = transactionObj.merchant_order_id || transactionObj.order?.merchant_order_id || transactionObj.special_reference;
 
     if (!merchantOrderId) {
       return NextResponse.json({ received: true, message: 'No merchant order tied' });

@@ -8,14 +8,60 @@
 
 **Key concepts:** pattern
 
+### app/admin/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| d74534af-d32e-44c7-9c5c-0f53c61bb6bf | ✅ change | Three files modified: admin page, checkout API, shipping lib | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** what-changed, how-it-works
+
+### app/api/admin/artworks/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** how-it-works
+
+### app/api/admin/artworks/[id]/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** how-it-works
+
 ### app/api/checkout/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| d74534af-d32e-44c7-9c5c-0f53c61bb6bf | ✅ change | Three files modified: admin page, checkout API, shipping lib | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
 | 0ea01862-ffb4-40b8-83f1-0e59dd764537 | ✅ change | Checkout deferral: insert into pending_checkouts instead of orders | 2026-06-24 |
 | c1ae0cc1-2d5c-4460-8f2e-07f359b17270 | 🟣 feature | Paymob checkout route: creates intention, stores pending_checkout, redirects to unified checkout | 2026-06-24 |
 | 956f14db-5e3e-4081-b20e-534772d26ffb | 🔵 discovery | Paymob payment gateway integration with dual webhook routes | 2026-06-24 |
 
 **Key concepts:** what-changed, how-it-works, pattern
+
+### app/api/home/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 1315bd31-6b26-4059-9a47-908017731add | 🔵 discovery | Home API route re-read confirms no changes from prior observation | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** pattern, how-it-works
+
+### app/api/lookup-order/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
+
+**Key concepts:** what-changed, how-it-works, problem-solution
+
+### app/api/paintings/[id]/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** how-it-works
 
 ### app/api/paymob-webhook/
 | ID | Type | Title | Date |
@@ -27,24 +73,61 @@
 ### app/api/webhooks/paymob/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
 | 956f14db-5e3e-4081-b20e-534772d26ffb | 🔵 discovery | Paymob payment gateway integration with dual webhook routes | 2026-06-24 |
 
-**Key concepts:** how-it-works, pattern
+**Key concepts:** what-changed, how-it-works, problem-solution, pattern
 
 ### app/checkout/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
 | ddb2125a-91e4-4669-abcf-1ff332f90129 | 🟣 feature | Checkout page: live FedEx shipping, Paymob redirect, cart context | 2026-06-24 |
 
 **Key concepts:** how-it-works, pattern
 
+### app/checkout/success/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
+
+**Key concepts:** what-changed, how-it-works, problem-solution
+
 ### app/context/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 72575a33-aa1f-4926-9c14-e8b0e1e4619d | 🔵 discovery | addToCart usage confirmed: CartContext + 2 consumer components (repeated grep) | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
 | ec97cf16-0493-454e-a00f-becc256775b0 | 🟣 feature | CartContext: localStorage-persisted cart with availability checks | 2026-06-24 |
 | 4f1f31bb-75ca-45b1-883a-e9fcda05d479 | 🔵 discovery | CartContext.js found at app/context/CartContext.js | 2026-06-24 |
 
-**Key concepts:** pattern
+**Key concepts:** pattern, how-it-works
+
+### app/painting/[id]/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** how-it-works
+
+### components/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 38787b02-81b2-4c17-8b06-09e16e584875 | 🔵 discovery | ArtworkCard re-read confirms no changes from prior observation | 2026-06-24 |
+| fc4086b3-cdaa-45e7-b81f-c5bc68dd1673 | 🔵 discovery | PaintingActions re-read confirms no changes from prior observation | 2026-06-24 |
+| 72575a33-aa1f-4926-9c14-e8b0e1e4619d | 🔵 discovery | addToCart usage confirmed: CartContext + 2 consumer components (repeated grep) | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** pattern, how-it-works
+
+### lib/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| d74534af-d32e-44c7-9c5c-0f53c61bb6bf | ✅ change | Three files modified: admin page, checkout API, shipping lib | 2026-06-24 |
+| ae7b3824-2018-40e6-90cd-495cd90e5b43 | 🔵 discovery | db.js re-read confirms no changes from prior observation | 2026-06-24 |
+| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+
+**Key concepts:** what-changed, pattern, how-it-works
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

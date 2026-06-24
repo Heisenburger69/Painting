@@ -86,8 +86,10 @@ export async function POST(req) {
           email: billingData.email,
           phone_number: billingData.phone_number,
         },
+        special_reference: String(pending.id),
         merchant_order_id: String(pending.id),
-        redirection_url: `${req.nextUrl.origin}/checkout/success?checkout_id=${pending.id}`
+        redirection_url: `${req.nextUrl.origin}/checkout/success?checkout_id=${pending.id}`,
+        notification_url: `${req.nextUrl.origin}/api/webhooks/paymob`
       }),
     });
 
