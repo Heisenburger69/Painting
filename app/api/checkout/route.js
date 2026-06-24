@@ -5,6 +5,11 @@ import { calculateFedExShipping } from '@/lib/shipping';
 export async function POST(req) {
   try {
     const { cart, customerInfo } = await req.json();
+
+    if (!cart || cart.length === 0) {
+      throw new Error('Cart is empty.');
+    }
+
     const supabase = getServiceSupabase();
     if (!supabase) throw new Error('Server service key configuration missing.');
 
@@ -63,7 +68,8 @@ export async function POST(req) {
         payment_methods: [5723260, 5723390],
         items: [
           ...cart.map((i) => ({
-            name: i.title || 'Artwork',
+            name: String(i.title || i.medium || '').trim() || 'Artwork',
+            description: String(i.medium || '').trim() || undefined,
             amount: Math.round(Number(i.price) * 100),
             quantity: 1,
           })),
