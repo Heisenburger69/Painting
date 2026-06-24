@@ -1,0 +1,11 @@
+2026-06-16T17:28:48.036536Z  INFO opencode_lib: Initializing app
+2026-06-16T17:28:48.047081Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:50991
+2026-06-16T17:28:48.047111Z  INFO opencode_lib::cli: Spawning sidecar port=50991
+2026-06-16T17:28:53.020392Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-16T17:29:04.723934Z  INFO sidecar: opencode_lib::cli: opencode server listening on http://127.0.0.1:50991
+2026-06-16T17:29:04.815537Z  INFO opencode_lib::server: Server ready elapsed=11.6900016s
+2026-06-16T17:29:04.815569Z  INFO opencode_lib: Sidecar health check OK
+2026-06-16T17:29:04.815575Z  INFO opencode_lib: Loading task finished
+2026-06-16T17:29:04.815587Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-16T17:29:22.947595Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-16T17:29:22 +22167ms service=server error=Session not found failed
+2026-06-16T17:29:24.072718Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-16T17:29:24 +1154ms service=server error=NotFoundError failed

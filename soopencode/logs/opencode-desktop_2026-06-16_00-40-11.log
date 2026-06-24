@@ -1,0 +1,13 @@
+2026-06-15T21:40:12.000744Z  INFO opencode_lib: Initializing app
+2026-06-15T21:40:12.003069Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:49819
+2026-06-15T21:40:12.003088Z  INFO opencode_lib::cli: Spawning sidecar port=49819
+2026-06-15T21:40:12.044731Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-15T21:40:14.353196Z  INFO sidecar: opencode_lib::cli: ASSERTION FAILED: MemoryExhaustion: Crash intentionally because memory is exhausted.
+2026-06-15T21:40:14.353329Z  INFO sidecar: opencode_lib::cli: failureMode != AllocationFailureMode::Assert
+2026-06-15T21:40:14.354071Z  INFO sidecar: opencode_lib::cli: C:\a\WebKit\WebKit\Source\JavaScriptCore\heap\LocalAllocator.cpp(150) : void *JSC::LocalAllocator::allocateSlowCase(JSC::Heap &, size_t, GCDeferralContext *, AllocationFailureMode)
+2026-06-15T21:40:14.573439Z  INFO sidecar: opencode_lib::cli: Sidecar terminated code=Some(-2147483645) signal=None
+2026-06-15T21:40:14.573881Z ERROR opencode_lib: Sidecar health check failed: Sidecar terminated before becoming healthy (code=Some(-2147483645) signal=None)
+2026-06-15T21:40:14.573898Z  INFO opencode_lib: Loading task finished
+2026-06-15T21:40:14.573957Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-15T21:41:54.828007Z  INFO opencode_lib: Received Exit
+2026-06-15T21:41:54.828033Z  INFO opencode_lib: Killed server

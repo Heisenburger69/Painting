@@ -1,0 +1,28 @@
+2026-06-22T10:49:05.004706Z  INFO opencode_lib: Initializing app
+2026-06-22T10:49:05.006564Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:50174
+2026-06-22T10:49:05.006594Z  INFO opencode_lib::cli: Spawning sidecar port=50174
+2026-06-22T10:49:05.050829Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-22T10:49:07.038358Z  INFO sidecar: opencode_lib::cli: ============================================================
+2026-06-22T10:49:07.038779Z  INFO sidecar: opencode_lib::cli: Bun v1.3.13 (bf2e2cec) Windows x64 (baseline)
+2026-06-22T10:49:07.040221Z  INFO sidecar: opencode_lib::cli: Windows v.win10_ni
+2026-06-22T10:49:07.040257Z  INFO sidecar: opencode_lib::cli: CPU: sse42 avx avx2
+2026-06-22T10:49:07.040523Z  INFO sidecar: opencode_lib::cli: Args: "\\?\C:\Users\Joe\AppData\Local\OpenCode\opencode-cli" "--user-agent=opencode/1.14.26" "--use-system-ca" "--" "--print-logs" "--log-level" "WARN" "serve" "--hostname" "127.0.0.1" "--port" "50174"
+2026-06-22T10:49:07.040620Z  INFO sidecar: opencode_lib::cli: Features: Bun.stderr(2) Bun.stdin(2) Bun.stdout(2) fetch jsc standalone_executable 
+2026-06-22T10:49:07.041219Z  INFO sidecar: opencode_lib::cli: Builtins: "bun:ffi" "bun:main" "bun:sqlite" "node:assert" "node:async_hooks" "node:buffer" "node:child_process" "node:console" "node:crypto" "node:events" "node:fs" "node:fs/promises" "node:http" "node:module" "node:net" "node:os" "node:path" "node:process" "node:readline" "node:stream" "node:stream/consumers" "node:stream/promises" "node:string_decoder" "node:timers/promises" "node:tty" "node:url" "node:util" "ws" "node:v8" 
+2026-06-22T10:49:07.042112Z  INFO sidecar: opencode_lib::cli: Elapsed: 1932ms | User: 796ms | Sys: 140ms
+2026-06-22T10:49:07.043471Z  INFO sidecar: opencode_lib::cli: RSS: 0.24GB | Peak: 0.24GB | Commit: 0.41GB | Faults: 61280 | Machine: 8.49GB
+2026-06-22T10:49:07.043506Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:49:07.043536Z  INFO sidecar: opencode_lib::cli: panic(thread 6880): Illegal instruction at address 0x7FF6333CBDF0
+2026-06-22T10:49:07.050540Z  INFO sidecar: opencode_lib::cli: oh no: Bun has crashed. This indicates a bug in Bun, not your code.
+2026-06-22T10:49:07.050575Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:49:07.050587Z  INFO sidecar: opencode_lib::cli: To send a redacted crash report to Bun's team,
+2026-06-22T10:49:07.050598Z  INFO sidecar: opencode_lib::cli: please file a GitHub issue using the link below:
+2026-06-22T10:49:07.050608Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:49:07.051928Z  INFO sidecar: opencode_lib::cli:  https://bun.report/1.3.13/ea1bf2e2ceEugogCg/+qvC672lvCsjmpvCy1xlvCwpvlvC28/twC+mwk1Ckqm+0C2mw60Cuh/40C20640Coxo50C240twCy36u0Cgp1r2CgtnyvCyh68iCms+u0DCYKERNEL32.DLLoh7FCSntdll.dllirzUA3s//Bg/+ynzB
+2026-06-22T10:49:07.051972Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:49:07.197326Z  INFO sidecar: opencode_lib::cli: Sidecar terminated code=Some(3) signal=None
+2026-06-22T10:49:07.197557Z ERROR opencode_lib: Sidecar health check failed: Sidecar terminated before becoming healthy (code=Some(3) signal=None)
+2026-06-22T10:49:07.197566Z  INFO opencode_lib: Loading task finished
+2026-06-22T10:49:07.197586Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-22T10:49:27.263035Z  INFO opencode_lib: Received Exit
+2026-06-22T10:49:27.263092Z  INFO opencode_lib: Killed server

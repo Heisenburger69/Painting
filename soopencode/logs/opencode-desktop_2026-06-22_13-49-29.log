@@ -1,0 +1,107 @@
+2026-06-22T10:49:29.195739Z  INFO opencode_lib: Initializing app
+2026-06-22T10:49:29.197299Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:50326
+2026-06-22T10:49:29.197313Z  INFO opencode_lib::cli: Spawning sidecar port=50326
+2026-06-22T10:49:29.223048Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-22T10:49:31.424281Z  INFO sidecar: opencode_lib::cli: opencode server listening on http://127.0.0.1:50326
+2026-06-22T10:49:31.500055Z  INFO opencode_lib::server: Server ready elapsed=2.2760774s
+2026-06-22T10:49:31.500086Z  INFO opencode_lib: Sidecar health check OK
+2026-06-22T10:49:31.500090Z  INFO opencode_lib: Loading task finished
+2026-06-22T10:49:31.500114Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-22T10:49:58.625831Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:49:58 +28062ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:49:58.625855Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:49:58.625861Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:49:58.625867Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:03.206699Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:03 +4581ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:03.206715Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:03.206721Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:03.206728Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:12.401894Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:12 +9195ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:12.401916Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:12.401922Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:12.401930Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:13.722989Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:13 +1321ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:13.723008Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:13.723014Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:13.723020Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:16.316703Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:16 +2594ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:16.316725Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:16.316733Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:16.316738Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:19.927092Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:19 +3603ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:19.927120Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:19.927127Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:19.927134Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:21.699611Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:21 +1780ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:21.699630Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:21.699637Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:21.699642Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:24.569389Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:24 +2870ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:24.569406Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:24.569412Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:24.569418Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:26.303717Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:26 +1734ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:26.303736Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:26.303745Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:26.303751Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:28.431128Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:28 +2127ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:28.431208Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:28.431233Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:28.431249Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:31.818230Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:31 +3386ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:31.818281Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:31.818287Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:31.818292Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:35.208734Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:35 +3389ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:35.208760Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:35.208773Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:35.208781Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:37.885609Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:37 +2680ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:37.885660Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:37.885669Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:37.885675Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:40.653961Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:40 +2768ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:40.653978Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:40.653982Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:40.653986Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:43.507941Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:43 +2854ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:43.507969Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:43.507976Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:43.507981Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:44.943615Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:44 +1435ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:44.943764Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:44.943773Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:44.943785Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:47.591506Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:47 +2649ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:47.591628Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:47.591636Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:47.591646Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:49.497849Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:49 +1906ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:49.497876Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:49.497886Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:49.497895Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:50.958141Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:50 +1461ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:50.958350Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:50.958369Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:50.958384Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:53.700463Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:53 +2742ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:53.700480Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:53.700487Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:53.700493Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:50:59.286428Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:50:59 +5586ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:50:59.286459Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:50:59.286467Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:50:59.286475Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:51:00.865610Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:51:00 +1579ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:51:00.865795Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:51:00.865803Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:51:00.865810Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:51:03.634077Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:51:03 +2768ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:51:03.634157Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:51:03.634169Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:51:03.634178Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:51:04.630605Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-22T10:51:04 +997ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\f5772269946dd8fd8499ae37bd183269144c6a90/index.lock': File exists.
+2026-06-22T10:51:04.630629Z  INFO sidecar: opencode_lib::cli: 
+2026-06-22T10:51:04.630640Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-22T10:51:04.630648Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-22T10:52:10.812797Z  INFO opencode_lib: Received Exit
+2026-06-22T10:52:10.812824Z  INFO opencode_lib: Killed server

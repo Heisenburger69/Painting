@@ -1,0 +1,19 @@
+2026-06-17T18:30:30.282975Z  INFO opencode_lib: Initializing app
+2026-06-17T18:30:30.286317Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:52211
+2026-06-17T18:30:30.286356Z  INFO opencode_lib::cli: Spawning sidecar port=52211
+2026-06-17T18:30:30.873007Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-17T18:30:34.612528Z  INFO sidecar: opencode_lib::cli: opencode server listening on http://127.0.0.1:52211
+2026-06-17T18:30:34.672217Z  INFO opencode_lib::server: Server ready elapsed=3.7946659s
+2026-06-17T18:30:34.672242Z  INFO opencode_lib: Sidecar health check OK
+2026-06-17T18:30:34.672247Z  INFO opencode_lib: Loading task finished
+2026-06-17T18:30:34.672261Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-17T18:30:42.471184Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-17T18:30:42 +8909ms service=server error=Session not found failed
+2026-06-17T18:30:43.145168Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-17T18:30:43 +675ms service=server error=NotFoundError failed
+2026-06-17T18:31:06.454576Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-17T18:31:06 +23309ms service=snapshot exitCode=128 stderr=fatal: Unable to create 'C:\Users\Joe\.local\share\opencode\snapshot\269a4bd37247cc6ed8f53d09935adf0a4d2b0029\0fa27d96e35c552fb5ba1f5918f56bb8e8115f4c/index.lock': File exists.
+2026-06-17T18:31:06.454597Z  INFO sidecar: opencode_lib::cli: 
+2026-06-17T18:31:06.454607Z  INFO sidecar: opencode_lib::cli: Another git process seems to be running in this repository, or the lock file may be stale
+2026-06-17T18:31:06.454616Z  INFO sidecar: opencode_lib::cli:  failed to add snapshot files
+2026-06-17T18:31:10.223326Z  INFO sidecar: opencode_lib::cli: WARN  2026-06-17T18:31:10 +3769ms service=share-next sessionID=ses_2355c05e6ffeqbILdH7HTT0aI1 shareID=7HTT0aI1 status=503 failed to sync share
+2026-06-17T18:31:10.778154Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-17T18:31:10 +555ms service=session.processor session.id=ses_2355c05e6ffeqbILdH7HTT0aI1 messageID=msg_ed6d9e896001xg825ZX7XHXsEg error=Aborted process
+2026-06-17T18:34:10.520348Z  INFO opencode_lib: Received Exit
+2026-06-17T18:34:10.520376Z  INFO opencode_lib: Killed server

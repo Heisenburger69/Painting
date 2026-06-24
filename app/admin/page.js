@@ -801,7 +801,7 @@ function OrdersManager({ setError, setSuccess }) {
   const [busy, setBusy] = useState(false)
   const [filter, setFilter] = useState('')
 
-  const STATUSES = ['pending', 'paid', 'still packaging', 'sent to shipping', 'completed', 'cancelled']
+  const STATUSES = ['paid', 'still packaging', 'sent to shipping', 'completed', 'cancelled']
 
   const load = async () => {
     try {
@@ -828,6 +828,20 @@ function OrdersManager({ setError, setSuccess }) {
     setBusy(false)
   }
 
+  const handleDelete = async (id) => {
+    if (!confirm('Remove this order?')) return
+    setBusy(true)
+    try {
+      const supabase = await getServiceSupabase()
+      await supabase.from('order_items').delete().eq('order_id', id)
+      const { error } = await supabase.from('orders').delete().eq('id', id)
+      if (error) throw error
+      setSuccess(`Order ${id.slice(0, 8)} removed`)
+      load()
+    } catch (e) { setError(e.message) }
+    setBusy(false)
+  }
+
   const filtered = filter ? items.filter((o) => o.status === filter) : items
 
   return (
@@ -845,23 +859,24 @@ function OrdersManager({ setError, setSuccess }) {
         <table>
           <thead>
             <tr>
-              <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Total</th><th>Artworks</th><th>Status</th><th>Date</th>
+              <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Total</th><th>Code</th><th>Artworks</th><th>Status</th><th>Date</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
-              <tr><td colSpan={9} style={{ padding: 20, textAlign: 'center', color: 'var(--slate-gray)', fontSize: 13 }}>No orders found</td></tr>
+              <tr><td colSpan={11} style={{ padding: 20, textAlign: 'center', color: 'var(--slate-gray)', fontSize: 13 }}>No orders found</td></tr>
             )}
             {filtered.map((o) => (
               <tr key={o.id}>
                 <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.id.slice(0, 8)}</td>
-                <td>{o.customer_name}</td>
+                <td>{o.buyer_name}</td>
                 <td>{o.buyer_email}</td>
-                <td>{o.customer_phone}</td>
+                <td>{o.shipping_address?.phone || '\u2014'}</td>
                 <td style={{ fontSize: 12 }}>
                   {[o.street_address, o.building_number, o.apartment_number, o.customer_city, o.customer_governorate].filter(Boolean).join(', ')}
                 </td>
                 <td>{o.total_items_cost ? `${o.total_items_cost} EGP` : '\u2014'}</td>
+                <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.verification_code || '\u2014'}</td>
                 <td style={{ fontSize: 12 }}>
                   {(o.order_items || []).map((oi) => oi.artworks?.title).filter(Boolean).join(', ') || '\u2014'}
                 </td>
@@ -873,6 +888,12 @@ function OrdersManager({ setError, setSuccess }) {
                 </td>
                 <td style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
                   {new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </td>
+                <td>
+                  <button onClick={() => handleDelete(o.id)} disabled={busy}
+                    style={{ padding: '4px 10px', border: 'none', borderRadius: 4, background: 'var(--caput-mortuum)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>
+                    Remove
+                  </button>
                 </td>
               </tr>
             ))}

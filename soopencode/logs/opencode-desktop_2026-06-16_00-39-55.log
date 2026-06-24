@@ -1,0 +1,10 @@
+2026-06-15T21:39:55.180411Z  INFO opencode_lib: Initializing app
+2026-06-15T21:39:55.182273Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:49662
+2026-06-15T21:39:55.182288Z  INFO opencode_lib::cli: Spawning sidecar port=49662
+2026-06-15T21:39:55.342271Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
+2026-06-15T21:39:58.361180Z  INFO sidecar: opencode_lib::cli: opencode server listening on http://127.0.0.1:49662
+2026-06-15T21:39:58.621001Z  INFO opencode_lib::server: Server ready elapsed=3.2771348s
+2026-06-15T21:39:58.621029Z  INFO opencode_lib: Sidecar health check OK
+2026-06-15T21:39:58.621034Z  INFO opencode_lib: Loading task finished
+2026-06-15T21:39:58.621050Z  INFO opencode_lib: Loading done, completing initialisation
+2026-06-15T21:40:07.604633Z  INFO sidecar: opencode_lib::cli: ERROR 2026-06-15T21:40:07 +10043ms service=server error=EUNKNOWN: unknown error, uv_spawn failed

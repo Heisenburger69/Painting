@@ -1,0 +1,4 @@
+2026/06/22-14:22:44.160 2e48 Reusing MANIFEST C:\Users\Joe\AppData\Roaming\OpenCode\EBWebView\Default\Site Characteristics Database/MANIFEST-000001
+2026/06/22-14:22:44.163 2e48 Recovering log #3
+2026/06/22-14:22:44.163 2e48 (ignoring error) C:\Users\Joe\AppData\Roaming\OpenCode\EBWebView\Default\Site Characteristics Database/000003.log: dropping 2407 bytes; Corruption: checksum mismatch
+2026/06/22-14:22:44.164 2e48 Reusing old log C:\Users\Joe\AppData\Roaming\OpenCode\EBWebView\Default\Site Characteristics Database/000003.log 

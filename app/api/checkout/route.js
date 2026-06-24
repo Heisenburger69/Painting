@@ -16,45 +16,21 @@ export async function POST(req) {
     }
 
     const { totalShipping, billableWeight } = calculateFedExShipping(cart, customerInfo.governorate);
-
     const itemsTotal = cart.reduce((acc, item) => acc + Number(item.price), 0);
-    const finalTotalAmount = itemsTotal + totalShipping;
-    const totalAmountCents = Math.round(finalTotalAmount * 100);
 
-    const { data: order, error: orderErr } = await supabase
-      .from('orders')
+    const { data: pending, error: pendingErr } = await supabase
+      .from('pending_checkouts')
       .insert({
-        buyer_name: customerInfo.name,
-        buyer_email: customerInfo.email,
-        shipping_address: {
-          governorate: customerInfo.governorate,
-          city: customerInfo.city,
-          street: customerInfo.street,
-          building: customerInfo.building,
-          apartment: customerInfo.apartment,
-          phone: customerInfo.phone,
-        },
-        customer_governorate: customerInfo.governorate,
-        customer_city: customerInfo.city,
-        street_address: customerInfo.street,
-        building_number: customerInfo.building,
-        apartment_number: customerInfo.apartment,
-        shipping_cost: totalShipping,
-        subtotal: itemsTotal,
+        cart_items: cart,
+        customer_info: customerInfo,
         total_items_cost: itemsTotal,
-        total: finalTotalAmount,
-        calculated_weight: billableWeight,
-        currency: 'EGP',
-        status: 'pending',
+        shipping_cost: totalShipping,
+        billable_weight: billableWeight,
       })
       .select()
       .single();
 
-    if (orderErr) throw orderErr;
-
-    await supabase.from('order_items').insert(
-      cart.map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price }))
-    );
+    if (pendingErr) throw pendingErr;
 
     const nameParts = (customerInfo.name || '').trim().split(' ');
     const billingData = {
@@ -71,6 +47,9 @@ export async function POST(req) {
       apartment: customerInfo.apartment || '1',
       postal_code: 'NA',
     };
+
+    const finalTotalAmount = itemsTotal + totalShipping;
+    const totalAmountCents = Math.round(finalTotalAmount * 100);
 
     const intentionRes = await fetch('https://accept.paymob.com/v1/intention/', {
       method: 'POST',
@@ -101,8 +80,8 @@ export async function POST(req) {
           email: billingData.email,
           phone_number: billingData.phone_number,
         },
-        merchant_order_id: String(order.id),
-        redirection_url: `${req.nextUrl.origin}/checkout/success?order_id=${order.id}`
+        merchant_order_id: String(pending.id),
+        redirection_url: `${req.nextUrl.origin}/checkout/success?checkout_id=${pending.id}`
       }),
     });
 
@@ -115,9 +94,9 @@ export async function POST(req) {
     const { id: intentionId, client_secret: clientSecret } = intentionData;
 
     await supabase
-      .from('orders')
-      .update({ paymob_order_id: intentionId, paymob_client_secret: clientSecret })
-      .eq('id', order.id);
+      .from('pending_checkouts')
+      .update({ paymob_intention_id: intentionId })
+      .eq('id', pending.id);
 
     const checkoutUrl = `https://accept.paymob.com/unifiedcheckout/?publicKey=${PAYMOB_PUBLIC_KEY}&clientSecret=${clientSecret}`;
     return NextResponse.json({ success: true, redirectUrl: checkoutUrl });
