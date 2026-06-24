@@ -7,6 +7,7 @@ import Link from 'next/link';
 function SuccessContent() {
   const searchParams = useSearchParams();
   const checkoutId = searchParams.get('checkout_id');
+  const success = searchParams.get('success');
   const [status, setStatus] = useState('verifying');
   const [code, setCode] = useState('');
 
@@ -18,25 +19,47 @@ function SuccessContent() {
 
     let cancelled = false;
 
-    const poll = async () => {
+    const tryConfirm = async () => {
       try {
-        const res = await fetch(`/api/lookup-order?checkout_id=${checkoutId}`);
+        const res = await fetch(`/api/confirm-checkout?checkout_id=${checkoutId}&success=true`);
         const data = await res.json();
-        if (!cancelled && data.found && data.order) {
+        if (!cancelled && data.confirmed && data.order) {
           setCode(data.order.verification_code || '');
           setStatus('confirmed');
-          return;
+          return true;
         }
       } catch {}
-
-      if (!cancelled) {
-        setTimeout(poll, 2000);
-      }
+      return false;
     };
 
-    poll();
+    const init = async () => {
+      if (success === 'true') {
+        const done = await tryConfirm();
+        if (done || cancelled) return;
+      }
+
+      const poll = async () => {
+        try {
+          const res = await fetch(`/api/lookup-order?checkout_id=${checkoutId}`);
+          const data = await res.json();
+          if (!cancelled && data.found && data.order) {
+            setCode(data.order.verification_code || '');
+            setStatus('confirmed');
+            return;
+          }
+        } catch {}
+
+        if (!cancelled) {
+          setTimeout(poll, 2000);
+        }
+      };
+
+      poll();
+    };
+
+    init();
     return () => { cancelled = true; };
-  }, [checkoutId]);
+  }, [checkoutId, success]);
 
   if (status === 'verifying') {
     return (

@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
-import crypto from 'crypto';
 
 function generateVerificationCode(length = 8) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -11,44 +10,38 @@ function generateVerificationCode(length = 8) {
   return code;
 }
 
-export async function POST(req) {
+export async function GET(req) {
   try {
-    const rawBody = await req.text();
-    const body = JSON.parse(rawBody);
+    const { searchParams } = new URL(req.url);
+    const checkoutId = searchParams.get('checkout_id');
+    const success = searchParams.get('success');
+
+    if (!checkoutId || success !== 'true') {
+      return NextResponse.json({ confirmed: false, error: 'Invalid params' }, { status: 400 });
+    }
+
     const supabase = getServiceSupabase();
-    if (!supabase) return NextResponse.json({ error: 'Database instance missing' }, { status: 500 });
+    if (!supabase) return NextResponse.json({ error: 'Database not configured' }, { status: 500 });
 
-    const hmacSecret = process.env.PAYMOB_HMAC_SECRET;
-    if (hmacSecret) {
-      const calculatedHmac = crypto.createHmac('sha512', hmacSecret).update(rawBody).digest('hex');
-      const receivedHmac = body.hmac;
-      if (!receivedHmac || calculatedHmac !== receivedHmac) {
-        console.error('HMAC verification failed');
-        return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-      }
-    }
+    const existing = await supabase
+      .from('orders')
+      .select('id, verification_code, status')
+      .eq('pending_checkout_id', checkoutId)
+      .maybeSingle();
 
-    const transactionObj = body.obj || body;
-    const isSuccess = transactionObj.success === true || transactionObj.success === "true";
-    const merchantOrderId = transactionObj.merchant_order_id || transactionObj.order?.merchant_order_id || transactionObj.special_reference;
-
-    if (!merchantOrderId) {
-      return NextResponse.json({ received: true, message: 'No merchant order tied' });
-    }
-
-    if (!isSuccess) {
-      return NextResponse.json({ received: true, message: 'Transaction not successful' });
+    if (existing.data) {
+      return NextResponse.json({ confirmed: true, order: existing.data });
     }
 
     const { data: pending, error: pendingErr } = await supabase
       .from('pending_checkouts')
       .select('*')
-      .eq('id', merchantOrderId)
+      .eq('id', checkoutId)
       .maybeSingle();
 
     if (pendingErr) throw pendingErr;
     if (!pending) {
-      return NextResponse.json({ received: true, message: 'Pending checkout already processed or not found' });
+      return NextResponse.json({ confirmed: false, error: 'Pending checkout not found' }, { status: 404 });
     }
 
     const verificationCode = generateVerificationCode();
@@ -117,11 +110,10 @@ export async function POST(req) {
 
     await supabase.from('pending_checkouts').delete().eq('id', pending.id);
 
-    console.log(`Order ${order.id} created from webhook, verification code: ${verificationCode}`);
+    return NextResponse.json({ confirmed: true, order: { id: order.id, verification_code: verificationCode, status: 'paid' } });
 
-    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Webhook payload parsing error:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Confirm checkout error:', error.message);
+    return NextResponse.json({ confirmed: false, error: error.message }, { status: 500 });
   }
 }
