@@ -111,7 +111,7 @@ export async function GET(req) {
 
     await supabase.from('pending_checkouts').delete().eq('id', pending.id);
 
-    sendOrderConfirmation({
+    await sendOrderConfirmation({
       orderId: order.id,
       customerInfo,
       cartItems: pending.cart_items || [],

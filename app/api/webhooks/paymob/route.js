@@ -120,7 +120,7 @@ export async function POST(req) {
 
     console.log(`Order ${order.id} created from webhook, verification code: ${verificationCode}`);
 
-    sendOrderConfirmation({
+    await sendOrderConfirmation({
       orderId: order.id,
       customerInfo,
       cartItems: pending.cart_items || [],
