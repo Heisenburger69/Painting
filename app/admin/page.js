@@ -819,9 +819,13 @@ function OrdersManager({ setError, setSuccess }) {
   const updateStatus = async (id, status) => {
     setBusy(true)
     try {
-      const supabase = await getServiceSupabase()
-      const { error } = await supabase.from('orders').update({ status }).eq('id', id)
-      if (error) throw error
+      const res = await fetch('/api/admin/orders/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: id, status }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Update failed')
       setSuccess(`Order ${id.slice(0, 8)} → ${status}`)
       load()
     } catch (e) { setError(e.message) }
