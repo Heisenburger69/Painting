@@ -82,7 +82,7 @@ function SuccessContent() {
         {orderId && (
           <div style={{ margin: '24px 0', padding: 16, background: 'var(--bg-cream)', borderRadius: 8 }}>
             <p style={{ fontSize: 13, color: 'var(--slate-gray)', marginBottom: 4 }}>Order ID</p>
-            <p style={{ fontSize: 28, fontWeight: 700, letterSpacing: 4, fontFamily: 'monospace' }}>{orderId}</p>
+            <p style={{ fontSize: 28, fontWeight: 700, letterSpacing: 6, fontFamily: 'monospace' }}>{orderId.slice(0, 8).toUpperCase()}</p>
           </div>
         )}
         <Link href="/" className="btn btn-primary">

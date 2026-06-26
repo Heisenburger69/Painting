@@ -67,14 +67,19 @@ export async function POST(req) {
         currency: 'EGP',
         payment_methods: [5723260, 5723390],
         items: [
-          ...cart.map((i) => ({
-            name: String(i.title || i.medium || '').trim() || 'Artwork',
-            description: String(i.medium || '').trim() || undefined,
-            amount: Math.round(Number(i.price) * 100),
-            quantity: 1,
-          })),
+          ...cart.map((i) => {
+            const name = String(i.title || '').trim() || 'Artwork';
+            const details = [i.medium, i.size_full || i.size].filter(Boolean).join(' — ');
+            return {
+              name,
+              description: details || undefined,
+              amount: Math.round(Number(i.price) * 100),
+              quantity: 1,
+            };
+          }),
           ...(totalShipping > 0 ? [{
             name: 'Shipping Fee',
+            description: `FedEx delivery to ${customerInfo.governorate}`,
             amount: Math.round(totalShipping * 100),
             quantity: 1,
           }] : [])

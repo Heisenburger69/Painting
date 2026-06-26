@@ -808,7 +808,7 @@ function OrdersManager({ setError, setSuccess }) {
       const supabase = await getServiceSupabase()
       const { data, error } = await supabase
         .from('orders')
-        .select('*, order_items(*, artworks(title))')
+        .select('*, order_items(*, artworks(id, title, artwork_images(id, url, is_primary)))')
         .order('created_at', { ascending: false })
       if (error) throw error
       setItems(data || [])
@@ -859,48 +859,54 @@ function OrdersManager({ setError, setSuccess }) {
         <span style={{ fontSize: 12, color: 'var(--slate-gray)', marginLeft: 8 }}>{filtered.length} orders</span>
       </div>
 
-      <div className="admin-table-wrap">
+      <div className="admin-table-wrap orders-table">
         <table>
           <thead>
             <tr>
-              <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Total</th><th>Code</th><th>Artworks</th><th>Status</th><th>Date</th><th>Actions</th>
+              <th>ID</th><th></th><th>Name</th><th>Email</th><th>Phone</th><th>Address</th><th>Total</th><th>Artworks</th><th>Status</th><th>Date</th><th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 && (
               <tr><td colSpan={11} style={{ padding: 20, textAlign: 'center', color: 'var(--slate-gray)', fontSize: 13 }}>No orders found</td></tr>
             )}
-            {filtered.map((o) => (
+            {filtered.map((o) => {
+              const firstImg = o.order_items?.[0]?.artworks?.artwork_images?.[0]?.url
+              return (
               <tr key={o.id}>
-                <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.id.slice(0, 8)}</td>
-                <td>{o.buyer_name}</td>
-                <td>{o.buyer_email}</td>
-                <td>{o.shipping_address?.phone || '\u2014'}</td>
-                <td style={{ fontSize: 12 }}>
+                <td data-label="ID" data-mobile-col="1" style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.id.slice(0, 8)}</td>
+                <td data-mobile-span="full" style={{ width: 44, padding: '6px 8px' }}>
+                  {firstImg ? (
+                    <img src={firstImg} alt="" className="order-thumb" style={{ width: 36, height: 36, borderRadius: 4, objectFit: 'cover', display: 'block' }} />
+                  ) : null}
+                </td>
+                <td data-label="Name" data-mobile-span="full">{o.buyer_name}</td>
+                <td data-label="Email" data-mobile-span="full">{o.buyer_email}</td>
+                <td data-label="Phone" data-mobile-col="2">{o.shipping_address?.phone || '\u2014'}</td>
+                <td data-label="Address" data-mobile-span="full" style={{ fontSize: 12 }}>
                   {[o.street_address, o.building_number, o.apartment_number, o.customer_city, o.customer_governorate].filter(Boolean).join(', ')}
                 </td>
-                <td>{o.total_items_cost ? `${o.total_items_cost} EGP` : '\u2014'}</td>
-                <td style={{ fontSize: 11, fontFamily: 'monospace' }}>{o.verification_code || '\u2014'}</td>
-                <td style={{ fontSize: 12 }}>
+                <td data-label="Total" data-mobile-col="1">{o.total_items_cost ? `${o.total_items_cost} EGP` : '\u2014'}</td>
+                <td data-label="Artworks" data-mobile-span="full" style={{ fontSize: 12 }}>
                   {(o.order_items || []).map((oi) => oi.artworks?.title).filter(Boolean).join(', ') || '\u2014'}
                 </td>
-                <td>
+                <td data-mobile-col="2">
                   <select value={o.status} onChange={(e) => updateStatus(o.id, e.target.value)} disabled={busy}
                     style={{ padding: '4px 6px', borderRadius: 4, border: '1px solid var(--border)', fontSize: 12, background: '#fff', cursor: 'pointer' }}>
                     {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </td>
-                <td style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
+                <td data-mobile-span="full" style={{ fontSize: 12, whiteSpace: 'nowrap' }}>
                   {new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                 </td>
-                <td>
+                <td data-mobile-col="1">
                   <button onClick={() => handleDelete(o.id)} disabled={busy}
                     style={{ padding: '4px 10px', border: 'none', borderRadius: 4, background: 'var(--caput-mortuum)', color: '#fff', fontSize: 12, cursor: 'pointer' }}>
                     Remove
                   </button>
                 </td>
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>

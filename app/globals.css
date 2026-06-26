@@ -1982,3 +1982,58 @@ p { color: var(--space-cadet); line-height: 1.8; }
     .contact-item .contact-value { font-size: 12px; }
     .btn-square { width: 44px; height: 44px; }
 }
+
+/* ── Orders table responsive: cards on mobile ── */
+@media (max-width: 767px) {
+    .orders-table table,
+    .orders-table tbody,
+    .orders-table tr {
+        display: block;
+    }
+
+    .orders-table thead { display: none; }
+    .orders-table table { min-width: 0; }
+
+    .orders-table tbody tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4px 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        background: #fff;
+        font-size: 12px;
+    }
+
+    .orders-table td {
+        display: block;
+        padding: 2px 0 !important;
+        border: none !important;
+        white-space: normal !important;
+        grid-column: span 2;
+    }
+
+    .orders-table td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--slate-gray);
+        margin-bottom: 1px;
+    }
+
+    .orders-table td[data-mobile-col="1"] { grid-column: 1; }
+    .orders-table td[data-mobile-col="2"] { grid-column: 2; }
+
+    .orders-table td[data-mobile-span="full"] { grid-column: span 2; }
+
+    .orders-table .order-thumb {
+        width: 36px !important;
+        height: 36px !important;
+        border-radius: 4px;
+        object-fit: cover;
+        vertical-align: middle;
+    }
+}
