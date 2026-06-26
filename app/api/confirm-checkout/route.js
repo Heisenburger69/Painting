@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
+import { sendOrderConfirmation } from '@/lib/email/send-order-confirmation';
 
 function generateVerificationCode(length = 8) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -109,6 +110,17 @@ export async function GET(req) {
     }
 
     await supabase.from('pending_checkouts').delete().eq('id', pending.id);
+
+    sendOrderConfirmation({
+      orderId: order.id,
+      customerInfo,
+      cartItems: pending.cart_items || [],
+      totals: {
+        subtotal: pending.total_items_cost,
+        shipping: pending.shipping_cost,
+        total: Number(pending.total_items_cost) + Number(pending.shipping_cost),
+      },
+    });
 
     return NextResponse.json({ confirmed: true, order: { id: order.id, verification_code: verificationCode, status: 'paid' } });
 

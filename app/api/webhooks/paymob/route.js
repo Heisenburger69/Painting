@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServiceSupabase } from '@/lib/supabase';
 import crypto from 'crypto';
+import { sendOrderConfirmation } from '@/lib/email/send-order-confirmation';
 
 function generateVerificationCode(length = 8) {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -118,6 +119,17 @@ export async function POST(req) {
     await supabase.from('pending_checkouts').delete().eq('id', pending.id);
 
     console.log(`Order ${order.id} created from webhook, verification code: ${verificationCode}`);
+
+    sendOrderConfirmation({
+      orderId: order.id,
+      customerInfo,
+      cartItems: pending.cart_items || [],
+      totals: {
+        subtotal: pending.total_items_cost,
+        shipping: pending.shipping_cost,
+        total: Number(pending.total_items_cost) + Number(pending.shipping_cost),
+      },
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

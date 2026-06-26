@@ -9,7 +9,7 @@ function SuccessContent() {
   const checkoutId = searchParams.get('checkout_id');
   const success = searchParams.get('success');
   const [status, setStatus] = useState('verifying');
-  const [code, setCode] = useState('');
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     if (!checkoutId) {
@@ -24,7 +24,7 @@ function SuccessContent() {
         const res = await fetch(`/api/confirm-checkout?checkout_id=${checkoutId}&success=true`);
         const data = await res.json();
         if (!cancelled && data.confirmed && data.order) {
-          setCode(data.order.verification_code || '');
+          setOrderId(data.order.id || '');
           setStatus('confirmed');
           return true;
         }
@@ -43,7 +43,7 @@ function SuccessContent() {
           const res = await fetch(`/api/lookup-order?checkout_id=${checkoutId}`);
           const data = await res.json();
           if (!cancelled && data.found && data.order) {
-            setCode(data.order.verification_code || '');
+            setOrderId(data.order.id || '');
             setStatus('confirmed');
             return;
           }
@@ -77,18 +77,13 @@ function SuccessContent() {
         <div style={{ fontSize: 48, marginBottom: 16 }}>&#10003;</div>
         <h1 style={{ marginBottom: 12 }}>Payment Successful!</h1>
         <p style={{ color: 'var(--slate-gray)', marginBottom: 8 }}>
-          Thank you for your purchase.
+          Thank you for your purchase. A confirmation email with your order details has been sent to your inbox.
         </p>
-        {code && (
+        {orderId && (
           <div style={{ margin: '24px 0', padding: 16, background: 'var(--bg-cream)', borderRadius: 8 }}>
-            <p style={{ fontSize: 13, color: 'var(--slate-gray)', marginBottom: 4 }}>Your verification code</p>
-            <p style={{ fontSize: 28, fontWeight: 700, letterSpacing: 4, fontFamily: 'monospace' }}>{code}</p>
+            <p style={{ fontSize: 13, color: 'var(--slate-gray)', marginBottom: 4 }}>Order ID</p>
+            <p style={{ fontSize: 28, fontWeight: 700, letterSpacing: 4, fontFamily: 'monospace' }}>{orderId}</p>
           </div>
-        )}
-        {checkoutId && (
-          <p style={{ fontSize: 13, color: 'var(--slate-gray)', marginBottom: 24 }}>
-            Order reference: <strong>{checkoutId.slice(0, 8)}</strong>
-          </p>
         )}
         <Link href="/" className="btn btn-primary">
           Back to Gallery
