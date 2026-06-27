@@ -97,11 +97,20 @@ export async function GET(req) {
       throw orderErr;
     }
 
-    await supabase.from('order_items').insert(
-      (pending.cart_items || []).map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price }))
-    );
+    const cartItems = typeof pending.cart_items === 'string' ? JSON.parse(pending.cart_items) : (pending.cart_items || [])
+    if (cartItems.length > 0) {
+      const rows = cartItems.map((item) => ({ order_id: order.id, artwork_id: item.id, price: item.price, title: item.title || item.name || 'Untitled' }))
+      const { error: oiErr } = await supabase.from('order_items').insert(rows)
+      if (oiErr) {
+        console.error('order_items insert failed:', oiErr.message, 'rows:', JSON.stringify(rows))
+        throw oiErr
+      }
+      console.log('order_items inserted:', rows.length, 'rows')
+    } else {
+      console.error('WARNING: cartItems is empty for order', order.id, 'pending id:', pending.id, 'cart_items raw:', JSON.stringify(pending.cart_items))
+    }
 
-    const artworkIds = (pending.cart_items || []).map(item => item.id).filter(Boolean);
+    const artworkIds = cartItems.map(item => item.id).filter(Boolean);
     if (artworkIds.length > 0) {
       await supabase
         .from('artworks')
@@ -114,7 +123,7 @@ export async function GET(req) {
     await sendOrderConfirmation({
       orderId: order.id,
       customerInfo,
-      cartItems: pending.cart_items || [],
+      cartItems,
       totals: {
         subtotal: pending.total_items_cost,
         shipping: pending.shipping_cost,
