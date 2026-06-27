@@ -4,166 +4,203 @@
 ### ./
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| e7edabb2-9094-4e46-a41c-ba5cf4f1b573 | ✅ change | Commit: final Paymob fixes — notification_url, special_reference, merchant_order_id paths | 2026-06-24 |
-| 5a3e7a6c-ed37-4069-a904-d1107e965496 | ✅ change | Two code files modified: checkout route and webhook route | 2026-06-24 |
-| 1653f157-a42d-4a01-87fb-94ce213cc10d | ✅ change | Commit: sanitize Paymob items name, add description and empty-cart guard | 2026-06-24 |
+| b53e13f5-1070-4885-8817-75fe5004ca40 | 🔵 discovery | Example env file: Supabase, Paymob, Resend template | 2026-06-27 |
+| 2af83ee4-4a82-440b-b5f8-ecb52eceedd6 | 🔵 discovery | Environment config: Supabase, Paymob, and admin email | 2026-06-27 |
+| fe1e7a72-9d75-4caa-bbf6-b5c43afc12b7 | 🔵 discovery | Two .env.local files: main config and example | 2026-06-27 |
+| 437f66f9-af78-4ac5-b61b-97efbe06545e | ✅ change | Orders status migration: drops and recreates check constraint | 2026-06-27 |
+| 186453b2-23f8-459b-9a2b-de8a24f0db20 | 🔵 discovery | order_items table: FK to orders with CASCADE, FK to artworks without CASCADE | 2026-06-27 |
+| be071258-a7dc-4dd7-8a92-32b567b88754 | 🔵 discovery | Project is Next.js 16 + Supabase + Resend | 2026-06-27 |
+| 2a6d3539-147e-4e78-bd53-63d8bdf82ddd | 🔵 discovery | Supabase schema: 7 tables, RLS disabled, FK fix for artist_profile | 2026-06-27 |
+| d39ba035-cef6-4508-9266-a1810384dc3d | 🔵 discovery | Three SQL schema files: main schema, collections, FK fix | 2026-06-27 |
+| e5068058-52c0-422c-97e7-a6d87e0712a3 | 🔵 discovery | Orders status migration file at project root | 2026-06-27 |
+| 60473497-abbd-430f-81fd-92b93cd07bec | 🔵 discovery | Supabase schema file at project root | 2026-06-27 |
 
-**Key concepts:** what-changed
-
-### .opencode/
-| ID | Type | Title | Date |
-|----|------|-------|------|
-| 1653f157-a42d-4a01-87fb-94ce213cc10d | ✅ change | Commit: sanitize Paymob items name, add description and empty-cart guard | 2026-06-24 |
-
-**Key concepts:** what-changed
+**Key concepts:** pattern, what-changed, gotcha, how-it-works
 
 ### app/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| eed5c9fa-5f3b-4896-907c-25b662b78442 | 🔵 discovery | Checkout directory contains page.js and success subdirectory | 2026-06-24 |
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 8b443430-b3ed-49a3-9281-e20603b33212 | ✅ change | Global CSS chip styles for desktop artworks column | 2026-06-27 |
+| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
+| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
 
-**Key concepts:** pattern
+**Key concepts:** what-changed, pattern, refactor, how-it-works
 
 ### app/admin/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| a202604d-3710-45aa-ba77-3ecfcec6ca51 | ✅ change | Admin OrdersManager: removed 'pending' status, added Code column, delete orders, field renames | 2026-06-24 |
-| d74534af-d32e-44c7-9c5c-0f53c61bb6bf | ✅ change | Three files modified: admin page, checkout API, shipping lib | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 4bc82455-d54b-4af9-9ad2-4a00b7825596 | 🔵 discovery | Order item chip fallback: 'Artwork' when artwork data missing | 2026-06-27 |
+| adcd0df7-9bd4-485f-a9d8-d95c35b67ee5 | 🔵 discovery | OrdersManager current state: two-step fetch, merged chip layout, 10 columns | 2026-06-27 |
+| 39ffacff-babb-4dcb-961a-ee9436e40ffa | 🔵 discovery | OrdersManager load: two-step fetch pattern (orders then artworks) | 2026-06-27 |
+| 62433ec6-e99a-43a3-b030-e046e7f703f1 | 🔄 refactor | Desktop orders table: artworks column displays chips with images | 2026-06-27 |
+| 555bd95e-3d7c-476c-a3a7-e2d9586d7870 | 🔵 discovery | OrdersManager fetches full artworks data unnecessarily | 2026-06-27 |
+| 14d5ccfe-d5c4-4e80-9f34-7cc842af1cd9 | 🔵 discovery | artwork_images insert duplicated: admin page and API route | 2026-06-27 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
+| 268386b5-1807-436b-ba03-048b43bc5c43 | ✅ change | OrdersManager desktop table: image column removed | 2026-06-27 |
 
-**Key concepts:** what-changed, how-it-works
+**Key concepts:** what-changed, pattern, how-it-works, gotcha, refactor
+
+### app/admin/login/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
+
+**Key concepts:** pattern, how-it-works
+
+### app/admin/orders/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 4bc82455-d54b-4af9-9ad2-4a00b7825596 | 🔵 discovery | Order item chip fallback: 'Artwork' when artwork data missing | 2026-06-27 |
+| 001e353b-e6c9-43e9-b18d-bdf98941c06c | 🔴 bugfix | Orders page load reverted to two-step fetch pattern | 2026-06-27 |
+| a6837027-b2f3-4f96-a4fa-89b71504909e | 🔴 bugfix | Orders page query regressed to full artworks(*) select | 2026-06-27 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
+| 118ee3d1-6fd3-47e6-9f52-d069721d8519 | ✅ change | Dedicated orders page: image column removed, 9 columns | 2026-06-27 |
+| e95d1dd4-5745-44f6-8557-c206e34278cf | 🔵 discovery | Dedicated orders page: 147 lines, 10 columns, no delete | 2026-06-27 |
+| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
+
+**Key concepts:** what-changed, pattern, gotcha, how-it-works, refactor
 
 ### app/api/admin/artworks/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
 
-**Key concepts:** how-it-works
+**Key concepts:** pattern, how-it-works
 
-### app/api/admin/artworks/[id]/
+### app/api/admin/collections/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
 
-**Key concepts:** how-it-works
+**Key concepts:** pattern, how-it-works
+
+### app/api/admin/collections/[id]/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+
+**Key concepts:** pattern, how-it-works
+
+### app/api/admin/orders/data/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 0d25d88a-8502-4b2f-9be4-24b0cc903c77 | 🔵 discovery | Admin orders data API: three-step server-side fetch with merge | 2026-06-27 |
+| 84417621-0086-42cd-bae8-428ff56ad08a | 🔵 discovery | Admin orders data API: three-step server-side fetch with merge | 2026-06-27 |
+
+**Key concepts:** pattern, how-it-works
+
+### app/api/admin/upload/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 14d5ccfe-d5c4-4e80-9f34-7cc842af1cd9 | 🔵 discovery | artwork_images insert duplicated: admin page and API route | 2026-06-27 |
+| e2d36992-e4e1-484d-be05-7c276a0486ee | 🔵 discovery | Admin upload API: single route handles POST/DELETE/PUT for artwork images | 2026-06-27 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+
+**Key concepts:** pattern, gotcha, how-it-works
 
 ### app/api/checkout/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| e7edabb2-9094-4e46-a41c-ba5cf4f1b573 | ✅ change | Commit: final Paymob fixes — notification_url, special_reference, merchant_order_id paths | 2026-06-24 |
-| 5a3e7a6c-ed37-4069-a904-d1107e965496 | ✅ change | Two code files modified: checkout route and webhook route | 2026-06-24 |
-| 2c1c30bb-6f36-49af-a519-cb1e3c8ad50e | ✅ change | All three Paymob fixes completed; push to remote in progress | 2026-06-24 |
-| e7fa163f-7021-44e6-8421-c13489e095d4 | ✅ change | notification_url and special_reference added to Paymob intention request | 2026-06-24 |
-| 3402ba36-8648-4a37-8462-23a5a2ccff85 | ✅ change | notification_url and special_reference added to Paymob intention; webhook fix in progress | 2026-06-24 |
-| f7bd27f8-c9b1-4f9c-b8a8-29382483c389 | 🔵 discovery | Checkout intention request missing notification_url and special_reference | 2026-06-24 |
-| 1653f157-a42d-4a01-87fb-94ce213cc10d | ✅ change | Commit: sanitize Paymob items name, add description and empty-cart guard | 2026-06-24 |
-| 1e2cb530-49e1-40ae-92a7-55455af8b49e | ✅ change | Checkout route.js updated: item name formatting, added description, empty cart guard | 2026-06-24 |
-| d07cd1bf-7d62-4bdd-9f56-6ae0cadb4b1a | 🔵 discovery | Checkout route.js partial re-read — imports, env vars, shipping calc, items total | 2026-06-24 |
-| a731ab07-5769-4703-8829-644c7e842a2e | 🔵 discovery | Paymob request body: items array with cart + shipping, EGP amounts in cents | 2026-06-24 |
+| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
+| 80b0a247-494c-4cb1-9526-74382993a23e | 🔵 discovery | Checkout route: create pending, initiate Paymob payment | 2026-06-27 |
+| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
 
-**Key concepts:** what-changed, problem-solution, gotcha, pattern, how-it-works
+**Key concepts:** pattern, how-it-works, gotcha
+
+### app/api/confirm-checkout/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 1c0d0f16-1f96-4e2c-8882-92e4275e17e3 | ✅ change | Confirm-checkout route: verbose logging added to match webhook | 2026-06-27 |
+| e70d2ef4-aa4b-4023-832a-ae33bd79a67e | ✅ change | Confirm-checkout route updated with JSON-stringify cart_items handling | 2026-06-27 |
+| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
+| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
+| d1696596-5251-4926-8160-ac7fcc360459 | 🔵 discovery | Confirm-checkout: full order creation with schema fallback | 2026-06-27 |
+| 2979ecbc-7f45-427a-b0fa-beb40f57cc72 | 🔵 discovery | Checkout flow: create order, mark artworks sold, send confirmation | 2026-06-27 |
+
+**Key concepts:** what-changed, pattern, gotcha, how-it-works
 
 ### app/api/home/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 1315bd31-6b26-4059-9a47-908017731add | 🔵 discovery | Home API route re-read confirms no changes from prior observation | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
 
 **Key concepts:** pattern, how-it-works
 
 ### app/api/lookup-order/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 8cb0df72-d737-46d6-bffa-e2c163ec6403 | 🟣 feature | Lookup-order endpoint: bridges success page polling to webhook order creation | 2026-06-24 |
-| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
+| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
 
-**Key concepts:** how-it-works, problem-solution, what-changed
+**Key concepts:** pattern, gotcha
 
-### app/api/paintings/[id]/
+### app/api/paintings/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| b51cda16-d9d2-48d1-b702-c4a1ef216d12 | 🔵 discovery | Paintings API: simple artworks endpoint with artwork_images join | 2026-06-27 |
+| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
 
-**Key concepts:** how-it-works
+**Key concepts:** pattern, how-it-works
 
 ### app/api/paymob-webhook/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| e61eb51f-88ba-4412-9379-6e152d92185f | 🔵 discovery | paymob-webhook route: legacy/alternate webhook reading intention extras | 2026-06-24 |
-| 956f14db-5e3e-4081-b20e-534772d26ffb | 🔵 discovery | Paymob payment gateway integration with dual webhook routes | 2026-06-24 |
+| 50bf2ef2-ec09-4cdf-835d-7f4f12a2acdf | 🔵 discovery | Legacy paymob-webhook: minimal status update only | 2026-06-27 |
 
-**Key concepts:** gotcha, pattern, how-it-works
+**Key concepts:** how-it-works, pattern
 
 ### app/api/webhooks/paymob/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| e7edabb2-9094-4e46-a41c-ba5cf4f1b573 | ✅ change | Commit: final Paymob fixes — notification_url, special_reference, merchant_order_id paths | 2026-06-24 |
-| 5a3e7a6c-ed37-4069-a904-d1107e965496 | ✅ change | Two code files modified: checkout route and webhook route | 2026-06-24 |
-| 2c1c30bb-6f36-49af-a519-cb1e3c8ad50e | ✅ change | All three Paymob fixes completed; push to remote in progress | 2026-06-24 |
-| 5813d4e7-ac28-4561-951f-ac897f367117 | ✅ change | Webhook merchant_order_id extraction: 3 fallback paths added | 2026-06-24 |
-| 79d6a097-3d58-4a07-bc75-a0f708f29f83 | 🔵 discovery | Paymob webhook route re-read confirms no changes | 2026-06-24 |
-| 0c85df9e-4a0b-4383-9fa9-9a04cff935d5 | 🟣 feature | Paymob webhook: HMAC verification, pending_checkout → order, verification code, sold mark | 2026-06-24 |
-| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
-| 956f14db-5e3e-4081-b20e-534772d26ffb | 🔵 discovery | Paymob payment gateway integration with dual webhook routes | 2026-06-24 |
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 2e50b72c-6639-405f-b5f6-a4675fbebc03 | 🔵 discovery | Paymob webhook finalization: JSON-stringified cart_items with detailed error logging | 2026-06-27 |
+| 0f834f52-475c-423c-b9da-069e84b92929 | 🔵 discovery | Paymob webhook: handles JSON-stringified cart_items with schema fallback | 2026-06-27 |
+| 667f8f03-aa16-4bda-a463-ca5e39941a0c | 🔵 discovery | Paymob webhook: handles JSON-stringified cart_items with schema fallback | 2026-06-27 |
+| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
+| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
+| d2099ffc-5796-4035-ba80-cf95d4405deb | 🔵 discovery | Paymob webhook: order creation with schema fallback | 2026-06-27 |
 
-**Key concepts:** what-changed, problem-solution, pattern, how-it-works
+**Key concepts:** what-changed, pattern, gotcha, how-it-works
 
 ### app/checkout/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
-| ddb2125a-91e4-4669-abcf-1ff332f90129 | 🟣 feature | Checkout page: live FedEx shipping, Paymob redirect, cart context | 2026-06-24 |
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
 
-**Key concepts:** how-it-works, pattern
-
-### app/checkout/success/
-| ID | Type | Title | Date |
-|----|------|-------|------|
-| ef983f8a-faf8-4de8-af3e-4279f18321dc | 🟣 feature | Checkout success page: polls lookup endpoint, displays verification code, 8-char reference | 2026-06-24 |
-| f13785fe-a028-4b23-bd7a-6e9bbcc31124 | ✅ change | Webhook creates orders from pending_checkouts, adds verification code, success page polls | 2026-06-24 |
-
-**Key concepts:** how-it-works, problem-solution, what-changed
-
-### app/context/
-| ID | Type | Title | Date |
-|----|------|-------|------|
-| 72575a33-aa1f-4926-9c14-e8b0e1e4619d | 🔵 discovery | addToCart usage confirmed: CartContext + 2 consumer components (repeated grep) | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
-| ec97cf16-0493-454e-a00f-becc256775b0 | 🟣 feature | CartContext: localStorage-persisted cart with availability checks | 2026-06-24 |
-| 4f1f31bb-75ca-45b1-883a-e9fcda05d479 | 🔵 discovery | CartContext.js found at app/context/CartContext.js | 2026-06-24 |
-
-**Key concepts:** pattern, how-it-works
-
-### app/painting/[id]/
-| ID | Type | Title | Date |
-|----|------|-------|------|
-| 9105f869-d0b3-4239-a0d0-6a878697dcca | 🔵 discovery | Painting detail page re-read confirms no changes | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
-
-**Key concepts:** pattern, how-it-works
+**Key concepts:** what-changed
 
 ### components/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 38787b02-81b2-4c17-8b06-09e16e584875 | 🔵 discovery | ArtworkCard re-read confirms no changes from prior observation | 2026-06-24 |
-| fc4086b3-cdaa-45e7-b81f-c5bc68dd1673 | 🔵 discovery | PaintingActions re-read confirms no changes from prior observation | 2026-06-24 |
-| 72575a33-aa1f-4926-9c14-e8b0e1e4619d | 🔵 discovery | addToCart usage confirmed: CartContext + 2 consumer components (repeated grep) | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 60d969f3-37b3-4710-82d7-397843816c44 | 🔵 discovery | addToCart used in PaintingActions and ArtworkCard components | 2026-06-27 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** pattern
 
 ### lib/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 04437756-a305-4c5b-9002-33f22b72c694 | 🔄 refactor | Shipping lib rewrite: zone-based rates, volumetric/3000, line-item surcharges, 5-EGP rounding | 2026-06-24 |
-| 62623e46-7b34-4400-8f33-d0a9e002cd12 | 🔄 refactor | Commit 4099132: large shipping refactor plus checkout changes | 2026-06-24 |
-| f3f1c7be-1055-48c9-95cb-7eaf21ea09d5 | 🔵 discovery | Shipping lib: FedEx zone-based rates with volumetric/3000 and 5-EGP rounding | 2026-06-24 |
-| 17f7bb9f-1619-4a70-ae4c-3b693eb19847 | 🔄 refactor | Shipping calc: extract pad constant, remove height padding, ignore packageHeight option | 2026-06-24 |
-| d74534af-d32e-44c7-9c5c-0f53c61bb6bf | ✅ change | Three files modified: admin page, checkout API, shipping lib | 2026-06-24 |
-| ae7b3824-2018-40e6-90cd-495cd90e5b43 | 🔵 discovery | db.js re-read confirms no changes from prior observation | 2026-06-24 |
-| 8e6446d6-1bce-48d5-b8c9-3c08340d081f | 🔵 discovery | Artwork title property confirmed consistent across entire stack | 2026-06-24 |
+| 2888e4c9-b688-484e-a8b3-3fc30ea9a66d | 🔵 discovery | artwork_images queries in lib/: db.js has 8 queries, admin-client.js has 2 mutations | 2026-06-27 |
 
-**Key concepts:** what-changed, how-it-works, pattern
+**Key concepts:** pattern, how-it-works
+
+### lib/email/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 926cee08-67ca-40ff-9dbc-050f12d494ad | 🔵 discovery | Email sender: Resend via fetch with 30s timeout from hala-salah-elhosary.com | 2026-06-27 |
+
+**Key concepts:** how-it-works
+
+### lib/email/templates/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+
+**Key concepts:** what-changed
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

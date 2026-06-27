@@ -5,49 +5,57 @@ import { GOVERNORATE_RATES, calculateFedExShipping } from '@/lib/shipping';
 
 function ShippingTooltip() {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const btnRef = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (btnRef.current && !btnRef.current.parentElement.contains(e.target)) setOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
   return (
-    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }} ref={ref}>
+    <span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle' }} ref={btnRef}>
       <button
         type="button"
-        onClick={() => setOpen(!open)}
+        onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
         style={{
-          background: 'none', border: 'none', cursor: 'pointer',
+          background: 'none', border: 'none', cursor: 'pointer', outline: 'none',
           width: 18, height: 18, borderRadius: '50%',
           display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: '#888',
-          border: '1.5px solid #ccc', marginLeft: 6, padding: 0,
-          lineHeight: 1, transition: 'border-color 0.15s, color 0.15s',
+          fontSize: 11, fontWeight: 700, color: open ? '#1a1a2e' : '#888',
+          border: open ? '1.5px solid #1a1a2e' : '1.5px solid #ccc',
+          marginLeft: 6, padding: 0, lineHeight: 1,
+          transition: 'border-color 0.15s, color 0.15s',
         }}
         aria-label="Shipping cost details"
       >?</button>
-      {open && (
-        <div style={{
-          position: 'absolute', top: 'calc(100% + 8px)', left: 0,
-          background: '#1a1a2e', color: '#f0f0f0', borderRadius: 8,
-          padding: '14px 16px', fontSize: 13, lineHeight: 1.6,
-          width: 300, zIndex: 100, boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-        }}>
-          <p style={{ margin: '0 0 8px', fontWeight: 600, color: '#fff', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Why shipping costs what it does</p>
-          <ul style={{ margin: 0, paddingLeft: 16, color: '#ccc' }}>
-            <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Size over weight</strong> — Paintings are charged by the space they occupy, not their weight. A large canvas takes up room that could hold multiple smaller items.</li>
-            <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Premium packaging</strong> — Every piece is wrapped, padded, and boxed to arrive in perfect condition. The materials and care add to the cost.</li>
-            <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Region-based pricing</strong> — FedEx rates vary by governorate. Deliveries farther from Cairo (e.g. Assiut, Luxor) cost more than those within greater Cairo.</li>
-          </ul>
-        </div>
-      )}
+      <div style={{
+        position: 'absolute',
+        bottom: 'calc(100% + 8px)',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: '#1a1a2e', color: '#f0f0f0', borderRadius: 8,
+        padding: '14px 16px', fontSize: 13, lineHeight: 1.6,
+        width: 300, maxWidth: '85vw',
+        zIndex: 100,
+        boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+        pointerEvents: open ? 'auto' : 'none',
+        opacity: open ? 1 : 0,
+        transition: 'opacity 0.15s ease',
+        visibility: open ? 'visible' : 'hidden',
+      }}>
+        <p style={{ margin: '0 0 8px', fontWeight: 600, color: '#fff', fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Why shipping costs what it does</p>
+        <ul style={{ margin: 0, paddingLeft: 16, color: '#ccc' }}>
+          <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Size over weight</strong> — Paintings are charged by the space they occupy, not their weight. A large canvas takes up room that could hold multiple smaller items.</li>
+          <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Premium packaging</strong> — Every piece is wrapped, padded, and boxed to arrive in perfect condition. The materials and care add to the cost.</li>
+          <li style={{ marginBottom: 6 }}><strong style={{ color: '#fff' }}>Region-based pricing</strong> — FedEx rates vary by governorate. Deliveries farther from Cairo (e.g. Assiut, Luxor) cost more than those within greater Cairo.</li>
+        </ul>
+      </div>
     </span>
   );
 }
