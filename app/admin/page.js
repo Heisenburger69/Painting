@@ -1176,8 +1176,8 @@ function CategoryManager({ category, label, setError, setSuccess }) {
             </div>
             <div>
               <strong>{ex.title}</strong>{ex.venue ? ` — ${ex.venue}` : ''}
-              {ex.start_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> — {new Date(ex.start_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : ''}
-              {ex.end_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> – {new Date(ex.end_date + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span> : ''}
+              {ex.start_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> — {new Date(ex.start_date + 'T00:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span> : ''}
+              {ex.end_date ? <span style={{ fontSize: 12, color: 'var(--slate-gray)' }}> – {new Date(ex.end_date + 'T00:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</span> : ''}
             </div>
           </div>
           <div className="admin-list-item-actions">
@@ -1190,10 +1190,10 @@ function CategoryManager({ category, label, setError, setSuccess }) {
   )
 }
 
-function convertToDbDate(dmy) {
-  if (!dmy || !dmy.includes('/')) return dmy
-  const [day, month, year] = dmy.split('/')
-  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
+function convertToDbDate(my) {
+  if (!my || !my.includes('/')) return my
+  const [month, year] = my.split('/')
+  return `${year}-${month.padStart(2, '0')}-01`
 }
 
 /* ─── Reusable inline form ─── */
@@ -1213,7 +1213,7 @@ function InlineForm({ fields, item, onSave, onCancel, busy }) {
           ) : f === 'start_date' || f === 'end_date' ? (
             <div key={f} className="admin-field">
               <label>{f.replace(/_/g, ' ')}</label>
-              <input type="text" placeholder="DD/MM/YYYY" value={form[f]} onChange={(e) => setForm({ ...form, [f]: e.target.value })} />
+              <input type="text" placeholder="MM/YYYY" value={form[f]} onChange={(e) => setForm({ ...form, [f]: e.target.value })} />
             </div>
           ) : (
             <div key={f} className="admin-field">

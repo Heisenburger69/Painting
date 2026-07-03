@@ -159,11 +159,11 @@ export default async function HomePage() {
             <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
               {exhibitions.map((ex) => {
                 const d = (s) => s ? new Date(s + 'T00:00:00') : null
-                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''
+                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''
                 const start = d(ex.start_date)
                 const end = d(ex.end_date)
                 const dateRange = start && end && start.toDateString() === end.toDateString() ? fmt(start)
-                  : start && end ? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — ${fmt(end)}`
+                  : start && end ? `${fmt(start)} — ${fmt(end)}`
                   : start ? fmt(start) : end ? `Until ${fmt(end)}` : ''
                 return (
                   <div className="info-card-dark" key={ex.id}>
@@ -191,11 +191,11 @@ export default async function HomePage() {
             <div className="grid grid-2" style={{ gap: 30, maxWidth: 1000, margin: '0 auto' }}>
               {events.map((ex) => {
                 const d = (s) => s ? new Date(s + 'T00:00:00') : null
-                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''
+                const fmt = (dt) => dt ? dt.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : ''
                 const start = d(ex.start_date)
                 const end = d(ex.end_date)
                 const dateRange = start && end && start.toDateString() === end.toDateString() ? fmt(start)
-                  : start && end ? `${start.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — ${fmt(end)}`
+                  : start && end ? `${fmt(start)} — ${fmt(end)}`
                   : start ? fmt(start) : end ? `Until ${fmt(end)}` : ''
                 return (
                   <div className="info-card" key={ex.id}>
