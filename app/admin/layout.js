@@ -14,6 +14,8 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname()
 
   useEffect(() => {
+    if (PUBLIC_PATHS.includes(pathname)) return
+
     const check = async () => {
       const supabase = getBrowserSupabase()
       if (!supabase) { setChecked(true); setError('Supabase not configured'); return }
