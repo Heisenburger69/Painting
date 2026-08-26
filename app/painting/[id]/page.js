@@ -10,11 +10,11 @@ export async function generateMetadata({ params }) {
   const { id } = await params
   const artwork = await getArtworkById(id)
   if (!artwork) return {}
-  const imageUrl = artwork.image || ''
-  const absoluteImage = imageUrl.startsWith('http') ? imageUrl : imageUrl ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}${imageUrl}` : ''
+  const absoluteImage = artwork.image || ''
   return {
     title: `${artwork.title} — Hala Salah`,
     description: artwork.description || `${artwork.title} — ${artwork.medium || 'Original painting'} by Hala Salah. EGP ${(artwork.price || 0).toLocaleString()}`,
+    alternates: { canonical: `/painting/${id}` },
     openGraph: {
       title: `${artwork.title} by Hala Salah`,
       description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
