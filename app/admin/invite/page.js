@@ -50,6 +50,14 @@ export default function AdminInvitePage() {
     load()
   }
 
+  const deleteInvite = async (id) => {
+    if (!window.confirm('Delete this invite? This cannot be undone.')) return
+    const supabase = getBrowserSupabase()
+    const { error } = await supabase.from('admin_invites').delete().eq('id', id)
+    if (error) { setError(error.message); return }
+    load()
+  }
+
   const copyLink = async () => {
     await navigator.clipboard.writeText(link)
     setCopied(true)
@@ -102,11 +110,16 @@ export default function AdminInvitePage() {
               {invites.map((inv) => (
                 <div key={inv.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13 }}>
                   <span>{new Date(inv.created_at).toLocaleString()} — {statusOf(inv)}</span>
-                  {statusOf(inv) === 'pending' && (
-                    <button onClick={() => revokeInvite(inv.id)} style={{ background: 'none', border: 'none', color: '#b91c1c', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-                      Revoke
+                  <span style={{ display: 'flex', gap: 14 }}>
+                    {statusOf(inv) === 'pending' && (
+                      <button onClick={() => revokeInvite(inv.id)} style={{ background: 'none', border: 'none', color: '#b91c1c', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                        Revoke
+                      </button>
+                    )}
+                    <button onClick={() => deleteInvite(inv.id)} style={{ background: 'none', border: 'none', color: 'var(--slate-gray)', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
+                      Delete
                     </button>
-                  )}
+                  </span>
                 </div>
               ))}
             </div>
