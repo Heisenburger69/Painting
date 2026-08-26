@@ -1,9 +1,0 @@
-2026-06-17T20:13:08.450294Z  INFO opencode_lib: Initializing app
-2026-06-17T20:13:08.454302Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:52327
-2026-06-17T20:13:08.454331Z  INFO opencode_lib::cli: Spawning sidecar port=52327
-2026-06-17T20:13:08.716546Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
-2026-06-17T20:13:11.532092Z  INFO sidecar: opencode_lib::cli: opencode server listening on http://127.0.0.1:52327
-2026-06-17T20:13:12.010909Z  INFO opencode_lib::server: Server ready elapsed=3.293193s
-2026-06-17T20:13:12.010952Z  INFO opencode_lib: Sidecar health check OK
-2026-06-17T20:13:12.010959Z  INFO opencode_lib: Loading task finished
-2026-06-17T20:13:12.010996Z  INFO opencode_lib: Loading done, completing initialisation

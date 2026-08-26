@@ -62,3 +62,10 @@ next-env.d.ts
 .open-mem/memory.db-wal
 # Uncomment to exclude from version control (recommended for large projects):
 # **/AGENTS.md
+
+# Browser/Electron cache
+Default/
+EBWebView/
+
+# OpenCode logs
+soopencode/

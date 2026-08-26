@@ -1,8 +1,0 @@
-2026-06-22T10:44:44.794065Z  INFO opencode_lib: Initializing app
-2026-06-22T10:44:44.795898Z  INFO opencode_lib: Spawning sidecar on http://127.0.0.1:51598
-2026-06-22T10:44:44.795924Z  INFO opencode_lib::cli: Spawning sidecar port=51598
-2026-06-22T10:44:44.928873Z  INFO opencode_lib::cli: No CLI installation found, skipping sync
-2026-06-22T10:44:47.486498Z  INFO sidecar: opencode_lib::cli: Sidecar terminated code=Some(-2147483645) signal=None
-2026-06-22T10:44:47.486770Z ERROR opencode_lib: Sidecar health check failed: Sidecar terminated before becoming healthy (code=Some(-2147483645) signal=None)
-2026-06-22T10:44:47.486776Z  INFO opencode_lib: Loading task finished
-2026-06-22T10:44:47.486794Z  INFO opencode_lib: Loading done, completing initialisation
