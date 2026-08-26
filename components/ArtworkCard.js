@@ -12,13 +12,9 @@ export default function ArtworkCard({ artwork }) {
     reserved: 'Reserved',
   }
 
-  const priceLabel = status === 'sold'
-    ? 'SOLD'
-    : status === 'not_for_sale'
-      ? 'Not for Sale'
-      : status === 'reserved'
-        ? 'Reserved'
-        : `EGP ${(artwork.price || 0).toLocaleString()}`
+  const priceLabel = artwork.price
+    ? `EGP ${(artwork.price || 0).toLocaleString()}`
+    : ''
 
   const imageStyle = {
     aspectRatio: `${artwork.width_cm || 1}/${artwork.height_cm || 1}`,

@@ -10,20 +10,24 @@ export async function generateMetadata({ params }) {
   const { id } = await params
   const artwork = await getArtworkById(id)
   if (!artwork) return {}
+  const imageUrl = artwork.image || ''
+  const absoluteImage = imageUrl.startsWith('http') ? imageUrl : imageUrl ? `${process.env.NEXT_PUBLIC_SUPABASE_URL}${imageUrl}` : ''
   return {
     title: `${artwork.title} — Hala Salah`,
     description: artwork.description || `${artwork.title} — ${artwork.medium || 'Original painting'} by Hala Salah. EGP ${(artwork.price || 0).toLocaleString()}`,
     openGraph: {
       title: `${artwork.title} by Hala Salah`,
       description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
-      images: artwork.image ? [{ url: artwork.image, width: 1200, height: 630 }] : [],
+      url: `/painting/${id}`,
+      siteName: 'Hala Salah Art Gallery',
+      images: absoluteImage ? [{ url: absoluteImage, secureUrl: absoluteImage, width: 1200, height: 630, alt: artwork.title }] : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
       title: `${artwork.title} by Hala Salah`,
       description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
-      images: artwork.image ? [artwork.image] : [],
+      images: absoluteImage ? [absoluteImage] : [],
     },
   }
 }
@@ -52,8 +56,10 @@ export default async function PaintingPage({ params }) {
 
             <div className="painting-detail-info">
               <div className="detail-price-row">
-                <span className="detail-price">{artwork.sold ? 'SOLD' : `EGP ${(artwork.price || 0).toLocaleString()}`}</span>
-                <span className="detail-badge">{artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : artwork.status === 'not_for_sale' ? 'NOT FOR SALE' : 'AVAILABLE'}</span>
+                <span className="detail-price">{artwork.price ? `EGP ${(artwork.price || 0).toLocaleString()}` : ''}</span>
+                <span className="detail-badge">
+                  {artwork.status === 'sold' ? 'SOLD' : artwork.status === 'reserved' ? 'RESERVED' : artwork.status === 'not_for_sale' ? 'NOT FOR SALE' : 'AVAILABLE'}
+                </span>
                 {artwork.is_on_sale && <span className="detail-badge on-sale">ON SALE</span>}
               </div>
               <h1 className="detail-title">{artwork.title}</h1>
