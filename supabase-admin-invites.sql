@@ -15,4 +15,10 @@ CREATE TABLE IF NOT EXISTS admin_invites (
 -- this schema (see supabase-schema.sql) — the app enforces access, not RLS.
 ALTER TABLE admin_invites DISABLE ROW LEVEL SECURITY;
 
+-- Belt-and-suspenders: if RLS ever gets flipped back on (e.g. by Supabase's
+-- security advisor), this permissive policy keeps reads/writes working
+-- instead of hard-failing with "new row violates row-level security policy".
+DROP POLICY IF EXISTS "admin invites open access" ON admin_invites;
+CREATE POLICY "admin invites open access" ON admin_invites FOR ALL USING (true) WITH CHECK (true);
+
 CREATE INDEX IF NOT EXISTS idx_admin_invites_token ON admin_invites(token);
