@@ -54,25 +54,25 @@ function AdminSetupForm() {
       return
     }
 
+    const res = await fetch('/api/admin-signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, email, password }),
+    })
+    const body = await res.json()
+
+    if (!res.ok) {
+      setError(body.error || 'Something went wrong')
+      setLoading(false)
+      return
+    }
+
     const supabase = getBrowserSupabase()
     if (!supabase) {
       setError('Supabase is not configured')
       setLoading(false)
       return
     }
-
-    const { error: signUpError } = await supabase.auth.signUp({ email, password })
-
-    if (signUpError) {
-      setError(signUpError.message)
-      setLoading(false)
-      return
-    }
-
-    await supabase
-      .from('admin_invites')
-      .update({ used_at: new Date().toISOString(), claimed_email: email })
-      .eq('token', token)
 
     const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
 
