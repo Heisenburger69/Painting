@@ -4,203 +4,188 @@
 ### ./
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| b53e13f5-1070-4885-8817-75fe5004ca40 | 🔵 discovery | Example env file: Supabase, Paymob, Resend template | 2026-06-27 |
-| 2af83ee4-4a82-440b-b5f8-ecb52eceedd6 | 🔵 discovery | Environment config: Supabase, Paymob, and admin email | 2026-06-27 |
-| fe1e7a72-9d75-4caa-bbf6-b5c43afc12b7 | 🔵 discovery | Two .env.local files: main config and example | 2026-06-27 |
-| 437f66f9-af78-4ac5-b61b-97efbe06545e | ✅ change | Orders status migration: drops and recreates check constraint | 2026-06-27 |
-| 186453b2-23f8-459b-9a2b-de8a24f0db20 | 🔵 discovery | order_items table: FK to orders with CASCADE, FK to artworks without CASCADE | 2026-06-27 |
-| be071258-a7dc-4dd7-8a92-32b567b88754 | 🔵 discovery | Project is Next.js 16 + Supabase + Resend | 2026-06-27 |
-| 2a6d3539-147e-4e78-bd53-63d8bdf82ddd | 🔵 discovery | Supabase schema: 7 tables, RLS disabled, FK fix for artist_profile | 2026-06-27 |
-| d39ba035-cef6-4508-9266-a1810384dc3d | 🔵 discovery | Three SQL schema files: main schema, collections, FK fix | 2026-06-27 |
-| e5068058-52c0-422c-97e7-a6d87e0712a3 | 🔵 discovery | Orders status migration file at project root | 2026-06-27 |
-| 60473497-abbd-430f-81fd-92b93cd07bec | 🔵 discovery | Supabase schema file at project root | 2026-06-27 |
+| 3ed79069-d12c-4c2b-b358-330f2c46e124 | 🔵 discovery | GitHub credential helper configuration for Git | 2026-08-26 |
+| f0307ed0-0033-45f3-8eed-404010e03583 | 🔵 discovery | Identified .gitignore rules for common build artifacts | 2026-08-26 |
+| ca20edf8-071a-4e97-87ad-eef8a04c9268 | ✅ change | Git repository status and recent commits | 2026-08-26 |
 
-**Key concepts:** pattern, what-changed, gotcha, how-it-works
+**Key concepts:** git credential helper, github cli, authentication, version-control, gitignore, build-artifacts, dependency-management, git-branch, git-commit, git-staging
 
-### app/
+### .agents/skills/cavecrew/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
-| 8b443430-b3ed-49a3-9281-e20603b33212 | ✅ change | Global CSS chip styles for desktop artworks column | 2026-06-27 |
-| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
-| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** what-changed, pattern, refactor, how-it-works
+**Key concepts:** disk-usage, directory-structure
 
-### app/admin/
+### .agents/skills/caveman-commit/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
-| 4bc82455-d54b-4af9-9ad2-4a00b7825596 | 🔵 discovery | Order item chip fallback: 'Artwork' when artwork data missing | 2026-06-27 |
-| adcd0df7-9bd4-485f-a9d8-d95c35b67ee5 | 🔵 discovery | OrdersManager current state: two-step fetch, merged chip layout, 10 columns | 2026-06-27 |
-| 39ffacff-babb-4dcb-961a-ee9436e40ffa | 🔵 discovery | OrdersManager load: two-step fetch pattern (orders then artworks) | 2026-06-27 |
-| 62433ec6-e99a-43a3-b030-e046e7f703f1 | 🔄 refactor | Desktop orders table: artworks column displays chips with images | 2026-06-27 |
-| 555bd95e-3d7c-476c-a3a7-e2d9586d7870 | 🔵 discovery | OrdersManager fetches full artworks data unnecessarily | 2026-06-27 |
-| 14d5ccfe-d5c4-4e80-9f34-7cc842af1cd9 | 🔵 discovery | artwork_images insert duplicated: admin page and API route | 2026-06-27 |
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
-| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
-| 268386b5-1807-436b-ba03-048b43bc5c43 | ✅ change | OrdersManager desktop table: image column removed | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** what-changed, pattern, how-it-works, gotcha, refactor
+**Key concepts:** disk-usage, directory-structure
 
-### app/admin/login/
+### .agents/skills/caveman-compress/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** disk-usage, directory-structure
 
-### app/admin/orders/
+### .agents/skills/caveman-compress/scripts/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
-| 4bc82455-d54b-4af9-9ad2-4a00b7825596 | 🔵 discovery | Order item chip fallback: 'Artwork' when artwork data missing | 2026-06-27 |
-| 001e353b-e6c9-43e9-b18d-bdf98941c06c | 🔴 bugfix | Orders page load reverted to two-step fetch pattern | 2026-06-27 |
-| a6837027-b2f3-4f96-a4fa-89b71504909e | 🔴 bugfix | Orders page query regressed to full artworks(*) select | 2026-06-27 |
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
-| 95391213-60ea-4a22-9c46-c7e88b89259f | 🔄 refactor | Desktop orders table: image column merged into artworks chips | 2026-06-27 |
-| 118ee3d1-6fd3-47e6-9f52-d069721d8519 | ✅ change | Dedicated orders page: image column removed, 9 columns | 2026-06-27 |
-| e95d1dd4-5745-44f6-8557-c206e34278cf | 🔵 discovery | Dedicated orders page: 147 lines, 10 columns, no delete | 2026-06-27 |
-| 7898cfe7-8d97-4060-b0b9-a165ffd4f2a5 | 🔵 discovery | Admin orders system: dual page implementation with responsive CSS | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** what-changed, pattern, gotcha, how-it-works, refactor
+**Key concepts:** disk-usage, directory-structure
 
-### app/api/admin/artworks/
+### .agents/skills/caveman-help/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** disk-usage, directory-structure
 
-### app/api/admin/collections/
+### .agents/skills/caveman-review/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** disk-usage, directory-structure
 
-### app/api/admin/collections/[id]/
+### .agents/skills/caveman-stats/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 6acf64c4-3f20-463e-ad09-f5a7b3a02434 | 🔵 discovery | Disk Usage Analysis of .agents Directory | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** disk-usage, directory-structure
 
-### app/api/admin/orders/data/
+### Default/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 0d25d88a-8502-4b2f-9be4-24b0cc903c77 | 🔵 discovery | Admin orders data API: three-step server-side fetch with merge | 2026-06-27 |
-| 84417621-0086-42cd-bae8-428ff56ad08a | 🔵 discovery | Admin orders data API: three-step server-side fetch with merge | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/admin/upload/
+### Default/AutofillAiModelCache/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 14d5ccfe-d5c4-4e80-9f34-7cc842af1cd9 | 🔵 discovery | artwork_images insert duplicated: admin page and API route | 2026-06-27 |
-| e2d36992-e4e1-484d-be05-7c276a0486ee | 🔵 discovery | Admin upload API: single route handles POST/DELETE/PUT for artwork images | 2026-06-27 |
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, gotcha, how-it-works
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/checkout/
+### Default/AutofillStrikeDatabase/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
-| 80b0a247-494c-4cb1-9526-74382993a23e | 🔵 discovery | Checkout route: create pending, initiate Paymob payment | 2026-06-27 |
-| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works, gotcha
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/confirm-checkout/
+### Default/BudgetDatabase/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
-| 1c0d0f16-1f96-4e2c-8882-92e4275e17e3 | ✅ change | Confirm-checkout route: verbose logging added to match webhook | 2026-06-27 |
-| e70d2ef4-aa4b-4023-832a-ae33bd79a67e | ✅ change | Confirm-checkout route updated with JSON-stringify cart_items handling | 2026-06-27 |
-| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
-| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
-| d1696596-5251-4926-8160-ac7fcc360459 | 🔵 discovery | Confirm-checkout: full order creation with schema fallback | 2026-06-27 |
-| 2979ecbc-7f45-427a-b0fa-beb40f57cc72 | 🔵 discovery | Checkout flow: create order, mark artworks sold, send confirmation | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** what-changed, pattern, gotcha, how-it-works
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/home/
+### Default/Cache/Cache_Data/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/lookup-order/
+### Default/Cache/No_Vary_Search/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, gotcha
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/paintings/
+### Default/ClientCertificates/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| b51cda16-d9d2-48d1-b702-c4a1ef216d12 | 🔵 discovery | Paintings API: simple artworks endpoint with artwork_images join | 2026-06-27 |
-| 7214a4db-d098-4f12-8039-67dcf506fbad | 🔵 discovery | artwork_images data flow: Supabase queries across 9 files | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** cache-management, database-structure, file-system-organization
 
-### app/api/paymob-webhook/
+### Default/Code Cache/js/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 50bf2ef2-ec09-4cdf-835d-7f4f12a2acdf | 🔵 discovery | Legacy paymob-webhook: minimal status update only | 2026-06-27 |
+| 386bea9c-a1b0-4832-b0b9-d8439f9ec132 | 🔵 discovery | Cache and Database File Structures Identified | 2026-08-26 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** how-it-works, pattern
+**Key concepts:** cache-management, database-structure, file-system-organization, disk-usage, log-files
 
-### app/api/webhooks/paymob/
+### EBWebView/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
-| 2e50b72c-6639-405f-b5f6-a4675fbebc03 | 🔵 discovery | Paymob webhook finalization: JSON-stringified cart_items with detailed error logging | 2026-06-27 |
-| 0f834f52-475c-423c-b9da-069e84b92929 | 🔵 discovery | Paymob webhook: handles JSON-stringified cart_items with schema fallback | 2026-06-27 |
-| 667f8f03-aa16-4bda-a463-ca5e39941a0c | 🔵 discovery | Paymob webhook: handles JSON-stringified cart_items with schema fallback | 2026-06-27 |
-| 46f9bd6d-1410-404a-9515-0280de2f53b9 | 🔵 discovery | pending_checkouts table accessed by 3 routes across 6 locations | 2026-06-27 |
-| d4e8e43a-5102-4bc8-b35c-008ab823780e | 🔵 discovery | pending_checkouts flow: checkout, webhook, and confirm routes share duplicated logic | 2026-06-27 |
-| d2099ffc-5796-4035-ba80-cf95d4405deb | 🔵 discovery | Paymob webhook: order creation with schema fallback | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** what-changed, pattern, gotcha, how-it-works
+**Key concepts:** disk-usage, cache-management, log-files
 
-### app/checkout/
+### EBWebView/BrowserMetrics/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** what-changed
+**Key concepts:** disk-usage, cache-management, log-files
 
-### components/
+### EBWebView/component_crx_cache/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 60d969f3-37b3-4710-82d7-397843816c44 | 🔵 discovery | addToCart used in PaintingActions and ArtworkCard components | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** pattern
+**Key concepts:** disk-usage, cache-management, log-files
 
-### lib/
+### EBWebView/Default/Code Cache/js/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 2888e4c9-b688-484e-a8b3-3fc30ea9a66d | 🔵 discovery | artwork_images queries in lib/: db.js has 8 queries, admin-client.js has 2 mutations | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** pattern, how-it-works
+**Key concepts:** disk-usage, cache-management, log-files
 
-### lib/email/
+### EBWebView/Default/GPUCache/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 926cee08-67ca-40ff-9dbc-050f12d494ad | 🔵 discovery | Email sender: Resend via fetch with 30s timeout from hala-salah-elhosary.com | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** how-it-works
+**Key concepts:** disk-usage, cache-management, log-files
 
-### lib/email/templates/
+### EBWebView/GrShaderCache/
 | ID | Type | Title | Date |
 |----|------|-------|------|
-| 6e8f0207-a3f2-44c6-a639-83c871c8a067 | ✅ change | Working tree: 13 modified + 6 untracked files, 497 insertions | 2026-06-27 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
-**Key concepts:** what-changed
+**Key concepts:** disk-usage, cache-management, log-files
+
+### EBWebView/Speech Recognition/1.15.0.1/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
+
+**Key concepts:** disk-usage, cache-management, log-files
+
+### EBWebView/Subresource Filter/Indexed Rules/37/10.34.0.84/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
+
+**Key concepts:** disk-usage, cache-management, log-files
+
+### EBWebView/Subresource Filter/Unindexed Rules/10.34.0.84/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
+
+**Key concepts:** disk-usage, cache-management, log-files
+
+### soopencode/logs/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 634180b8-5b73-45a6-a239-2fa6d2b4dd06 | ✅ change | Log files removed | 2026-08-26 |
+| 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
+
+**Key concepts:** log management, file deletion, disk-usage, cache-management, log-files
 
 💡 *Use `mem-find` to search full details. Use `mem-create` to save important decisions.*
 <!-- /open-mem-context -->

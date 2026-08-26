@@ -79,9 +79,6 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-          <li>
-            <Link href="/admin" className="admin-link">Admin</Link>
-          </li>
         </ul>
 
         <button

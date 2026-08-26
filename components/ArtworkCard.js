@@ -1,17 +1,23 @@
 'use client'
 
 import Link from 'next/link'
-import { useCart } from '@/app/context/CartContext'
 
 export default function ArtworkCard({ artwork }) {
-  const { addToCart, cart } = useCart()
-
-  const inCart = cart.some((item) => item.id === artwork.id)
-
-  const handleAddToCart = (e) => {
+  const handleShare = async (e) => {
     e.preventDefault()
     e.stopPropagation()
-    addToCart(artwork)
+    const url = `${window.location.origin}/painting/${artwork.id}`
+    const shareData = {
+      title: artwork.title,
+      text: `${artwork.title} — ${artwork.medium || ''} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      url,
+    }
+    if (navigator.share) {
+      try { await navigator.share(shareData) } catch (e) {}
+    } else {
+      await navigator.clipboard.writeText(url)
+      alert('Link copied!')
+    }
   }
 
   const priceLabel = artwork.sold
@@ -49,17 +55,18 @@ export default function ArtworkCard({ artwork }) {
         </button>
       )
     }
-    if (inCart) {
-      return (
-        <button disabled className="btn btn-secondary art-card-btn in-cart-btn">
-          In Cart
-        </button>
-      )
-    }
     return (
-      <button className="btn btn-primary art-card-btn add-btn" onClick={handleAddToCart}>
-        Add to Cart
-      </button>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <Link href={`/painting/${artwork.id}`} className="btn btn-primary art-card-btn" style={{ textDecoration: 'none', flex: 1 }}>
+          Buy
+        </Link>
+        <button onClick={handleShare} className="btn btn-secondary art-card-btn art-card-share-btn" title="Share">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
+      </div>
     )
   }
 

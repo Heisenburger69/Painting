@@ -46,6 +46,9 @@ export default function AdminLoginPage() {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
+        <div style={{ marginTop: 16, textAlign: 'center' }}>
+          <a href="/admin/reset-password" style={{ fontSize: 13, color: 'var(--coffee)', textDecoration: 'none' }}>Forgot password?</a>
+        </div>
       </div>
     </main>
   )

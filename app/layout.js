@@ -1,8 +1,6 @@
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import FloatingCart from '@/components/FloatingCart';
-import ClientProviders from './ClientProviders';
 
 export const metadata = {
   title: 'Hala Salah — Original Paintings & Fine Art Gallery',
@@ -15,14 +13,11 @@ export default function RootLayout({ children }) {
       <body suppressHydrationWarning>
         <div className="bg-stars" />
         <div className="wrapper">
-          <ClientProviders>
-            <Navbar />
-            <FloatingCart />
-            <div className="content-clip">
-              <main>{children}</main>
-              <Footer />
-            </div>
-          </ClientProviders>
+          <Navbar />
+          <div className="content-clip">
+            <main>{children}</main>
+            <Footer />
+          </div>
         </div>
       </body>
     </html>

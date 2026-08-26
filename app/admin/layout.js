@@ -35,7 +35,7 @@ export default function AdminLayout({ children }) {
     check()
   }, [pathname, router])
 
-  if (pathname === '/admin/login') return children
+  if (pathname === '/admin/login' || pathname === '/admin/reset-password') return children
 
   if (!checked) return null
 
