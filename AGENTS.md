@@ -59,6 +59,13 @@
 
 **Key concepts:** disk-usage, directory-structure
 
+### app/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 8a7fb860-5d1d-47d4-be4a-a4e2eb076e85 | 🔄 refactor | CSS Styling for Product Listings | 2026-08-26 |
+
+**Key concepts:** css-styling, product-listing-ui, class-based-styling
+
 ### Default/
 | ID | Type | Title | Date |
 |----|------|-------|------|

@@ -726,6 +726,26 @@ p { color: var(--space-cadet); line-height: 1.8; }
 .coll-agi-price.sold { color: var(--slate-gray); }
 .coll-agi-price.on-sale { color: #dc2626; font-weight: 900; }
 
+.coll-agi-price-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+}
+
+.coll-agi-status-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: var(--coffee);
+    color: #fff;
+    white-space: nowrap;
+}
+
 .art-card-actions {
     margin-top: 10px;
     display: flex;

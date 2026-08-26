@@ -5,14 +5,12 @@ import Link from 'next/link'
 export default function ArtworkCard({ artwork }) {
   const status = artwork.status || 'available'
 
-  const statusConfig = {
-    available: { label: 'Available', bg: '#166534', color: '#fff' },
-    sold: { label: 'Sold', bg: '#d1d5db', color: '#6b7280' },
-    not_for_sale: { label: 'Not for Sale', bg: '#d1d5db', color: '#6b7280' },
-    reserved: { label: 'Reserved', bg: '#fef3c7', color: '#92400e', border: '#fbbf24' },
+  const statusLabels = {
+    available: 'Available',
+    sold: 'Sold',
+    not_for_sale: 'Not for Sale',
+    reserved: 'Reserved',
   }
-
-  const currentStatus = statusConfig[status] || statusConfig.available
 
   const priceLabel = artwork.sold
     ? 'SOLD'
@@ -108,26 +106,15 @@ export default function ArtworkCard({ artwork }) {
               {artwork.year && <span>{artwork.year}</span>}
               {artwork.size && <span>{artwork.size}</span>}
             </div>
-            <div className={`coll-agi-price${artwork.sold ? ' sold' : ''}${artwork.is_on_sale ? ' on-sale' : ''}`}>
-              {priceLabel}
+            <div className="coll-agi-price-row">
+              <div className={`coll-agi-price${artwork.sold ? ' sold' : ''}${artwork.is_on_sale ? ' on-sale' : ''}`}>
+                {priceLabel}
+              </div>
+              <span className="coll-agi-status-badge">
+                {statusLabels[status] || 'Available'}
+              </span>
             </div>
           </Link>
-          <div className="art-card-actions">
-            <span style={{
-              display: 'inline-block',
-              padding: '5px 12px',
-              borderRadius: 6,
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: '0.03em',
-              textTransform: 'uppercase',
-              background: currentStatus.bg,
-              color: currentStatus.color,
-              border: currentStatus.border ? `1px solid ${currentStatus.border}` : 'none',
-            }}>
-              {currentStatus.label}
-            </span>
-          </div>
         </div>
       </div>
     </div>
