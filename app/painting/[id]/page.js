@@ -11,22 +11,25 @@ export async function generateMetadata({ params }) {
   const artwork = await getArtworkById(id)
   if (!artwork) return {}
   const absoluteImage = artwork.image || ''
+  const label = artwork.title || artwork.medium || 'Original Painting'
+  const title = `${label} by Hala Salah`
+  const description = artwork.description || `${artwork.medium || 'Original painting'} by Hala Salah. EGP ${(artwork.price || 0).toLocaleString()}`
   return {
-    title: `${artwork.title} — Hala Salah`,
-    description: artwork.description || `${artwork.title} — ${artwork.medium || 'Original painting'} by Hala Salah. EGP ${(artwork.price || 0).toLocaleString()}`,
+    title: `${label} — Hala Salah`,
+    description,
     alternates: { canonical: `/painting/${id}` },
     openGraph: {
-      title: `${artwork.title} by Hala Salah`,
-      description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      title,
+      description,
       url: `/painting/${id}`,
       siteName: 'Hala Salah Art Gallery',
-      images: absoluteImage ? [{ url: absoluteImage, secureUrl: absoluteImage, width: 1200, height: 630, alt: artwork.title }] : [],
+      images: absoluteImage ? [{ url: absoluteImage, secureUrl: absoluteImage, width: 1200, height: 630, alt: label }] : [],
       type: 'website',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${artwork.title} by Hala Salah`,
-      description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      title,
+      description,
       images: absoluteImage ? [absoluteImage] : [],
     },
   }
