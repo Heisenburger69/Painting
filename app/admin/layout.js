@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { getBrowserSupabase, ADMIN_EMAIL } from '@/lib/supabase'
+import { getBrowserSupabase } from '@/lib/supabase'
 
 const PUBLIC_PATHS = ['/admin/login', '/admin/reset-password', '/admin/setup']
 
@@ -19,26 +19,8 @@ export default function AdminLayout({ children }) {
       if (!supabase) { setChecked(true); setError('Supabase not configured'); return }
 
       const { data: { session } } = await supabase.auth.getSession()
-      const email = session?.user?.email
-      if (!email) {
+      if (!session?.user?.email) {
         if (pathname !== '/admin/login') router.replace('/admin/login')
-        setChecked(true)
-        return
-      }
-
-      let allowed = ADMIN_EMAIL && email === ADMIN_EMAIL
-      if (!allowed) {
-        const { data: invite } = await supabase
-          .from('admin_invites')
-          .select('id')
-          .eq('claimed_email', email)
-          .not('used_at', 'is', null)
-          .maybeSingle()
-        allowed = !!invite
-      }
-
-      if (!allowed) {
-        setError('This account is not authorized for admin access.')
         setChecked(true)
         return
       }
