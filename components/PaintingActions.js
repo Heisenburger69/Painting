@@ -15,8 +15,8 @@ export default function PaintingActions({ artwork }) {
   const handleShare = async () => {
     const url = typeof window !== 'undefined' ? window.location.href : ''
     const shareData = {
-      title: artwork.title,
-      text: `${artwork.title} — ${artwork.medium || ''} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      title: `${artwork.title} by Hala Salah`,
+      text: `Check out this painting by Hala Salah`,
       url,
     }
     if (navigator.share) {
@@ -62,6 +62,7 @@ export default function PaintingActions({ artwork }) {
       `Phone: ${form.phone}`,
       `Governorate: ${GOVERNORATE_RATES[form.governorate]?.name || form.governorate}`,
       ``,
+      `Check out this painting by Hala Salah`,
       paintingUrl,
     ].filter(Boolean).join('\n')
 

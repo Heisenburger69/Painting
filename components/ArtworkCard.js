@@ -12,7 +12,7 @@ export default function ArtworkCard({ artwork }) {
     reserved: 'Reserved',
   }
 
-  const priceLabel = artwork.sold
+  const priceLabel = status === 'sold'
     ? 'SOLD'
     : status === 'not_for_sale'
       ? 'Not for Sale'
@@ -98,7 +98,7 @@ export default function ArtworkCard({ artwork }) {
         </Link>
         <div className="coll-agi-body">
           <Link href={`/painting/${artwork.id}`} className="coll-art-link">
-            <div className={`coll-agi-title${artwork.sold ? ' sold' : ''}`}>
+            <div className="coll-agi-title">
               {artwork.title}
             </div>
             <div className="coll-agi-medium">{artwork.medium}</div>
@@ -107,7 +107,7 @@ export default function ArtworkCard({ artwork }) {
               {artwork.size && <span>{artwork.size}</span>}
             </div>
             <div className="coll-agi-price-row">
-              <div className={`coll-agi-price${artwork.sold ? ' sold' : ''}${artwork.is_on_sale ? ' on-sale' : ''}`}>
+              <div className="coll-agi-price">
                 {priceLabel}
               </div>
               <span className="coll-agi-status-badge">

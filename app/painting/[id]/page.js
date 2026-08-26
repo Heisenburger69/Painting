@@ -6,6 +6,28 @@ import PaintingActions from '@/components/PaintingActions'
 
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata({ params }) {
+  const { id } = await params
+  const artwork = await getArtworkById(id)
+  if (!artwork) return {}
+  return {
+    title: `${artwork.title} — Hala Salah`,
+    description: artwork.description || `${artwork.title} — ${artwork.medium || 'Original painting'} by Hala Salah. EGP ${(artwork.price || 0).toLocaleString()}`,
+    openGraph: {
+      title: `${artwork.title} by Hala Salah`,
+      description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      images: artwork.image ? [{ url: artwork.image, width: 1200, height: 630 }] : [],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${artwork.title} by Hala Salah`,
+      description: artwork.description || `${artwork.medium || 'Original painting'} — EGP ${(artwork.price || 0).toLocaleString()}`,
+      images: artwork.image ? [artwork.image] : [],
+    },
+  }
+}
+
 export default async function PaintingPage({ params }) {
   const { id } = await params
   const artwork = await getArtworkById(id)
@@ -39,7 +61,7 @@ export default async function PaintingPage({ params }) {
               {artwork.size && <p className="detail-dimensions">{artwork.size} {artwork.size_inches && <span className="detail-inches">| {artwork.size_inches}</span>}</p>}
               {artwork.collection_name && (
                 <p style={{ fontSize: 13, color: 'var(--coffee)', fontStyle: 'italic' }}>
-                  From the collection: <Link href="/#gallery" style={{ color: 'var(--caput-mortuum)', fontWeight: 600, textDecoration: 'none', borderBottom: '1px solid var(--tan)' }}>{artwork.collection_name}</Link>
+                  From the collection: <Link href={`/collection/${artwork.collection_slug}`} style={{ color: 'var(--caput-mortuum)', fontWeight: 600, textDecoration: 'none', borderBottom: '1px solid var(--tan)' }}>{artwork.collection_name}</Link>
                 </p>
               )}
               {artwork.description && (

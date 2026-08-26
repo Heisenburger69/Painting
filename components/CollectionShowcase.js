@@ -18,7 +18,7 @@ function CollectionSlot({ collection }) {
 
   return (
     <Link
-      href={`/collection/${collection.id}`}
+      href={`/collection/${collection.slug}`}
       className="coll-grid-item coll-collection-slot"
       style={isOnSale ? { background: '#fecaca' } : undefined}
     >

@@ -11,7 +11,7 @@ export default async function HomePage() {
   ])
 
   const featured = featuredList.length > 0 ? featuredList[0] : artworks[0]
-  const onSaleArtworks = artworks.filter((a) => a.is_on_sale && !a.sold)
+  const onSaleArtworks = artworks.filter((a) => a.is_on_sale && a.status !== 'sold')
   const onSaleDb = collections.find((c) => c.id === ON_SALE_COLLECTION_ID)
   const regularColls = collections.filter((c) => c.id !== ON_SALE_COLLECTION_ID)
 
@@ -121,10 +121,10 @@ export default async function HomePage() {
                 <p style={{ fontSize: 14, color: 'var(--tan)', fontStyle: 'italic', marginBottom: 16 }}>{featured.medium} — {featured.size} — {featured.year}</p>
                 {featured.collection_name && <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8 }}>Collection: {featured.collection_name}</p>}
                 <p style={{ fontSize: 15, lineHeight: 1.8, marginBottom: 20, color: 'rgba(255,255,255,0.85)' }}>{featured.description}</p>
-                <div style={{ fontSize: 24, fontWeight: 900, color: featured.sold ? 'var(--caput-mortuum)' : 'var(--tan)', marginBottom: 16 }}>
-                  {featured.sold ? 'SOLD' : `EGP ${(featured.price || 0).toLocaleString()}`}
+                <div style={{ fontSize: 24, fontWeight: 900, color: featured.status === 'sold' ? 'var(--caput-mortuum)' : 'var(--tan)', marginBottom: 16 }}>
+                  {featured.status === 'sold' ? 'SOLD' : `EGP ${(featured.price || 0).toLocaleString()}`}
                 </div>
-                {!featured.sold && <Link href={`/painting/${featured.id}`} className="btn btn-primary">View Artwork</Link>}
+                {featured.status !== 'sold' && <Link href={`/painting/${featured.id}`} className="btn btn-primary">View Artwork</Link>}
               </div>
             </div>
           )}
