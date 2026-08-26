@@ -744,15 +744,6 @@ p { color: var(--space-cadet); line-height: 1.8; }
     transition: background 0.2s;
 }
 
-.art-card-share-btn {
-    width: auto;
-    padding: 8px 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
 .art-card-btn.sold-btn,
 .art-card-btn:disabled {
     background: #d1d5db;

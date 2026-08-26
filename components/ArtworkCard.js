@@ -3,71 +3,28 @@
 import Link from 'next/link'
 
 export default function ArtworkCard({ artwork }) {
-  const handleShare = async (e) => {
-    e.preventDefault()
-    e.stopPropagation()
-    const url = `${window.location.origin}/painting/${artwork.id}`
-    const shareData = {
-      title: artwork.title,
-      text: `${artwork.title} — ${artwork.medium || ''} — EGP ${(artwork.price || 0).toLocaleString()}`,
-      url,
-    }
-    if (navigator.share) {
-      try { await navigator.share(shareData) } catch (e) {}
-    } else {
-      await navigator.clipboard.writeText(url)
-      alert('Link copied!')
-    }
+  const status = artwork.status || 'available'
+
+  const statusConfig = {
+    available: { label: 'Available', bg: '#166534', color: '#fff' },
+    sold: { label: 'Sold', bg: '#d1d5db', color: '#6b7280' },
+    not_for_sale: { label: 'Not for Sale', bg: '#d1d5db', color: '#6b7280' },
+    reserved: { label: 'Reserved', bg: '#fef3c7', color: '#92400e', border: '#fbbf24' },
   }
+
+  const currentStatus = statusConfig[status] || statusConfig.available
 
   const priceLabel = artwork.sold
     ? 'SOLD'
-    : artwork.status === 'not_for_sale'
+    : status === 'not_for_sale'
       ? 'Not for Sale'
-      : artwork.status === 'reserved'
+      : status === 'reserved'
         ? 'Reserved'
         : `EGP ${(artwork.price || 0).toLocaleString()}`
 
   const imageStyle = {
     aspectRatio: `${artwork.width_cm || 1}/${artwork.height_cm || 1}`,
     width: '100%',
-  }
-
-  const renderButton = () => {
-    if (artwork.status === 'sold') {
-      return (
-        <button disabled className="btn btn-secondary art-card-btn sold-btn">
-          Sold
-        </button>
-      )
-    }
-    if (artwork.status === 'not_for_sale') {
-      return (
-        <button disabled className="btn btn-secondary art-card-btn">
-          Not for Sale
-        </button>
-      )
-    }
-    if (artwork.status === 'reserved') {
-      return (
-        <button disabled className="btn btn-secondary art-card-btn">
-          Reserved
-        </button>
-      )
-    }
-    return (
-      <div style={{ display: 'flex', gap: 6 }}>
-        <Link href={`/painting/${artwork.id}`} className="btn btn-primary art-card-btn" style={{ textDecoration: 'none', flex: 1 }}>
-          Buy
-        </Link>
-        <button onClick={handleShare} className="btn btn-secondary art-card-btn art-card-share-btn" title="Share">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
-          </svg>
-        </button>
-      </div>
-    )
   }
 
   return (
@@ -156,7 +113,20 @@ export default function ArtworkCard({ artwork }) {
             </div>
           </Link>
           <div className="art-card-actions">
-            {renderButton()}
+            <span style={{
+              display: 'inline-block',
+              padding: '5px 12px',
+              borderRadius: 6,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: '0.03em',
+              textTransform: 'uppercase',
+              background: currentStatus.bg,
+              color: currentStatus.color,
+              border: currentStatus.border ? `1px solid ${currentStatus.border}` : 'none',
+            }}>
+              {currentStatus.label}
+            </span>
           </div>
         </div>
       </div>
