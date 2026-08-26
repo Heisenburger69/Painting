@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { getBrowserSupabase, ADMIN_EMAIL } from '@/lib/supabase'
+import { getBrowserSupabase } from '@/lib/supabase'
 
 export default function AdminLayout({ children }) {
   const [checked, setChecked] = useState(false)
@@ -19,12 +19,6 @@ export default function AdminLayout({ children }) {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user?.email) {
         if (pathname !== '/admin/login') router.replace('/admin/login')
-        setChecked(true)
-        return
-      }
-
-      if (session.user.email !== ADMIN_EMAIL) {
-        setError(`Access denied. Signed in as ${session.user.email}, expected admin email.`)
         setChecked(true)
         return
       }
