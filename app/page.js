@@ -18,6 +18,7 @@ export default async function HomePage() {
   // Build the On Sale collection from DB metadata + dynamic artworks
   const onSaleEntry = onSaleArtworks.length > 0 ? {
     id: 'on-sale',
+    slug: 'on-sale',
     title: onSaleDb?.title || 'On Sale',
     description: onSaleDb?.description || 'Artworks currently on sale',
     cover_image: onSaleDb?.cover_image || null,
