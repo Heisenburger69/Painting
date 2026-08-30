@@ -4,11 +4,14 @@
 ### ./
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 395cd22a-8627-4a15-bf0f-68ab4da0411a | ✅ change | Uncommitted changes detected in Git repository | 2026-08-29 |
+| e0250d95-4459-45fb-ae94-4f87c9c6b939 | ✅ change | Uncommitted changes detected in Git repository | 2026-08-29 |
+| cde7bb30-500b-4055-94e5-d925557b0bf1 | 🔴 bugfix | Fix 404 in on-sale collection by adding slug | 2026-08-29 |
 | 3ed79069-d12c-4c2b-b358-330f2c46e124 | 🔵 discovery | GitHub credential helper configuration for Git | 2026-08-26 |
 | f0307ed0-0033-45f3-8eed-404010e03583 | 🔵 discovery | Identified .gitignore rules for common build artifacts | 2026-08-26 |
 | ca20edf8-071a-4e97-87ad-eef8a04c9268 | ✅ change | Git repository status and recent commits | 2026-08-26 |
 
-**Key concepts:** git credential helper, github cli, authentication, version-control, gitignore, build-artifacts, dependency-management, git-branch, git-commit, git-staging
+**Key concepts:** git-repository, uncommitted-changes, file-modification, file-deletion, git-staging-area, git-status, staging-area, bugfix, slug, 404-error
 
 ### .agents/skills/cavecrew/
 | ID | Type | Title | Date |
@@ -62,9 +65,19 @@
 ### app/
 | ID | Type | Title | Date |
 |----|------|-------|------|
+| 1acaae74-d8b6-4c58-9f73-8d7a27bb7afd | 🔄 refactor | Improve collection handling and hero section rendering | 2026-08-29 |
 | 8a7fb860-5d1d-47d4-be4a-a4e2eb076e85 | 🔄 refactor | CSS Styling for Product Listings | 2026-08-26 |
 
-**Key concepts:** css-styling, product-listing-ui, class-based-styling
+**Key concepts:** dynamic content, collection filtering, data binding, css-styling, product-listing-ui, class-based-styling
+
+### app/admin/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 10591284-0a5c-4272-ada2-e230e968ad73 | 🟣 feature | Implement admin authentication flow | 2026-08-29 |
+| 2a5d24d5-1896-4ded-8e4c-617c1d0c1ef5 | 🟣 feature | Implement Admin Route Protection with Supabase | 2026-08-29 |
+| f517fe55-f859-46db-88e2-8c81737a11f3 | 🟣 feature | Implement Admin Authentication Redirect | 2026-08-26 |
+
+**Key concepts:** authentication-flow, client-side-routing, state-management, route-protection, authentication, supabase, next-navigation, next.js-middleware
 
 ### Default/
 | ID | Type | Title | Date |
@@ -185,6 +198,14 @@
 | 7f6087e2-92fe-412f-b7e3-db66a5d9ab65 | 🔵 discovery | Large cache and log files identified | 2026-08-26 |
 
 **Key concepts:** disk-usage, cache-management, log-files
+
+### lib/
+| ID | Type | Title | Date |
+|----|------|-------|------|
+| 71afeebb-c0b0-4aa0-893a-a590636ed6ce | 🔵 discovery | Functionality for retrieving "On Sale" artworks | 2026-08-29 |
+| 78de3f8a-ea77-499d-a465-bd1e33c85396 | 🔄 refactor | Consolidated collection data fetching logic | 2026-08-29 |
+
+**Key concepts:** data-retrieval, database-query, database-querying, data-normalization, api-design, data-modeling
 
 ### soopencode/logs/
 | ID | Type | Title | Date |
